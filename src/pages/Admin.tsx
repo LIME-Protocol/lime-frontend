@@ -4,8 +4,7 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
-  Plus, CheckCircle2, XCircle, Edit3, Shield, ClipboardList,
-  ChevronDown, ChevronUp, X,
+  Plus, CheckCircle2, XCircle, Edit3, Shield, ClipboardList, X,
 } from 'lucide-react';
 
 type AdminTab = 'markets' | 'logs';
