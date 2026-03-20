@@ -37,7 +37,6 @@ function MobileNavItems() {
   );
 }
 
-];
 
 function NavItem({ item }: { item: typeof navItems[0] }) {
   const { pathname } = useLocation();
