@@ -13,7 +13,7 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
       <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center mb-4">
         {icon || <Package className="h-5 w-5 text-muted-foreground" />}
       </div>
-      <h3 className="text-sm font-semibold mb-1">{title}</h3>
+      <h3 className="text-sm font-semibold mb-1 text-foreground">{title}</h3>
       {description && <p className="text-xs text-muted-foreground text-center max-w-xs">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
