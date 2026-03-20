@@ -70,7 +70,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Mobile nav */}
-        <MobileNav />
+        <nav className="md:hidden flex border-b bg-card overflow-x-auto">
+          <MobileNavItems />
+        </nav>
 
         <main className="flex-1 overflow-y-auto">
           {children}
