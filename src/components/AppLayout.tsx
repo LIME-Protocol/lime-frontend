@@ -10,6 +10,35 @@ const navItems = [
   { label: 'Admin', path: '/admin', icon: Settings },
 ];
 
+function MobileNavItems() {
+  const { pathname } = useLocation();
+  return (
+    <>
+      {navItems.map((item) => {
+        const active = pathname === item.path;
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium whitespace-nowrap border-b-2 transition-colors',
+              active
+                ? 'border-accent text-accent'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {item.label}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+];
+
 function NavItem({ item }: { item: typeof navItems[0] }) {
   const { pathname } = useLocation();
   const active = pathname === item.path;
