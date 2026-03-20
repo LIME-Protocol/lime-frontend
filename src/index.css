@@ -2,67 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 25% 10%;
+    /* ── Dark financial theme ── */
+    --background: 222 22% 8%;
+    --foreground: 210 20% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card: 222 20% 11%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover: 222 20% 13%;
+    --popover-foreground: 210 20% 95%;
 
-    --primary: 220 20% 16%;
-    --primary-foreground: 210 20% 98%;
+    --primary: 160 55% 48%;
+    --primary-foreground: 222 22% 8%;
 
-    --secondary: 215 16% 93%;
-    --secondary-foreground: 220 20% 16%;
+    --secondary: 222 16% 16%;
+    --secondary-foreground: 210 14% 72%;
 
-    --muted: 215 16% 93%;
-    --muted-foreground: 215 12% 50%;
+    --muted: 222 14% 18%;
+    --muted-foreground: 215 12% 52%;
 
-    --accent: 160 60% 38%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 160 55% 48%;
+    --accent-foreground: 222 22% 8%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 90%;
-    --input: 215 20% 90%;
-    --ring: 160 60% 38%;
+    --border: 222 14% 18%;
+    --input: 222 14% 20%;
+    --ring: 160 55% 48%;
 
     --radius: 0.5rem;
 
-    /* Custom semantic tokens */
-    --positive: 160 60% 38%;
-    --positive-muted: 160 40% 94%;
-    --positive-foreground: 0 0% 100%;
-    --negative: 0 72% 51%;
-    --negative-muted: 0 60% 96%;
-    --negative-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-muted: 38 80% 95%;
-    --warning-foreground: 38 92% 20%;
-    --info: 210 80% 52%;
-    --info-muted: 210 60% 95%;
-    --info-foreground: 0 0% 100%;
-    --pending: 45 90% 52%;
-    --pending-muted: 45 80% 95%;
-    --pending-foreground: 45 90% 18%;
-    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    /* ── Semantic financial tokens ── */
+    --positive: 160 55% 48%;
+    --positive-soft: 160 40% 16%;
+    --positive-foreground: 160 60% 90%;
+    --negative: 0 72% 56%;
+    --negative-soft: 0 50% 16%;
+    --negative-foreground: 0 70% 92%;
+    --warning: 38 92% 56%;
+    --warning-soft: 38 60% 14%;
+    --warning-foreground: 38 80% 88%;
+    --info: 210 80% 58%;
+    --info-soft: 210 50% 16%;
+    --info-foreground: 210 70% 90%;
+    --pending: 45 85% 58%;
+    --pending-soft: 45 50% 14%;
+    --pending-foreground: 45 70% 88%;
 
-    --sidebar-background: 220 20% 14%;
-    --sidebar-foreground: 215 16% 75%;
-    --sidebar-primary: 160 60% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 20%;
-    --sidebar-accent-foreground: 215 16% 92%;
-    --sidebar-border: 220 16% 20%;
-    --sidebar-ring: 160 60% 38%;
-    --sidebar-muted: 215 12% 45%;
+    --sidebar-background: 222 24% 6%;
+    --sidebar-foreground: 215 14% 55%;
+    --sidebar-primary: 160 55% 48%;
+    --sidebar-primary-foreground: 222 22% 8%;
+    --sidebar-accent: 222 20% 14%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 222 18% 14%;
+    --sidebar-ring: 160 55% 48%;
+    --sidebar-muted: 215 12% 42%;
   }
 }
 
@@ -73,48 +73,95 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-semibold;
     text-wrap: balance;
   }
 
+  h1 { @apply text-[22px] leading-tight; }
+
   p { text-wrap: pretty; }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: hsl(222, 14%, 22%); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(222, 14%, 28%); }
 }
 
 @layer components {
   .font-mono {
-    font-family: var(--mono);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 
-  .surface-raised {
-    @apply bg-card;
-    box-shadow: 0 1px 3px 0 hsl(220 25% 10% / 0.04), 0 1px 2px -1px hsl(220 25% 10% / 0.04);
+  /* Card surfaces with subtle glow */
+  .surface-card {
+    @apply bg-card rounded-xl border;
+    box-shadow:
+      0 1px 2px 0 hsl(0 0% 0% / 0.2),
+      0 0 0 1px hsl(222 14% 18% / 0.5);
   }
 
-  .surface-raised-hover {
-    @apply surface-raised;
-    transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+  .surface-card-hover {
+    @apply surface-card;
+    transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out, transform 0.15s ease-out;
   }
 
-  .surface-raised-hover:hover {
-    box-shadow: 0 4px 12px 0 hsl(220 25% 10% / 0.07), 0 2px 4px -2px hsl(220 25% 10% / 0.04);
+  .surface-card-hover:hover {
+    border-color: hsl(160, 55%, 48%, 0.2);
+    box-shadow:
+      0 4px 16px 0 hsl(0 0% 0% / 0.3),
+      0 0 0 1px hsl(160 55% 48% / 0.1);
   }
 
-  .surface-sunken {
-    background: hsl(215 20% 96%);
+  .surface-card-hover:active {
+    transform: scale(0.985);
+  }
+
+  /* Inset surface for inputs, embedded areas */
+  .surface-inset {
+    background: hsl(222, 22%, 7%);
+    border: 1px solid hsl(222, 14%, 16%);
+  }
+
+  /* Glow effect for important elements */
+  .glow-accent {
+    box-shadow: 0 0 20px -4px hsl(160 55% 48% / 0.15);
+  }
+
+  /* Range bar component */
+  .range-track {
+    @apply h-2 rounded-full overflow-hidden;
+    background: hsl(222, 16%, 16%);
+  }
+
+  .range-fill {
+    @apply h-full rounded-full transition-all duration-500;
+    background: linear-gradient(90deg, hsl(160, 55%, 40%), hsl(160, 55%, 52%));
+  }
+
+  /* Data label style */
+  .data-label {
+    @apply text-[10px] uppercase tracking-widest font-medium text-muted-foreground;
+  }
+
+  .data-value {
+    @apply font-mono tabular-nums font-semibold;
   }
 }
 
 @layer utilities {
   @keyframes reveal-up {
-    from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+    from { opacity: 0; transform: translateY(14px); filter: blur(3px); }
     to { opacity: 1; transform: translateY(0); filter: blur(0); }
   }
   @keyframes reveal-left {
-    from { opacity: 0; transform: translateX(-16px); filter: blur(4px); }
+    from { opacity: 0; transform: translateX(-14px); filter: blur(3px); }
     to { opacity: 1; transform: translateX(0); filter: blur(0); }
   }
   @keyframes fade-in {
@@ -129,16 +176,21 @@
     from { background-position: -200% 0; }
     to { background-position: 200% 0; }
   }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
 
-  .animate-reveal-up { animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-  .animate-reveal-left { animation: reveal-left 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-  .animate-fade-in { animation: fade-in 0.5s ease-out both; }
-  .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-reveal-up { animation: reveal-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-reveal-left { animation: reveal-left 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-in { animation: fade-in 0.45s ease-out both; }
+  .animate-scale-in { animation: scale-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .animate-shimmer {
-    background: linear-gradient(90deg, hsl(215 16% 93%) 25%, hsl(215 16% 96%) 50%, hsl(215 16% 93%) 75%);
+    background: linear-gradient(90deg, hsl(222 16% 14%) 25%, hsl(222 16% 18%) 50%, hsl(222 16% 14%) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
   .stagger-1 { animation-delay: 60ms; }
   .stagger-2 { animation-delay: 120ms; }
