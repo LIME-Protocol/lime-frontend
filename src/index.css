@@ -36,30 +36,33 @@
 
     --radius: 0.5rem;
 
-    /* Custom tokens */
-    --surface-raised: 0 0% 100%;
-    --surface-sunken: 215 20% 95%;
+    /* Custom semantic tokens */
     --positive: 160 60% 38%;
+    --positive-muted: 160 40% 94%;
     --positive-foreground: 0 0% 100%;
     --negative: 0 72% 51%;
+    --negative-muted: 0 60% 96%;
     --negative-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning-muted: 38 80% 95%;
+    --warning-foreground: 38 92% 20%;
     --info: 210 80% 52%;
+    --info-muted: 210 60% 95%;
     --info-foreground: 0 0% 100%;
-    --chart-line: 160 60% 38%;
-    --chart-area: 160 60% 38%;
-    --chart-cap: 215 12% 50%;
+    --pending: 45 90% 52%;
+    --pending-muted: 45 80% 95%;
+    --pending-foreground: 45 90% 18%;
     --mono: 'JetBrains Mono', ui-monospace, monospace;
 
-    --sidebar-background: 220 20% 16%;
-    --sidebar-foreground: 215 16% 80%;
+    --sidebar-background: 220 20% 14%;
+    --sidebar-foreground: 215 16% 75%;
     --sidebar-primary: 160 60% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 22%;
-    --sidebar-accent-foreground: 215 16% 90%;
-    --sidebar-border: 220 18% 22%;
+    --sidebar-accent: 220 18% 20%;
+    --sidebar-accent-foreground: 215 16% 92%;
+    --sidebar-border: 220 16% 20%;
     --sidebar-ring: 160 60% 38%;
+    --sidebar-muted: 215 12% 45%;
   }
 }
 
@@ -78,9 +81,7 @@
     text-wrap: balance;
   }
 
-  p {
-    text-wrap: pretty;
-  }
+  p { text-wrap: pretty; }
 }
 
 @layer components {
@@ -88,82 +89,61 @@
     font-family: var(--mono);
   }
 
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-
   .surface-raised {
-    @apply bg-card shadow-sm;
+    @apply bg-card;
     box-shadow: 0 1px 3px 0 hsl(220 25% 10% / 0.04), 0 1px 2px -1px hsl(220 25% 10% / 0.04);
   }
 
-  .surface-raised:hover {
-    box-shadow: 0 4px 12px 0 hsl(220 25% 10% / 0.08), 0 2px 4px -2px hsl(220 25% 10% / 0.04);
+  .surface-raised-hover {
+    @apply surface-raised;
+    transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+  }
+
+  .surface-raised-hover:hover {
+    box-shadow: 0 4px 12px 0 hsl(220 25% 10% / 0.07), 0 2px 4px -2px hsl(220 25% 10% / 0.04);
+  }
+
+  .surface-sunken {
+    background: hsl(215 20% 96%);
   }
 }
 
 @layer utilities {
-  /* Scroll reveal animations */
   @keyframes reveal-up {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-      filter: blur(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-      filter: blur(0);
-    }
+    from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
   }
-
   @keyframes reveal-left {
-    from {
-      opacity: 0;
-      transform: translateX(-16px);
-      filter: blur(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-      filter: blur(0);
-    }
+    from { opacity: 0; transform: translateX(-16px); filter: blur(4px); }
+    to { opacity: 1; transform: translateX(0); filter: blur(0); }
   }
-
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-
   @keyframes scale-in {
-    from {
-      opacity: 0;
-      transform: scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
   }
 
-  .animate-reveal-up {
-    animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  .animate-reveal-up { animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-reveal-left { animation: reveal-left 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-in { animation: fade-in 0.5s ease-out both; }
+  .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-shimmer {
+    background: linear-gradient(90deg, hsl(215 16% 93%) 25%, hsl(215 16% 96%) 50%, hsl(215 16% 93%) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
   }
 
-  .animate-reveal-left {
-    animation: reveal-left 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-out both;
-  }
-
-  .animate-scale-in {
-    animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .delay-100 { animation-delay: 100ms; }
-  .delay-200 { animation-delay: 200ms; }
-  .delay-300 { animation-delay: 300ms; }
-  .delay-400 { animation-delay: 400ms; }
+  .stagger-1 { animation-delay: 60ms; }
+  .stagger-2 { animation-delay: 120ms; }
+  .stagger-3 { animation-delay: 180ms; }
+  .stagger-4 { animation-delay: 240ms; }
+  .stagger-5 { animation-delay: 300ms; }
+  .stagger-6 { animation-delay: 360ms; }
 }
