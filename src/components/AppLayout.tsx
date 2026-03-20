@@ -70,28 +70,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Mobile nav */}
-        <nav className="md:hidden flex border-b bg-card overflow-x-auto">
-          {navItems.map((item) => {
-            const { pathname } = useLocation();
-            const active = pathname === item.path;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  'flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium whitespace-nowrap border-b-2 transition-colors',
-                  active
-                    ? 'border-accent text-accent'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+        <MobileNav />
 
         <main className="flex-1 overflow-y-auto">
           {children}
