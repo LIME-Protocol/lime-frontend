@@ -3,6 +3,9 @@ import { Market, formatPrice } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
+import { usePlaceOrder } from '@/hooks/use-trading';
+import { useAuth } from '@/hooks/use-auth';
+import { Loader2 } from 'lucide-react';
 
 interface TradePanelProps {
   market: Market;
@@ -13,13 +16,30 @@ export default function TradePanel({ market }: TradePanelProps) {
   const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
   const [quantity, setQuantity] = useState('10');
   const [limitPrice, setLimitPrice] = useState((market.currentPrice * 100).toFixed(1));
+  const { user } = useAuth();
+  const placeOrder = usePlaceOrder();
 
   const price = orderType === 'market' ? market.currentPrice : Number(limitPrice) / 100;
   const cost = Number(quantity) * (side === 'buy' ? price : 1 - price);
 
+  const handleSubmit = () => {
+    if (!user) {
+      // Could show auth modal here
+      return;
+    }
+
+    placeOrder.mutate({
+      market_id: market.id,
+      side,
+      order_type: orderType,
+      quantity: Number(quantity),
+      price: Number(price.toFixed(4)),
+    });
+  };
+
   return (
     <div className="space-y-4">
-      {/* Buy / Sell toggle — full-width, bold */}
+      {/* Buy / Sell toggle */}
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => setSide('buy')}
@@ -87,7 +107,7 @@ export default function TradePanel({ market }: TradePanelProps) {
       <div>
         <label className="data-label block mb-1.5">
           Contracts
-          <InfoTip content="Each contract pays between 0¢ and 100¢ depending on where the final value lands in the L-U range." />
+          <InfoTip content="Each contract pays between 0¢ and 100¢ depending on where the final value lands in the range." />
         </label>
         <input
           type="number" min="1"
@@ -133,23 +153,35 @@ export default function TradePanel({ market }: TradePanelProps) {
         <div className="flex justify-between">
           <span className="text-muted-foreground">
             Max payout
-            <InfoTip content="If the contract settles at 100¢ (value ≥ U), each contract pays $1.00." side="left" />
+            <InfoTip content="If the contract settles at 100¢ (value ≥ cap), each contract pays $1.00." side="left" />
           </span>
           <span className="data-value text-positive text-[13px]">${(Number(quantity) * 100).toFixed(2)}</span>
         </div>
       </div>
 
       {/* Submit */}
-      <Button
-        className={cn(
-          'w-full h-11 font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.97]',
-          side === 'buy'
-            ? 'bg-positive hover:bg-positive/90 text-primary-foreground shadow-lg shadow-positive/15'
-            : 'bg-negative hover:bg-negative/90 text-destructive-foreground shadow-lg shadow-negative/15'
-        )}
-      >
-        {side === 'buy' ? 'BUY' : 'SELL'} {quantity} CONTRACTS
-      </Button>
+      {!user ? (
+        <p className="text-xs text-center text-muted-foreground py-2">
+          Sign in to start trading
+        </p>
+      ) : (
+        <Button
+          onClick={handleSubmit}
+          disabled={placeOrder.isPending || Number(quantity) <= 0}
+          className={cn(
+            'w-full h-11 font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.97]',
+            side === 'buy'
+              ? 'bg-positive hover:bg-positive/90 text-primary-foreground shadow-lg shadow-positive/15'
+              : 'bg-negative hover:bg-negative/90 text-destructive-foreground shadow-lg shadow-negative/15'
+          )}
+        >
+          {placeOrder.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            `${side === 'buy' ? 'BUY' : 'SELL'} ${quantity} CONTRACTS`
+          )}
+        </Button>
+      )}
     </div>
   );
 }
