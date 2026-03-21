@@ -1,6 +1,9 @@
 import { useState, useMemo } from 'react';
-import { markets, categories } from '@/lib/mock-data';
+import { markets as mockMarkets, categories } from '@/lib/mock-data';
+import { useMarkets } from '@/hooks/use-markets';
+import { dbMarketToMarket } from '@/lib/adapters';
 import { daysUntil, formatCurrency } from '@/lib/types';
+import type { Market } from '@/lib/types';
 import MarketCard from '@/components/market/MarketCard';
 import MarketTable from '@/components/market/MarketTable';
 import EmptyState from '@/components/shared/EmptyState';
@@ -15,7 +18,16 @@ export default function Explore() {
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('cards');
 
-  const activeMarkets = useMemo(() => markets.filter((m) => m.status === 'active'), []);
+  const { data: dbMarkets } = useMarkets();
+
+  // Merge DB markets with mock data (DB takes priority, mock as fallback)
+  const allMarkets: Market[] = useMemo(() => {
+    const fromDb = (dbMarkets || []).map(dbMarketToMarket);
+    if (fromDb.length > 0) return [...fromDb, ...mockMarkets];
+    return mockMarkets;
+  }, [dbMarkets]);
+
+  const activeMarkets = useMemo(() => allMarkets.filter((m) => m.status === 'active'), [allMarkets]);
 
   const filtered = useMemo(() => {
     return activeMarkets.filter((m) => {
@@ -32,10 +44,16 @@ export default function Explore() {
       .sort((a, b) => daysUntil(a.resolutionDate) - daysUntil(b.resolutionDate))
       .slice(0, 4),
     [activeMarkets]);
-  const recentlyResolved = useMemo(() => markets.filter((m) => m.status === 'resolved').slice(0, 3), []);
+  const recentlyResolved = useMemo(() => allMarkets.filter((m) => m.status === 'resolved').slice(0, 3), [allMarkets]);
 
   const totalVol = activeMarkets.reduce((s, m) => s + m.volume24h, 0);
   const totalOI = activeMarkets.reduce((s, m) => s + m.openInterest, 0);
+
+  // Build categories dynamically
+  const allCategories = useMemo(() => {
+    const cats = new Set(allMarkets.map(m => m.category));
+    return ['All', ...Array.from(cats).sort()];
+  }, [allMarkets]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-8">
@@ -53,7 +71,7 @@ export default function Explore() {
         <StatCard icon={<Activity className="h-3.5 w-3.5 text-primary" />} label="Active Markets" value={String(activeMarkets.length)} />
         <StatCard icon={<Flame className="h-3.5 w-3.5 text-warning" />} label="24h Volume" value={formatCurrency(totalVol)} />
         <StatCard label="Open Interest" value={formatCurrency(totalOI)} />
-        <StatCard icon={<CheckCircle className="h-3.5 w-3.5 text-info" />} label="Resolved" value={String(markets.filter(m => m.status === 'resolved').length)} />
+        <StatCard icon={<CheckCircle className="h-3.5 w-3.5 text-info" />} label="Resolved" value={String(allMarkets.filter(m => m.status === 'resolved').length)} />
       </div>
 
       {/* Trending */}
@@ -109,7 +127,7 @@ export default function Explore() {
             />
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-1">
-            {categories.map((cat) => (
+            {allCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}

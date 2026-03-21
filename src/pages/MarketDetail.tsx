@@ -1,7 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { markets, generateOrderBook, generateTrades } from '@/lib/mock-data';
+import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
+import { useMarket, useMarketTrades, useMarketOrders } from '@/hooks/use-markets';
+import { dbMarketToMarket } from '@/lib/adapters';
 import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil } from '@/lib/types';
+import type { Market, Trade, OrderBook } from '@/lib/types';
 import PayoffChart from '@/components/market/PayoffChart';
 import OrderBookComponent from '@/components/market/OrderBookComponent';
 import TradeHistory from '@/components/market/TradeHistory';
@@ -14,10 +17,60 @@ import { cn } from '@/lib/utils';
 
 export default function MarketDetail() {
   const { id } = useParams();
-  const market = markets.find((m) => m.id === id);
 
-  const orderBook = useMemo(() => market ? generateOrderBook(market.currentPrice) : null, [market]);
-  const trades = useMemo(() => market ? generateTrades(market.id, market.currentPrice) : [], [market]);
+  // Try DB first, fallback to mock
+  const { data: dbMarket } = useMarket(id);
+  const { data: dbTrades } = useMarketTrades(id);
+  const { data: dbOrders } = useMarketOrders(id);
+
+  const market: Market | undefined = useMemo(() => {
+    if (dbMarket) return dbMarketToMarket(dbMarket);
+    return mockMarkets.find((m) => m.id === id);
+  }, [dbMarket, id]);
+
+  // Build trades list from DB or mock
+  const trades: Trade[] = useMemo(() => {
+    if (dbTrades && dbTrades.length > 0) {
+      return dbTrades.map(t => ({
+        id: t.id,
+        marketId: t.market_id,
+        side: 'buy' as const, // DB trades don't have a "side" per se, show as buy
+        price: Number(t.price),
+        quantity: Number(t.quantity),
+        timestamp: t.executed_at,
+      }));
+    }
+    return market ? generateTrades(market.id, market.currentPrice) : [];
+  }, [dbTrades, market]);
+
+  // Build order book from DB orders or generate mock
+  const orderBook: OrderBook | null = useMemo(() => {
+    if (dbOrders && dbOrders.length > 0) {
+      const buyOrders = dbOrders.filter(o => o.side === 'buy').sort((a, b) => Number(b.price) - Number(a.price));
+      const sellOrders = dbOrders.filter(o => o.side === 'sell').sort((a, b) => Number(a.price) - Number(b.price));
+
+      let cumBid = 0;
+      const bids = buyOrders.slice(0, 8).map(o => {
+        const size = Number(o.quantity) - Number(o.filled_quantity);
+        cumBid += size;
+        return { price: Number(o.price), size, total: cumBid };
+      });
+
+      let cumAsk = 0;
+      const asks = sellOrders.slice(0, 8).map(o => {
+        const size = Number(o.quantity) - Number(o.filled_quantity);
+        cumAsk += size;
+        return { price: Number(o.price), size, total: cumAsk };
+      });
+
+      const spread = asks.length > 0 && bids.length > 0
+        ? Number((asks[0].price - bids[0].price).toFixed(3))
+        : 0;
+
+      return { bids, asks, spread };
+    }
+    return market ? generateOrderBook(market.currentPrice) : null;
+  }, [dbOrders, market]);
 
   if (!market) {
     return (
@@ -130,7 +183,7 @@ export default function MarketDetail() {
           <div className="surface-card p-5 animate-reveal-up stagger-3">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-sm font-semibold">Payoff Structure</h2>
-              <InfoTip content="This chart shows how the contract payout (in cents) varies with the final observed value. The payout is linear between L and U, capped at the extremes." />
+              <InfoTip content="This chart shows how the contract payout (in cents) varies with the final observed value. The payout is linear between floor and cap." />
             </div>
             <PayoffChart
               lower={market.lowerBound}
@@ -196,7 +249,7 @@ export default function MarketDetail() {
             <div className="text-center mb-4">
               <p className="data-label mb-1.5">
                 Implied Value
-                <InfoTip content="The market's consensus estimate for the final value, based on the current contract price and the L–U range." />
+                <InfoTip content="The market's consensus estimate for the final value, based on the current contract price and the range." />
               </p>
               <p className="text-[36px] font-bold font-mono tabular-nums leading-none">{fmtVal(implied)}</p>
               <p className="text-xs text-muted-foreground mt-1">{market.unit}</p>
