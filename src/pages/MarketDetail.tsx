@@ -205,16 +205,17 @@ export default function MarketDetail() {
             {/* Range */}
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-semibold text-negative bg-negative-soft px-1.5 py-0.5 rounded">
-                  L {fmtVal(market.lowerBound)}
+                <span className="text-[10px] font-mono font-semibold text-muted-foreground">
+                  {fmtVal(market.lowerBound)}
                 </span>
                 <div className="flex-1 range-track">
                   <div className="range-fill" style={{ width: `${clamp(market.currentPrice * 100)}%` }} />
                 </div>
-                <span className="text-[10px] font-mono font-semibold text-positive bg-positive-soft px-1.5 py-0.5 rounded">
-                  U {fmtVal(market.upperBound)}
+                <span className="text-[10px] font-mono font-semibold text-muted-foreground">
+                  {fmtVal(market.upperBound)}
                 </span>
               </div>
+              <p className="text-[10px] text-muted-foreground text-center mt-1">Range · {market.unit}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-center text-xs">

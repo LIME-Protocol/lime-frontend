@@ -57,19 +57,20 @@ export default function MarketCard({ market, index = 0 }: MarketCardProps) {
         )}
       </div>
 
-      {/* L — U range bar with labels */}
+      {/* Range bar */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
-            L {fmtBound(market.lowerBound)}
+          <span className="text-[10px] font-mono font-semibold text-muted-foreground">
+            {fmtBound(market.lowerBound)}
           </span>
           <div className="flex-1 range-track">
             <div className="range-fill" style={{ width: `${clamp(market.currentPrice * 100)}%` }} />
           </div>
-          <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
-            U {fmtBound(market.upperBound)}
+          <span className="text-[10px] font-mono font-semibold text-muted-foreground">
+            {fmtBound(market.upperBound)}
           </span>
         </div>
+        <p className="text-[10px] text-muted-foreground text-center">Range · {market.unit}</p>
       </div>
 
       {/* Footer: volume + resolution date */}

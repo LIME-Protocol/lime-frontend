@@ -17,7 +17,7 @@ export default function ContractExplainer({ market }: ContractExplainerProps) {
       <div>
         <h3 className="text-[14px] font-semibold mb-1 flex items-center gap-1">
           How this contract settles
-          <InfoTip content="This is a range contract. The payout depends linearly on where the final observed value lands within the range [L, U]." />
+          <InfoTip content="This is a range contract. The payout depends linearly on where the final observed value lands within the contract range." />
         </h3>
         <p className="text-xs text-muted-foreground leading-relaxed">
           The contract tracks <span className="text-foreground font-medium">{market.variable}</span> and settles based on its observed value on the resolution date.
