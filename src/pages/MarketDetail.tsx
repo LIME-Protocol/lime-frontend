@@ -82,17 +82,16 @@ export default function MarketDetail() {
             <MetricCard label="Open Interest" value={formatCurrency(market.openInterest)} />
           </div>
 
-          {/* L — U Range Hero */}
+          {/* Contract Range */}
           <div className="surface-card p-5 animate-reveal-up stagger-2 glow-accent">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-sm font-semibold">Contract Range</h2>
-              <InfoTip content="The payoff of this contract is determined by where the final value lands within this range. Below L = 0¢, above U = 100¢, between = linear." />
+              <InfoTip content="The payoff is determined by where the final value lands within this range. Below the floor = 0¢, above the cap = 100¢, between = linear." />
             </div>
 
-            {/* Big range visualization */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-center">
-                <p className="data-label mb-1">Floor (L)</p>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="text-center min-w-[60px]">
+                <p className="data-label mb-1">Floor</p>
                 <p className="text-lg font-bold font-mono tabular-nums text-negative">
                   {fmtVal(market.lowerBound)}
                 </p>
@@ -102,16 +101,16 @@ export default function MarketDetail() {
                 <div className="range-track h-3">
                   <div className="range-fill h-full" style={{ width: `${clamp(market.currentPrice * 100)}%` }} />
                 </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-[10px] font-mono text-negative/60">0¢</span>
+                <div className="flex justify-between mt-1.5">
+                  <span className="text-[10px] font-mono text-muted-foreground/60">0¢</span>
                   <span className="text-[10px] font-mono text-muted-foreground">
-                    ← Implied: <span className="text-warning font-semibold">{fmtVal(implied)}</span> →
+                    Implied: <span className="text-warning font-semibold">{fmtVal(implied)}</span>
                   </span>
-                  <span className="text-[10px] font-mono text-positive/60">100¢</span>
+                  <span className="text-[10px] font-mono text-muted-foreground/60">100¢</span>
                 </div>
               </div>
-              <div className="text-center">
-                <p className="data-label mb-1">Cap (U)</p>
+              <div className="text-center min-w-[60px]">
+                <p className="data-label mb-1">Cap</p>
                 <p className="text-lg font-bold font-mono tabular-nums text-positive">
                   {fmtVal(market.upperBound)}
                 </p>
@@ -121,8 +120,8 @@ export default function MarketDetail() {
 
             {market.referenceValue !== undefined && (
               <div className="text-xs text-muted-foreground bg-secondary/40 rounded-lg px-3 py-2">
-                Current reference value: <span className="font-mono font-semibold text-foreground">{fmtVal(market.referenceValue)} {market.unit}</span>
-                <InfoTip content="The latest observed value of this variable. The contract settles based on the value on the resolution date, not the current reference." />
+                Current reference: <span className="font-mono font-semibold text-foreground">{fmtVal(market.referenceValue)} {market.unit}</span>
+                <InfoTip content="The latest observed value. The contract settles based on the value on the resolution date, not the current reference." />
               </div>
             )}
           </div>
