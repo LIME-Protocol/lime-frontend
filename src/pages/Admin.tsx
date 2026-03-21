@@ -78,7 +78,7 @@ export default function Admin() {
                     <StatusBadge type="market" status={m.status} />
                     <span className="data-label">{m.category}</span>
                     <span className="text-[10px] text-muted-foreground font-mono">
-                      L {m.lowerBound.toLocaleString()} – U {m.upperBound.toLocaleString()} {m.unit}
+                      {m.lowerBound.toLocaleString()} – {m.upperBound.toLocaleString()} {m.unit}
                     </span>
                   </div>
                   <h3 className="text-[13px] font-semibold mb-0.5">{m.title}</h3>
