@@ -14,7 +14,316 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: Database["public"]["Enums"]["audit_action"]
+          actor_id: string | null
+          actor_type: Database["public"]["Enums"]["audit_actor_type"]
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["audit_action"]
+          actor_id?: string | null
+          actor_type?: Database["public"]["Enums"]["audit_actor_type"]
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["audit_action"]
+          actor_id?: string | null
+          actor_type?: Database["public"]["Enums"]["audit_actor_type"]
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
+      markets: {
+        Row: {
+          category: string
+          ceiling_payout: number
+          created_at: string
+          created_by: string | null
+          current_reference_value: number | null
+          description: string | null
+          final_observed_value: number | null
+          final_payout_value: number | null
+          floor_payout: number
+          id: string
+          lower_bound: number
+          metric_name: string
+          resolution_date: string
+          settlement_source: string
+          settlement_url: string | null
+          status: Database["public"]["Enums"]["market_status"]
+          title: string
+          unit: string
+          updated_at: string
+          upper_bound: number
+        }
+        Insert: {
+          category?: string
+          ceiling_payout?: number
+          created_at?: string
+          created_by?: string | null
+          current_reference_value?: number | null
+          description?: string | null
+          final_observed_value?: number | null
+          final_payout_value?: number | null
+          floor_payout?: number
+          id?: string
+          lower_bound: number
+          metric_name: string
+          resolution_date: string
+          settlement_source: string
+          settlement_url?: string | null
+          status?: Database["public"]["Enums"]["market_status"]
+          title: string
+          unit?: string
+          updated_at?: string
+          upper_bound: number
+        }
+        Update: {
+          category?: string
+          ceiling_payout?: number
+          created_at?: string
+          created_by?: string | null
+          current_reference_value?: number | null
+          description?: string | null
+          final_observed_value?: number | null
+          final_payout_value?: number | null
+          floor_payout?: number
+          id?: string
+          lower_bound?: number
+          metric_name?: string
+          resolution_date?: string
+          settlement_source?: string
+          settlement_url?: string | null
+          status?: Database["public"]["Enums"]["market_status"]
+          title?: string
+          unit?: string
+          updated_at?: string
+          upper_bound?: number
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          created_at: string
+          filled_quantity: number
+          id: string
+          market_id: string
+          order_type: Database["public"]["Enums"]["order_type"]
+          price: number
+          quantity: number
+          side: Database["public"]["Enums"]["order_side"]
+          status: Database["public"]["Enums"]["order_status"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filled_quantity?: number
+          id?: string
+          market_id: string
+          order_type?: Database["public"]["Enums"]["order_type"]
+          price: number
+          quantity: number
+          side: Database["public"]["Enums"]["order_side"]
+          status?: Database["public"]["Enums"]["order_status"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filled_quantity?: number
+          id?: string
+          market_id?: string
+          order_type?: Database["public"]["Enums"]["order_type"]
+          price?: number
+          quantity?: number
+          side?: Database["public"]["Enums"]["order_side"]
+          status?: Database["public"]["Enums"]["order_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      positions: {
+        Row: {
+          average_price: number
+          estimated_pnl: number
+          id: string
+          market_id: string
+          net_quantity: number
+          realized_pnl: number
+          status: Database["public"]["Enums"]["position_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          average_price?: number
+          estimated_pnl?: number
+          id?: string
+          market_id: string
+          net_quantity?: number
+          realized_pnl?: number
+          status?: Database["public"]["Enums"]["position_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          average_price?: number
+          estimated_pnl?: number
+          id?: string
+          market_id?: string
+          net_quantity?: number
+          realized_pnl?: number
+          status?: Database["public"]["Enums"]["position_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "positions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          username: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          username?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          username?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      resolutions: {
+        Row: {
+          id: string
+          market_id: string
+          observed_value: number
+          resolution_notes: string | null
+          resolved_at: string
+          resolved_by: string | null
+          settlement_source_used: string
+        }
+        Insert: {
+          id?: string
+          market_id: string
+          observed_value: number
+          resolution_notes?: string | null
+          resolved_at?: string
+          resolved_by?: string | null
+          settlement_source_used: string
+        }
+        Update: {
+          id?: string
+          market_id?: string
+          observed_value?: number
+          resolution_notes?: string | null
+          resolved_at?: string
+          resolved_by?: string | null
+          settlement_source_used?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resolutions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: true
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trades: {
+        Row: {
+          buy_order_id: string
+          buyer_user_id: string
+          executed_at: string
+          id: string
+          market_id: string
+          price: number
+          quantity: number
+          sell_order_id: string
+          seller_user_id: string
+        }
+        Insert: {
+          buy_order_id: string
+          buyer_user_id: string
+          executed_at?: string
+          id?: string
+          market_id: string
+          price: number
+          quantity: number
+          sell_order_id: string
+          seller_user_id: string
+        }
+        Update: {
+          buy_order_id?: string
+          buyer_user_id?: string
+          executed_at?: string
+          id?: string
+          market_id?: string
+          price?: number
+          quantity?: number
+          sell_order_id?: string
+          seller_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_buy_order_id_fkey"
+            columns: ["buy_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_sell_order_id_fkey"
+            columns: ["sell_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +332,27 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      audit_action:
+        | "create"
+        | "update"
+        | "approve"
+        | "resolve"
+        | "invalidate"
+        | "cancel"
+        | "trade"
+        | "order"
+      audit_actor_type: "user" | "system" | "admin"
+      market_status:
+        | "draft"
+        | "pending"
+        | "active"
+        | "resolved"
+        | "invalidated"
+        | "cancelled"
+      order_side: "buy" | "sell"
+      order_status: "open" | "partial" | "filled" | "cancelled"
+      order_type: "market" | "limit"
+      position_status: "open" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +479,30 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      audit_action: [
+        "create",
+        "update",
+        "approve",
+        "resolve",
+        "invalidate",
+        "cancel",
+        "trade",
+        "order",
+      ],
+      audit_actor_type: ["user", "system", "admin"],
+      market_status: [
+        "draft",
+        "pending",
+        "active",
+        "resolved",
+        "invalidated",
+        "cancelled",
+      ],
+      order_side: ["buy", "sell"],
+      order_status: ["open", "partial", "filled", "cancelled"],
+      order_type: ["market", "limit"],
+      position_status: ["open", "closed"],
+    },
   },
 } as const
