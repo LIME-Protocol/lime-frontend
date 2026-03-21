@@ -149,8 +149,8 @@ export default function MarketDetail() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 text-sm">
               <DetailItem label="Variable" value={market.variable} />
               <DetailItem label="Unit" value={market.unit || '—'} />
-              <DetailItem label="Lower Bound (L)" value={`${market.lowerBound.toLocaleString()} ${market.unit}`} mono />
-              <DetailItem label="Upper Bound (U)" value={`${market.upperBound.toLocaleString()} ${market.unit}`} mono />
+              <DetailItem label="Range Floor" value={`${market.lowerBound.toLocaleString()} ${market.unit}`} mono />
+              <DetailItem label="Range Cap" value={`${market.upperBound.toLocaleString()} ${market.unit}`} mono />
               <DetailItem
                 label="Resolution Date"
                 value={new Date(market.resolutionDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
