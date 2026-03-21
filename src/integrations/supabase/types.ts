@@ -329,7 +329,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_market_last_price: { Args: { p_market_id: string }; Returns: number }
+      place_order_and_match: {
+        Args: {
+          p_market_id: string
+          p_order_type: Database["public"]["Enums"]["order_type"]
+          p_price: number
+          p_quantity: number
+          p_side: Database["public"]["Enums"]["order_side"]
+          p_user_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       audit_action:
