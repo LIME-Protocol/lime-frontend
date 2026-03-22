@@ -10,6 +10,7 @@ import OrderBookComponent from '@/components/market/OrderBookComponent';
 import TradeHistory from '@/components/market/TradeHistory';
 import TradePanel from '@/components/market/TradePanel';
 import ContractExplainer from '@/components/market/ContractExplainer';
+import Comments from '@/components/market/Comments';
 import StatusBadge from '@/components/shared/StatusBadge';
 import InfoTip from '@/components/shared/InfoTip';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
@@ -222,6 +223,11 @@ export default function MarketDetail() {
           {/* How settlement works */}
           <div className="surface-card p-5 animate-reveal-up stagger-5">
             <ContractExplainer market={market} />
+          </div>
+
+          {/* Discussion */}
+          <div className="surface-card p-5 animate-reveal-up stagger-6">
+            <Comments marketId={market.id} />
           </div>
 
           {/* Order book + trades */}
