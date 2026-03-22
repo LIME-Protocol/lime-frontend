@@ -225,6 +225,11 @@ export default function MarketDetail() {
             <ContractExplainer market={market} />
           </div>
 
+          {/* Discussion */}
+          <div className="surface-card p-5 animate-reveal-up stagger-6">
+            <Comments marketId={market.id} />
+          </div>
+
           {/* Order book + trades */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-reveal-up stagger-6">
             <div className="surface-card overflow-hidden">
