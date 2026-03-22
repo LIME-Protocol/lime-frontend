@@ -10,6 +10,7 @@ import OrderBookComponent from '@/components/market/OrderBookComponent';
 import TradeHistory from '@/components/market/TradeHistory';
 import TradePanel from '@/components/market/TradePanel';
 import ContractExplainer from '@/components/market/ContractExplainer';
+import Comments from '@/components/market/Comments';
 import StatusBadge from '@/components/shared/StatusBadge';
 import InfoTip from '@/components/shared/InfoTip';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
