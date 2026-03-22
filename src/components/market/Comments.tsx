@@ -25,11 +25,11 @@ export default function Comments({ marketId }: { marketId: string }) {
   const fetchComments = async () => {
     const { data } = await supabase
       .from('comments')
-      .select('*, profiles(username)')
+      .select('*')
       .eq('market_id', marketId)
       .order('created_at', { ascending: false })
       .limit(50);
-    setComments((data as Comment[]) || []);
+    setComments((data as unknown as Comment[]) || []);
     setLoading(false);
   };
 
