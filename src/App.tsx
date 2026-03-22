@@ -9,6 +9,7 @@ import MarketDetail from "@/pages/MarketDetail";
 import Portfolio from "@/pages/Portfolio";
 import Resolved from "@/pages/Resolved";
 import Admin from "@/pages/Admin";
+import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,16 +20,24 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Explore />} />
-            <Route path="/market/:id" element={<MarketDetail />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/resolved" element={<Resolved />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route
+            path="*"
+            element={
+              <AppLayout>
+                <Routes>
+                  <Route path="/" element={<Explore />} />
+                  <Route path="/market/:id" element={<MarketDetail />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/resolved" element={<Resolved />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AppLayout>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

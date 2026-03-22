@@ -1,7 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Briefcase, BarChart3, Shield, TrendingUp, Menu, X } from 'lucide-react';
+import { Compass, Briefcase, BarChart3, Shield, TrendingUp, Menu, X, LogIn, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
 
 const navItems = [
   { label: 'Explore', path: '/', icon: Compass },
