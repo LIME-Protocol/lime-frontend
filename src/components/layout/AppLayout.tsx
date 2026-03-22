@@ -35,6 +35,7 @@ function NavItem({ item }: { item: typeof navItems[0] }) {
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -55,13 +56,25 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <div className="px-4 py-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-positive animate-pulse-glow" />
-            <p className="text-[10px] text-[hsl(var(--sidebar-muted))] font-mono">
-              Live · RangeX v0.1
-            </p>
-          </div>
+        <div className="px-3 py-3 border-t border-sidebar-border space-y-2">
+          {user ? (
+            <>
+              <p className="text-[11px] text-[hsl(var(--sidebar-muted))] truncate px-1">{user.email}</p>
+              <button
+                onClick={() => signOut()}
+                className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[13px] font-medium text-[hsl(var(--sidebar-muted))] hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/60 transition-colors"
+              >
+                <LogOut className="h-4 w-4" /> Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[13px] font-medium text-primary hover:bg-sidebar-accent/60 transition-colors"
+            >
+              <LogIn className="h-4 w-4" /> Sign In
+            </Link>
+          )}
         </div>
       </aside>
 
