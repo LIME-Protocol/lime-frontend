@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
 import { useMarket, useMarketTrades, useMarketOrders } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
-import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil } from '@/lib/types';
+import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil, payoffCurveLabel } from '@/lib/types';
 import type { Market, Trade, OrderBook } from '@/lib/types';
 import PayoffChart from '@/components/market/PayoffChart';
 import OrderBookComponent from '@/components/market/OrderBookComponent';
