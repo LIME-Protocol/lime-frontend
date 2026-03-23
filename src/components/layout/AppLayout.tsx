@@ -27,7 +27,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <div className="h-8 w-8 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
               <Citrus className="h-4 w-4 text-primary" />
             </div>
-            <span className="text-[15px] font-bold tracking-tight">Lime</span>
+            <div className="flex flex-col">
+              <span className="text-[15px] font-bold tracking-tight leading-tight">LIME</span>
+              <span className="text-[8px] font-medium text-muted-foreground leading-none tracking-widest uppercase">Linear Index Market Exchange</span>
+            </div>
           </Link>
 
           {/* Nav links */}

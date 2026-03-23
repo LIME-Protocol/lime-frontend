@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Market, formatCurrency, formatPrice, impliedValue, daysUntil } from '@/lib/types';
+import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel } from '@/lib/types';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { cn } from '@/lib/utils';
 import { TrendingUp, Clock, Calendar, ArrowRight } from 'lucide-react';
@@ -22,11 +22,16 @@ export default function MarketCard({ market, index = 0 }: MarketCardProps) {
       style={{ animationDelay: `${index * 60}ms` }}
     >
       {/* Header: category + status + trending */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {market.category}
         </span>
         <StatusBadge type="market" status={market.status} />
+        {market.payoffCurve && market.payoffCurve.type !== 'linear' && (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent/10 text-accent text-[9px] font-semibold">
+            {payoffCurveLabel(market.payoffCurve)}
+          </span>
+        )}
         {market.trending && (
           <span className="ml-auto flex items-center gap-1 text-[10px] font-semibold text-warning">
             <TrendingUp className="h-3 w-3" /> HOT

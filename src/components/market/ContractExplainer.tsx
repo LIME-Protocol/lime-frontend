@@ -1,6 +1,6 @@
-import { Market, calculatePayoff } from '@/lib/types';
+import { Market, calculatePayoff, payoffCurveLabel } from '@/lib/types';
 import InfoTip from '@/components/shared/InfoTip';
-import { ArrowDown, ArrowUp, ArrowRight } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowRight, TrendingUp } from 'lucide-react';
 
 interface ContractExplainerProps {
   market: Market;
@@ -10,18 +10,26 @@ export default function ContractExplainer({ market }: ContractExplainerProps) {
   const fmtL = market.lowerBound.toLocaleString('en-US');
   const fmtU = market.upperBound.toLocaleString('en-US');
   const mid = (market.lowerBound + market.upperBound) / 2;
-  const midPayoff = calculatePayoff(mid, market.lowerBound, market.upperBound);
+  const midPayoff = calculatePayoff(mid, market.lowerBound, market.upperBound, market.payoffCurve);
+  const curveLabel = payoffCurveLabel(market.payoffCurve);
+  const isLinear = !market.payoffCurve || market.payoffCurve.type === 'linear';
 
   return (
     <div className="space-y-5">
       <div>
         <h3 className="text-[14px] font-semibold mb-1 flex items-center gap-1">
           How this contract settles
-          <InfoTip content="This is a range contract. The payout depends linearly on where the final observed value lands within the contract range." />
+          <InfoTip content="The payout depends on where the final observed value lands within the contract range." />
         </h3>
         <p className="text-xs text-muted-foreground leading-relaxed">
           The contract tracks <span className="text-foreground font-medium">{market.variable}</span> and settles based on its observed value on the resolution date.
         </p>
+        {!isLinear && (
+          <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20">
+            <TrendingUp className="h-3 w-3 text-accent" />
+            <span className="text-[11px] font-semibold text-accent">{curveLabel} Payoff</span>
+          </div>
+        )}
       </div>
 
       {/* Visual settlement rules */}
@@ -44,7 +52,7 @@ export default function ContractExplainer({ market }: ContractExplainerProps) {
             <div className="h-6 w-6 rounded-md bg-positive/15 flex items-center justify-center">
               <ArrowRight className="h-3.5 w-3.5 text-positive" />
             </div>
-            <span className="text-[11px] font-semibold text-positive-foreground">Linear</span>
+            <span className="text-[11px] font-semibold text-positive-foreground">{curveLabel}</span>
           </div>
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             Between <span className="font-mono font-semibold text-foreground">{fmtL}</span> and <span className="font-mono font-semibold text-foreground">{fmtU}</span>
@@ -72,8 +80,9 @@ export default function ContractExplainer({ market }: ContractExplainerProps) {
         <p className="text-xs text-muted-foreground leading-relaxed">
           If <span className="font-medium text-foreground">{market.variable}</span> settles at{' '}
           <span className="font-mono font-semibold text-foreground">{mid.toLocaleString('en-US', { maximumFractionDigits: 1 })} {market.unit}</span>{' '}
-          (midpoint of the range), the contract pays{' '}
-          <span className="font-mono font-semibold text-primary">{(midPayoff * 100).toFixed(0)}¢</span> per contract.
+          (midpoint of the range), the <strong>buyer</strong> receives{' '}
+          <span className="font-mono font-semibold text-primary">{(midPayoff * 100).toFixed(0)}¢</span> and the <strong>seller</strong> receives{' '}
+          <span className="font-mono font-semibold text-negative">{((1 - midPayoff) * 100).toFixed(0)}¢</span> per contract.
         </p>
       </div>
 
