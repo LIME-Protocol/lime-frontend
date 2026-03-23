@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Market, formatCurrency, formatPrice, impliedValue, daysUntil } from '@/lib/types';
+import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel } from '@/lib/types';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { cn } from '@/lib/utils';
 import { TrendingUp, Clock, Calendar, ArrowRight } from 'lucide-react';
