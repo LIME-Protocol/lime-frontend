@@ -86,7 +86,7 @@ export default function MarketDetail() {
   const isResolved = market.status === 'resolved';
   const days = daysUntil(market.resolutionDate);
   const resolvedPayoff = market.resolvedValue !== undefined
-    ? calculatePayoff(market.resolvedValue, market.lowerBound, market.upperBound) : undefined;
+    ? calculatePayoff(market.resolvedValue, market.lowerBound, market.upperBound, market.payoffCurve) : undefined;
 
   const fmtVal = (n: number) => {
     if (market.unit === 'pts' || market.unit === '$' || market.unit === '$/oz' || market.unit === '$/bbl')
