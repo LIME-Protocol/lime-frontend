@@ -184,7 +184,12 @@ export default function MarketDetail() {
           <div className="surface-card p-5 animate-reveal-up stagger-3">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-sm font-semibold">Payoff Structure</h2>
-              <InfoTip content="This chart shows how the contract payout (in cents) varies with the final observed value. The payout is linear between floor and cap." />
+              {market.payoffCurve && market.payoffCurve.type !== 'linear' && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-accent text-[10px] font-semibold">
+                  {payoffCurveLabel(market.payoffCurve)}
+                </span>
+              )}
+              <InfoTip content="Toggle between buyer and seller views to see how payoff changes for each side. Buyer profits when value is higher, seller when lower." />
             </div>
             <PayoffChart
               lower={market.lowerBound}
@@ -194,6 +199,7 @@ export default function MarketDetail() {
               resolvedValue={market.resolvedValue}
               referenceValue={market.referenceValue}
               height={280}
+              curve={market.payoffCurve}
             />
           </div>
 
