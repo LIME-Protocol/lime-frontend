@@ -3,7 +3,8 @@ import { MarketStatus, OrderStatus, LogAction } from '@/lib/types';
 
 const marketStatusConfig: Record<MarketStatus, { label: string; dot: string; className: string }> = {
   active: { label: 'Active', dot: 'bg-positive', className: 'bg-positive-soft text-positive-foreground' },
-  pending: { label: 'Pending', dot: 'bg-warning', className: 'bg-warning-soft text-warning-foreground' },
+  pending: { label: 'Pending Review', dot: 'bg-warning', className: 'bg-warning-soft text-warning-foreground' },
+  preliminary: { label: 'Bookbuilding', dot: 'bg-info', className: 'bg-info-soft text-info-foreground' },
   resolved: { label: 'Resolved', dot: 'bg-info', className: 'bg-info-soft text-info-foreground' },
   settled: { label: 'Settled', dot: 'bg-muted-foreground', className: 'bg-secondary text-secondary-foreground' },
   invalid: { label: 'Invalid', dot: 'bg-negative', className: 'bg-negative-soft text-negative-foreground' },

@@ -13,7 +13,7 @@ export interface PayoffCurve {
 }
 
 // ── Market ──
-export type MarketStatus = 'active' | 'pending' | 'resolved' | 'settled' | 'invalid';
+export type MarketStatus = 'active' | 'pending' | 'preliminary' | 'resolved' | 'settled' | 'invalid';
 
 export interface Market {
   id: string;
@@ -36,6 +36,14 @@ export interface Market {
   createdAt: string;
   trending?: boolean;
   payoffCurve?: PayoffCurve;
+  imageUrl?: string;
+  emoji?: string;
+  /** Number of unique participants (for preliminary → active transition) */
+  participantCount?: number;
+  /** Minimum participants needed to go active */
+  minParticipants?: number;
+  /** Submitted by user id/name */
+  submittedBy?: string;
 }
 
 // ── Order Book ──
