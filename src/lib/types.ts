@@ -13,7 +13,7 @@ export interface PayoffCurve {
 }
 
 // ── Market ──
-export type MarketStatus = 'active' | 'pending' | 'resolved' | 'settled' | 'invalid';
+export type MarketStatus = 'active' | 'pending' | 'preliminary' | 'resolved' | 'settled' | 'invalid';
 
 export interface Market {
   id: string;
