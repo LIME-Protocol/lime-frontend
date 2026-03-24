@@ -819,4 +819,4 @@ export const adminLogs: AdminLog[] = [
 
 // ────────────────────────────────── Categories ──────────────────────────────────
 
-export const categories = ['All', 'Rates', 'Inflation', 'FX', 'Macro', 'Equities', 'Commodities', 'Labor', 'Crypto', 'Weather', 'Climate'];
+export const categories = ['All', 'Rates', 'Inflation', 'FX', 'Macro', 'Equities', 'Commodities', 'Labor', 'Crypto', 'Weather', 'Climate', 'Politics', 'Events', 'Entertainment', 'Sports', 'Tech'];
