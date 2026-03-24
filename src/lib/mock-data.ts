@@ -12,6 +12,11 @@ export const categoryConfig: Record<string, { emoji: string; label: string }> = 
   Crypto: { emoji: '₿', label: 'Crypto' },
   Weather: { emoji: '🌤️', label: 'Weather' },
   Climate: { emoji: '🌱', label: 'Climate' },
+  Politics: { emoji: '🗳️', label: 'Politics' },
+  Events: { emoji: '📅', label: 'Events' },
+  Entertainment: { emoji: '🎬', label: 'Entertainment' },
+  Sports: { emoji: '⚽', label: 'Sports' },
+  Tech: { emoji: '💻', label: 'Tech' },
 };
 
 // ────────────────────────────────── Markets ──────────────────────────────────
