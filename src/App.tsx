@@ -8,6 +8,7 @@ import Explore from "@/pages/Explore";
 import MarketDetail from "@/pages/MarketDetail";
 import Portfolio from "@/pages/Portfolio";
 import Resolved from "@/pages/Resolved";
+import Bookbuilding from "@/pages/Bookbuilding";
 import Admin from "@/pages/Admin";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
                   <Route path="/market/:id" element={<MarketDetail />} />
                   <Route path="/portfolio" element={<Portfolio />} />
                   <Route path="/resolved" element={<Resolved />} />
+                  <Route path="/bookbuilding" element={<Bookbuilding />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -17,8 +17,6 @@ export default function Portfolio() {
   const { data: userOrders = [], isLoading: ordLoading } = useUserOrders();
   const { data: userTrades = [], isLoading: trLoading } = useUserTrades();
   const [tab, setTab] = useState<Tab>('positions');
-
-  // Filters
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [dateFromFilter, setDateFromFilter] = useState('');
   const [dateToFilter, setDateToFilter] = useState('');
