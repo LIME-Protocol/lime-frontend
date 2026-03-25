@@ -1,61 +1,89 @@
 import { useState } from 'react';
-import { markets, adminLogs } from '@/lib/mock-data';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/use-auth';
+import { useMarkets } from '@/hooks/use-markets';
+import { markets as mockMarkets, adminLogs } from '@/lib/mock-data';
+import { dbMarketToMarket } from '@/lib/adapters';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Plus, CheckCircle2, XCircle, Edit3, Shield, ClipboardList, X } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, Edit3, Shield, ClipboardList, X, Loader2, Search } from 'lucide-react';
+import { toast } from 'sonner';
+import { Navigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 type AdminTab = 'markets' | 'logs';
 
 export default function Admin() {
+  const { user, loading } = useAuth();
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState<AdminTab>('markets');
   const [showForm, setShowForm] = useState(false);
   const [resolveModal, setResolveModal] = useState<string | null>(null);
+  const [searchQ, setSearchQ] = useState('');
+
+  // Fetch real markets
+  const { data: dbMarkets = [] } = useMarkets();
+
+  // Fetch audit logs from DB
+  const { data: dbLogs = [] } = useQuery({
+    queryKey: ['audit-logs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  if (!user) return <Navigate to="/auth" replace />;
+
+  // Combine DB markets with mock for display
+  const allMarkets = [
+    ...dbMarkets.map(m => ({ ...m, source: 'db' as const })),
+    ...mockMarkets.map(m => ({ id: m.id, title: m.title, category: m.category, status: m.status, lower_bound: m.lowerBound, upper_bound: m.upperBound, unit: m.unit, resolution_date: m.resolutionDate, final_observed_value: m.resolvedValue ?? null, metric_name: m.variable, settlement_source: m.settlementSource, source: 'mock' as const })),
+  ].filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
+
+  const combinedLogs = [
+    ...dbLogs.map((l: any) => ({
+      id: l.id, action: l.action, detail: l.metadata ? JSON.stringify(l.metadata) : '', timestamp: l.created_at,
+      operator: l.actor_id || 'system', marketTitle: l.entity_type + ' ' + (l.entity_id || '').slice(0, 8),
+    })),
+    ...adminLogs,
+  ];
 
   const tabs: { key: AdminTab; label: string; icon: React.ReactNode }[] = [
     { key: 'markets', label: 'Markets', icon: <Shield className="h-3.5 w-3.5" /> },
-    { key: 'logs', label: 'Operational Logs', icon: <ClipboardList className="h-3.5 w-3.5" /> },
+    { key: 'logs', label: 'Audit Trail', icon: <ClipboardList className="h-3.5 w-3.5" /> },
   ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
       <div className="flex items-center justify-between animate-reveal-up">
         <div>
-          <h1 className="text-[22px] font-bold mb-1">Admin Panel</h1>
-          <p className="text-sm text-muted-foreground">Create, manage, and resolve markets</p>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center">
+              <Shield className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-[22px] font-bold">Admin Panel</h1>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Market Management</p>
+            </div>
+          </div>
         </div>
         <Button onClick={() => setShowForm(!showForm)} className="bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] shadow-lg shadow-primary/15" size="sm">
           <Plus className="h-4 w-4 mr-1" /> New Market
         </Button>
       </div>
 
-      {showForm && (
-        <div className="surface-card p-6 animate-scale-in">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold">Create Market</h2>
-            <button onClick={() => setShowForm(false)} className="p-1 rounded hover:bg-secondary"><X className="h-4 w-4 text-muted-foreground" /></button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <FormField label="Title" placeholder="Fed Funds Rate — Dec 2025" />
-            <FormField label="Category" placeholder="Rates" />
-            <FormField label="Variable" placeholder="Fed Funds Upper" />
-            <FormField label="Unit" placeholder="%" />
-            <FormField label="Lower Bound (L)" placeholder="3.0" type="number" />
-            <FormField label="Upper Bound (U)" placeholder="5.5" type="number" />
-            <FormField label="Resolution Date" placeholder="" type="date" />
-            <FormField label="Settlement Source" placeholder="Federal Reserve — FOMC Statement" />
-          </div>
-          <div className="mb-4">
-            <label className="data-label block mb-1.5">Description</label>
-            <textarea placeholder="Describe the variable being tracked..." className="w-full h-20 px-3 py-2 rounded-lg surface-inset text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 resize-none text-foreground" />
-          </div>
-          <div className="flex gap-2">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97]" size="sm">Create Market</Button>
-            <Button variant="outline" size="sm" className="active:scale-[0.97]">Save as Draft</Button>
-            <Button variant="ghost" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
-          </div>
-        </div>
-      )}
+      {showForm && <CreateMarketForm onClose={() => setShowForm(false)} userId={user.id} queryClient={queryClient} />}
 
       <div className="flex gap-1 border-b border-border animate-reveal-up stagger-1">
         {tabs.map((t) => (
@@ -69,62 +97,53 @@ export default function Admin() {
       </div>
 
       {tab === 'markets' && (
-        <div className="space-y-3 animate-fade-in">
-          {markets.map((m, i) => (
-            <div key={m.id} className="surface-card p-5 animate-reveal-up" style={{ animationDelay: `${i * 40}ms` }}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <StatusBadge type="market" status={m.status} />
-                    <span className="data-label">{m.category}</span>
-                    <span className="text-[10px] text-muted-foreground font-mono">
-                      {m.lowerBound.toLocaleString()} – {m.upperBound.toLocaleString()} {m.unit}
-                    </span>
+        <div className="space-y-3">
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input type="text" placeholder="Search markets..." value={searchQ} onChange={e => setSearchQ(e.target.value)} className="w-full h-9 pl-9 pr-3 rounded-lg surface-inset text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30" />
+          </div>
+
+          <div className="animate-fade-in space-y-3">
+            {allMarkets.map((m: any, i: number) => (
+              <div key={m.id} className="surface-card p-5 animate-reveal-up" style={{ animationDelay: `${i * 40}ms` }}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <StatusBadge type="market" status={m.status} />
+                      <span className="data-label">{m.category}</span>
+                      <span className="text-[10px] text-muted-foreground font-mono">
+                        {Number(m.lower_bound).toLocaleString()} – {Number(m.upper_bound).toLocaleString()} {m.unit}
+                      </span>
+                      {m.source === 'db' && <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-semibold">LIVE</span>}
+                    </div>
+                    <h3 className="text-[13px] font-semibold mb-0.5">{m.title}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Resolves: {new Date(m.resolution_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {m.final_observed_value != null && (
+                        <span className="ml-2">· Settled at <span className="data-value text-foreground">{Number(m.final_observed_value).toLocaleString()} {m.unit}</span></span>
+                      )}
+                    </p>
                   </div>
-                  <h3 className="text-[13px] font-semibold mb-0.5">{m.title}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Resolves: {new Date(m.resolutionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    {m.resolvedValue !== undefined && (
-                      <span className="ml-2">· Settled at <span className="data-value text-foreground">{m.resolvedValue.toLocaleString()} {m.unit}</span></span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {(m.status === 'pending' || m.status === 'draft') && m.source === 'db' && (
+                      <ApproveButton marketId={m.id} queryClient={queryClient} />
                     )}
-                  </p>
+                    {m.status === 'active' && m.source === 'db' && (
+                      <>
+                        <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8" onClick={() => setResolveModal(m.id)}>
+                          <CheckCircle2 className="h-3.5 w-3.5 mr-1 text-positive" /> Resolve
+                        </Button>
+                        <InvalidateButton marketId={m.id} queryClient={queryClient} />
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {m.status === 'pending' && (
-                    <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8">
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1 text-positive" /> Approve
-                    </Button>
-                  )}
-                  {m.status === 'active' && (
-                    <>
-                      <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8" onClick={() => setResolveModal(m.id)}>
-                        <CheckCircle2 className="h-3.5 w-3.5 mr-1 text-positive" /> Resolve
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8">
-                        <Edit3 className="h-3.5 w-3.5 mr-1" /> Edit
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8 text-negative hover:text-negative">
-                        <XCircle className="h-3.5 w-3.5 mr-1" /> Invalidate
-                      </Button>
-                    </>
-                  )}
-                </div>
+                {resolveModal === m.id && (
+                  <ResolveForm marketId={m.id} unit={m.unit} onClose={() => setResolveModal(null)} userId={user.id} queryClient={queryClient} />
+                )}
               </div>
-              {resolveModal === m.id && (
-                <div className="mt-4 p-4 border border-border rounded-lg bg-secondary/20 animate-scale-in">
-                  <h4 className="text-sm font-semibold mb-3">Resolve Market</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                    <FormField label={`Observed Value (${m.unit})`} placeholder="Enter the final value" type="number" />
-                    <FormField label="Settlement Source Reference" placeholder="Link or reference" />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" className="bg-positive hover:bg-positive/90 text-primary-foreground active:scale-[0.97]">Confirm Resolution</Button>
-                    <Button variant="ghost" size="sm" onClick={() => setResolveModal(null)}>Cancel</Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -135,18 +154,18 @@ export default function Admin() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left px-4 py-3 data-label">Action</th>
-                  <th className="text-left px-4 py-3 data-label">Market</th>
-                  <th className="text-left px-4 py-3 data-label hidden md:table-cell">Operator</th>
+                  <th className="text-left px-4 py-3 data-label">Entity</th>
+                  <th className="text-left px-4 py-3 data-label hidden md:table-cell">Actor</th>
                   <th className="text-left px-4 py-3 data-label">Detail</th>
                   <th className="text-right px-4 py-3 data-label">Date</th>
                 </tr>
               </thead>
               <tbody>
-                {adminLogs.map((log) => (
+                {combinedLogs.map((log: any) => (
                   <tr key={log.id} className="border-b border-border/50 last:border-0 hover:bg-secondary/20 transition-colors">
                     <td className="px-4 py-3"><StatusBadge type="log" status={log.action} /></td>
-                    <td className="px-4 py-3 text-[13px] font-medium">{log.marketTitle}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground font-mono hidden md:table-cell">{log.operator}</td>
+                    <td className="px-4 py-3 text-[13px] font-medium truncate max-w-[200px]">{log.marketTitle}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground font-mono hidden md:table-cell truncate max-w-[120px]">{log.operator}</td>
                     <td className="px-4 py-3 text-xs text-muted-foreground max-w-xs truncate">{log.detail}</td>
                     <td className="px-4 py-3 text-right text-xs text-muted-foreground font-mono tabular-nums">
                       {new Date(log.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -162,11 +181,215 @@ export default function Admin() {
   );
 }
 
-function FormField({ label, placeholder, type = 'text' }: { label: string; placeholder: string; type?: string }) {
+function CreateMarketForm({ onClose, userId, queryClient }: { onClose: () => void; userId: string; queryClient: any }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    title: '', category: 'Rates', metric_name: '', unit: '%',
+    lower_bound: '', upper_bound: '', resolution_date: '',
+    settlement_source: '', description: '',
+  });
+
+  const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleCreate = async () => {
+    if (!form.title || !form.metric_name || !form.lower_bound || !form.upper_bound || !form.resolution_date || !form.settlement_source) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from('markets').insert({
+        title: form.title,
+        category: form.category,
+        metric_name: form.metric_name,
+        unit: form.unit,
+        lower_bound: parseFloat(form.lower_bound),
+        upper_bound: parseFloat(form.upper_bound),
+        resolution_date: new Date(form.resolution_date).toISOString(),
+        settlement_source: form.settlement_source,
+        description: form.description || null,
+        created_by: userId,
+        status: 'draft',
+      });
+      if (error) throw error;
+      toast.success('Market created successfully');
+      queryClient.invalidateQueries({ queryKey: ['markets'] });
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to create market');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <div>
-      <label className="data-label block mb-1.5">{label}</label>
-      <input type={type} placeholder={placeholder} className="w-full h-9 px-3 rounded-lg surface-inset text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 text-foreground" />
+    <div className="surface-card p-6 animate-scale-in">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold">Create Market</h2>
+        <button onClick={onClose} className="p-1 rounded hover:bg-secondary"><X className="h-4 w-4 text-muted-foreground" /></button>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Title *</Label>
+          <Input placeholder="Fed Funds Rate — Dec 2025" value={form.title} onChange={e => update('title', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Category</Label>
+          <select value={form.category} onChange={e => update('category', e.target.value)} className="w-full h-10 px-3 rounded-lg bg-secondary/50 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring/30 text-foreground">
+            {['Rates','Inflation','FX','Macro','Equities','Commodities','Labor','Crypto','Weather','Climate','Politics','Events','Entertainment','Sports','Tech'].map(c => <option key={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Variable Name *</Label>
+          <Input placeholder="Fed Funds Upper" value={form.metric_name} onChange={e => update('metric_name', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Unit</Label>
+          <Input placeholder="%" value={form.unit} onChange={e => update('unit', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Lower Bound *</Label>
+          <Input type="number" placeholder="3.0" value={form.lower_bound} onChange={e => update('lower_bound', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Upper Bound *</Label>
+          <Input type="number" placeholder="5.5" value={form.upper_bound} onChange={e => update('upper_bound', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Resolution Date *</Label>
+          <Input type="date" value={form.resolution_date} onChange={e => update('resolution_date', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Settlement Source *</Label>
+          <Input placeholder="Federal Reserve — FOMC" value={form.settlement_source} onChange={e => update('settlement_source', e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+      </div>
+      <div className="mb-4 space-y-1.5">
+        <Label className="text-xs">Description</Label>
+        <textarea placeholder="Describe the variable being tracked..." value={form.description} onChange={e => update('description', e.target.value)} className="w-full h-20 px-3 py-2 rounded-lg surface-inset text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 resize-none text-foreground" />
+      </div>
+      <div className="flex gap-2">
+        <Button onClick={handleCreate} disabled={submitting} className="bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97]" size="sm">
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create Market'}
+        </Button>
+        <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
+
+function ApproveButton({ marketId, queryClient }: { marketId: string; queryClient: any }) {
+  const [loading, setLoading] = useState(false);
+  const handleApprove = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('markets').update({ status: 'active' }).eq('id', marketId);
+      if (error) throw error;
+      toast.success('Market approved and activated');
+      queryClient.invalidateQueries({ queryKey: ['markets'] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8" onClick={handleApprove} disabled={loading}>
+      {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><CheckCircle2 className="h-3.5 w-3.5 mr-1 text-positive" /> Approve</>}
+    </Button>
+  );
+}
+
+function InvalidateButton({ marketId, queryClient }: { marketId: string; queryClient: any }) {
+  const [loading, setLoading] = useState(false);
+  const handleInvalidate = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('markets').update({ status: 'invalidated' }).eq('id', marketId);
+      if (error) throw error;
+      toast.success('Market invalidated');
+      queryClient.invalidateQueries({ queryKey: ['markets'] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Button variant="outline" size="sm" className="text-xs active:scale-[0.97] h-8 text-negative hover:text-negative" onClick={handleInvalidate} disabled={loading}>
+      {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><XCircle className="h-3.5 w-3.5 mr-1" /> Invalidate</>}
+    </Button>
+  );
+}
+
+function ResolveForm({ marketId, unit, onClose, userId, queryClient }: { marketId: string; unit: string; onClose: () => void; userId: string; queryClient: any }) {
+  const [observedValue, setObservedValue] = useState('');
+  const [source, setSource] = useState('');
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleResolve = async () => {
+    if (!observedValue || !source) { toast.error('Please fill required fields'); return; }
+    setSubmitting(true);
+    try {
+      // Insert resolution
+      const { error: resErr } = await supabase.from('resolutions').insert({
+        market_id: marketId,
+        observed_value: parseFloat(observedValue),
+        settlement_source_used: source,
+        resolution_notes: notes || null,
+        resolved_by: userId,
+      });
+      if (resErr) throw resErr;
+
+      // Update market status
+      const { error: mktErr } = await supabase.from('markets').update({
+        status: 'resolved',
+        final_observed_value: parseFloat(observedValue),
+      }).eq('id', marketId);
+      if (mktErr) throw mktErr;
+
+      // Audit log
+      await supabase.from('audit_logs').insert({
+        actor_id: userId, actor_type: 'admin', action: 'resolve',
+        entity_type: 'market', entity_id: marketId,
+        metadata: { observed_value: parseFloat(observedValue), source },
+      });
+
+      toast.success('Market resolved successfully');
+      queryClient.invalidateQueries({ queryKey: ['markets'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to resolve market');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="mt-4 p-4 border border-border rounded-lg bg-secondary/20 animate-scale-in">
+      <h4 className="text-sm font-semibold mb-3">Resolve Market</h4>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Observed Value ({unit}) *</Label>
+          <Input type="number" placeholder="Enter the final value" value={observedValue} onChange={e => setObservedValue(e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Settlement Source *</Label>
+          <Input placeholder="Link or reference" value={source} onChange={e => setSource(e.target.value)} className="bg-secondary/50 border-border" />
+        </div>
+      </div>
+      <div className="mb-3 space-y-1.5">
+        <Label className="text-xs">Notes (optional)</Label>
+        <Input placeholder="Additional resolution notes" value={notes} onChange={e => setNotes(e.target.value)} className="bg-secondary/50 border-border" />
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" onClick={handleResolve} disabled={submitting} className="bg-positive hover:bg-positive/90 text-primary-foreground active:scale-[0.97]">
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirm Resolution'}
+        </Button>
+        <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+      </div>
     </div>
   );
 }
