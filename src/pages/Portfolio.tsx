@@ -22,9 +22,6 @@ export default function Portfolio() {
   const [dateToFilter, setDateToFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
-  if (authLoading) return <LoadingState />;
-  if (!user) return <Navigate to="/auth" replace />;
-
   const isLoading = posLoading || ordLoading || trLoading;
   const totalPnl = positions.reduce((s: number, p: any) => s + (p.estimated_pnl || 0), 0);
   const totalExposure = positions.reduce((s: number, p: any) => s + Math.abs(p.net_quantity) * p.average_price * 100, 0);
