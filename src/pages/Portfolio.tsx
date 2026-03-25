@@ -34,6 +34,9 @@ export default function Portfolio() {
     return ['All', ...Array.from(cats).sort()];
   }, [positions, userOrders]);
 
+  if (authLoading) return <LoadingState />;
+  if (!user) return <Navigate to="/auth" replace />;
+
   const hasActiveFilters = categoryFilter !== 'All' || dateFromFilter || dateToFilter;
 
   const filterByDate = (dateStr: string) => {
