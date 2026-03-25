@@ -1,24 +1,35 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { markets as mockMarkets, categories, categoryConfig } from '@/lib/mock-data';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
-import { daysUntil, formatCurrency } from '@/lib/types';
+import { daysUntil, formatCurrency, formatPrice, impliedValue } from '@/lib/types';
 import type { Market, MarketStatus } from '@/lib/types';
 import MarketCard from '@/components/market/MarketCard';
 import MarketTable from '@/components/market/MarketTable';
+import SimilarMarkets from '@/components/market/SimilarMarkets';
 import EmptyState from '@/components/shared/EmptyState';
 import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, List, Search, Flame, Clock, CheckCircle, Activity, BookOpen, Users, X } from 'lucide-react';
+import { LayoutGrid, List, Search, Flame, Clock, CheckCircle, Activity, Users, X, ArrowUpDown, TrendingUp, BarChart3, MessageCircle, Citrus } from 'lucide-react';
 
 type ViewMode = 'cards' | 'table';
-type StatusFilter = 'all' | 'active' | 'preliminary' | 'resolved';
+type StatusFilter = 'all' | 'active' | 'resolved';
+type SortKey = 'trending' | 'closing' | 'volume' | 'users' | 'comments';
+
+const sortOptions: { key: SortKey; label: string; icon: React.ReactNode }[] = [
+  { key: 'trending', label: 'Trending', icon: <TrendingUp className="h-3.5 w-3.5" /> },
+  { key: 'closing', label: 'Closing Date', icon: <Clock className="h-3.5 w-3.5" /> },
+  { key: 'volume', label: 'Volume', icon: <BarChart3 className="h-3.5 w-3.5" /> },
+  { key: 'users', label: 'Open Interest', icon: <Users className="h-3.5 w-3.5" /> },
+];
 
 export default function Explore() {
   const [category, setCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('cards');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [sortBy, setSortBy] = useState<SortKey>('trending');
 
   const { data: dbMarkets } = useMarkets();
 
@@ -29,19 +40,32 @@ export default function Explore() {
   }, [dbMarkets]);
 
   const activeMarkets = useMemo(() => allMarkets.filter((m) => m.status === 'active'), [allMarkets]);
-  const preliminaryMarkets = useMemo(() => allMarkets.filter((m) => m.status === 'preliminary'), [allMarkets]);
 
   const filtered = useMemo(() => {
-    return allMarkets.filter((m) => {
+    let list = allMarkets.filter((m) => {
       if (statusFilter === 'active' && m.status !== 'active') return false;
-      if (statusFilter === 'preliminary' && m.status !== 'preliminary') return false;
       if (statusFilter === 'resolved' && m.status !== 'resolved') return false;
-      if (statusFilter === 'all' && (m.status === 'pending')) return false;
+      if (statusFilter === 'all' && (m.status === 'pending' || m.status === 'preliminary')) return false;
       if (category !== 'All' && m.category !== category) return false;
       if (search && !m.title.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [allMarkets, category, search, statusFilter]);
+
+    // Sort
+    list = [...list].sort((a, b) => {
+      if (sortBy === 'trending') {
+        if (a.trending && !b.trending) return -1;
+        if (!a.trending && b.trending) return 1;
+        return b.volume24h - a.volume24h;
+      }
+      if (sortBy === 'closing') return daysUntil(a.resolutionDate) - daysUntil(b.resolutionDate);
+      if (sortBy === 'volume') return b.volume24h - a.volume24h;
+      if (sortBy === 'users') return b.openInterest - a.openInterest;
+      return 0;
+    });
+
+    return list;
+  }, [allMarkets, category, search, statusFilter, sortBy]);
 
   const trending = useMemo(() => activeMarkets.filter((m) => m.trending).slice(0, 6), [activeMarkets]);
   const closingSoon = useMemo(() =>
@@ -52,7 +76,6 @@ export default function Explore() {
     [activeMarkets]);
 
   const totalVol = activeMarkets.reduce((s, m) => s + m.volume24h, 0);
-  const totalOI = activeMarkets.reduce((s, m) => s + m.openInterest, 0);
 
   const allCategories = useMemo(() => {
     const cats = new Set(allMarkets.map(m => m.category));
@@ -62,34 +85,36 @@ export default function Explore() {
   const statusFilters: { key: StatusFilter; label: string; icon: React.ReactNode }[] = [
     { key: 'all', label: 'All', icon: <Activity className="h-3.5 w-3.5" /> },
     { key: 'active', label: 'Active', icon: <Flame className="h-3.5 w-3.5" /> },
-    { key: 'preliminary', label: 'Bookbuilding', icon: <Users className="h-3.5 w-3.5" /> },
     { key: 'resolved', label: 'Resolved', icon: <CheckCircle className="h-3.5 w-3.5" /> },
   ];
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-8">
-      {/* Header */}
+      {/* Hero Header */}
       <div className="animate-reveal-up">
-        <h1 className="text-[22px] font-bold mb-1">Explore Markets</h1>
-        <p className="text-sm text-muted-foreground">
-          Trade expectations on future economic variables
-          <InfoTip content="Each market tracks a specific variable. Buy contracts to express your view on where the value will land." />
-        </p>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-10 w-10 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center">
+            <Citrus className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-[22px] font-bold mb-0">Explore Markets</h1>
+            <p className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">LIME · Linear Index Market Exchange</p>
+          </div>
+        </div>
       </div>
 
-      {/* Stats bar */}
+      {/* Stats bar — enhanced */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-reveal-up stagger-1">
-        <StatCard icon={<Activity className="h-3.5 w-3.5 text-primary" />} label="Active Markets" value={String(activeMarkets.length)} />
-        <StatCard icon={<Flame className="h-3.5 w-3.5 text-warning" />} label="24h Volume" value={formatCurrency(totalVol)} />
-        <StatCard icon={<Users className="h-3.5 w-3.5 text-info" />} label="Bookbuilding" value={String(preliminaryMarkets.length)} />
-        <StatCard icon={<CheckCircle className="h-3.5 w-3.5 text-info" />} label="Resolved" value={String(allMarkets.filter(m => m.status === 'resolved').length)} />
+        <DashboardCard emoji="📊" label="Active Markets" value={String(activeMarkets.length)} sub="tradable now" color="primary" />
+        <DashboardCard emoji="🔥" label="24h Volume" value={formatCurrency(totalVol)} sub="across all markets" color="warning" />
+        <DashboardCard emoji="🏆" label="Top Mover" value={trending[0] ? formatPrice(trending[0].currentPrice) : '—'} sub={trending[0]?.title?.slice(0, 20) || ''} color="positive" />
+        <DashboardCard emoji="⏳" label="Closing Next" value={closingSoon[0] ? `${daysUntil(closingSoon[0].resolutionDate)}d` : '—'} sub={closingSoon[0]?.title?.slice(0, 20) || ''} color="info" />
       </div>
 
       {/* ── 🔥 Trending ── */}
       {trending.length > 0 && (
         <Section emoji="🔥" title="Trending" subtitle="Most traded markets right now" delay={2}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Two hero cards */}
             {trending.slice(0, 2).map((m, i) => (
               <MarketCard key={m.id} market={m} index={i} variant="hero" />
             ))}
@@ -113,12 +138,10 @@ export default function Explore() {
         </Section>
       )}
 
-      {/* ── 📋 Bookbuilding ── */}
-      {preliminaryMarkets.length > 0 && (
-        <Section emoji="📋" title="Bookbuilding" subtitle="Community-submitted markets gathering liquidity" delay={4}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {preliminaryMarkets.map((m, i) => <MarketCard key={m.id} market={m} index={i} />)}
-          </div>
+      {/* ── 💡 Related — Medium size similar markets on homepage ── */}
+      {trending.length > 0 && (
+        <Section emoji="💡" title="You Might Like" subtitle="Based on trending activity" delay={4}>
+          <SimilarMarkets currentMarketId={trending[0].id} category={trending[0].category} size="medium" maxItems={4} title="" />
         </Section>
       )}
 
@@ -126,47 +149,48 @@ export default function Explore() {
       <div className="space-y-4 animate-reveal-up stagger-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">All Markets</h2>
-          <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
-            <button onClick={() => setView('cards')} className={cn('p-1.5 rounded-md transition-all', view === 'cards' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}>
-              <LayoutGrid className="h-4 w-4" />
-            </button>
-            <button onClick={() => setView('table')} className={cn('p-1.5 rounded-md transition-all', view === 'table' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}>
-              <List className="h-4 w-4" />
-            </button>
+          <div className="flex items-center gap-2">
+            {/* Sort dropdown */}
+            <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
+              {sortOptions.map(so => (
+                <button key={so.key} onClick={() => setSortBy(so.key)} className={cn(
+                  'flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all whitespace-nowrap',
+                  sortBy === so.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+                )}>
+                  {so.icon}
+                  <span className="hidden sm:inline">{so.label}</span>
+                </button>
+              ))}
+            </div>
+            {/* View toggle */}
+            <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
+              <button onClick={() => setView('cards')} className={cn('p-1.5 rounded-md transition-all', view === 'cards' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}>
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button onClick={() => setView('table')} className={cn('p-1.5 rounded-md transition-all', view === 'table' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}>
+                <List className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Filters row */}
         <div className="flex flex-col gap-3">
-          {/* Status filter pills */}
           <div className="flex gap-1.5 overflow-x-auto pb-1">
             {statusFilters.map((sf) => (
-              <button
-                key={sf.key}
-                onClick={() => setStatusFilter(sf.key)}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 active:scale-95',
-                  statusFilter === sf.key
-                    ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:text-foreground'
-                )}
-              >
+              <button key={sf.key} onClick={() => setStatusFilter(sf.key)} className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 active:scale-95',
+                statusFilter === sf.key ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:text-foreground'
+              )}>
                 {sf.icon} {sf.label}
               </button>
             ))}
           </div>
 
-          {/* Search + category */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search markets..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-9 pl-9 pr-9 rounded-lg surface-inset text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow"
-              />
+              <input type="text" placeholder="Search markets..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full h-9 pl-9 pr-9 rounded-lg surface-inset text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 transition-shadow" />
               {search && (
                 <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   <X className="h-3.5 w-3.5" />
@@ -177,16 +201,10 @@ export default function Explore() {
               {allCategories.map((cat) => {
                 const cfg = categoryConfig[cat];
                 return (
-                  <button
-                    key={cat}
-                    onClick={() => setCategory(cat)}
-                    className={cn(
-                      'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 active:scale-95',
-                      category === cat
-                        ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:text-foreground'
-                    )}
-                  >
+                  <button key={cat} onClick={() => setCategory(cat)} className={cn(
+                    'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 active:scale-95',
+                    category === cat ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:text-foreground'
+                  )}>
                     {cfg && <span className="text-[12px]">{cfg.emoji}</span>}
                     {cat}
                   </button>
@@ -210,14 +228,15 @@ export default function Explore() {
   );
 }
 
-function StatCard({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string }) {
+function DashboardCard({ emoji, label, value, sub, color }: { emoji: string; label: string; value: string; sub: string; color: string }) {
   return (
-    <div className="surface-card px-4 py-3">
-      <div className="flex items-center gap-1.5 mb-1">
-        {icon}
+    <div className="surface-card px-4 py-3.5 group hover:border-primary/20 transition-colors">
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className="text-base">{emoji}</span>
         <p className="data-label">{label}</p>
       </div>
-      <p className="text-lg font-bold font-mono tabular-nums">{value}</p>
+      <p className={cn('text-xl font-bold font-mono tabular-nums', `text-${color}`)}>{value}</p>
+      <p className="text-[10px] text-muted-foreground truncate mt-0.5">{sub}</p>
     </div>
   );
 }
@@ -232,9 +251,7 @@ function Section({ emoji, title, subtitle, children, delay }: { emoji: string; t
           {subtitle && <p className="text-[11px] text-muted-foreground">{subtitle}</p>}
         </div>
       </div>
-      <div className="border-t border-border/50 pt-4">
-        {children}
-      </div>
+      <div className="border-t border-border/50 pt-4">{children}</div>
     </div>
   );
 }
