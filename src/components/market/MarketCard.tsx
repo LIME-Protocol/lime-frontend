@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel } from '@/lib/types';
+import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel, calculatePayoff } from '@/lib/types';
 import StatusBadge from '@/components/shared/StatusBadge';
+import MiniSparkline from '@/components/market/MiniSparkline';
 import { cn } from '@/lib/utils';
-import { TrendingUp, Clock, Calendar, Users } from 'lucide-react';
+import { TrendingUp, Clock, Calendar, Users, ArrowRight } from 'lucide-react';
 
 interface MarketCardProps {
   market: Market;
@@ -27,15 +28,9 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
       )}
       style={{ animationDelay: `${index * 60}ms` }}
     >
-      {/* Hero variant with image background */}
       {isHero && market.imageUrl && (
         <div className="relative h-36 overflow-hidden">
-          <img
-            src={market.imageUrl}
-            alt={market.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
+          <img src={market.imageUrl} alt={market.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
           <div className="absolute top-3 left-3 flex items-center gap-2">
             <StatusBadge type="market" status={market.status} />
@@ -49,13 +44,10 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
       )}
 
       <div className={cn(isHero && 'p-5 pt-3')}>
-        {/* Header: category + status + trending */}
         {!isHero && (
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="text-[13px]">{market.emoji}</span>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {market.category}
-            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{market.category}</span>
             <StatusBadge type="market" status={market.status} />
             {market.payoffCurve && market.payoffCurve.type !== 'linear' && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent/10 text-accent text-[9px] font-semibold">
@@ -73,7 +65,7 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
         {/* Title */}
         <div className="flex items-start gap-2 mb-3">
           {isHero && <span className="text-lg shrink-0 mt-0.5">{market.emoji}</span>}
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {isHero && market.payoffCurve && market.payoffCurve.type !== 'linear' && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent/10 text-accent text-[9px] font-semibold mb-1.5">
                 {payoffCurveLabel(market.payoffCurve)}
@@ -88,18 +80,18 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
           </div>
         </div>
 
-        {/* Implied value */}
-        <div className="flex items-baseline gap-2 mb-1">
-          <span className={cn(
-            'font-bold font-mono tabular-nums leading-none',
-            isHero ? 'text-[32px]' : 'text-[28px]'
-          )}>
-            {fmtImplied(implied, market.unit)}
-          </span>
-          <span className="text-xs text-muted-foreground font-medium">{market.unit}</span>
+        {/* Price + Sparkline row */}
+        <div className="flex items-center justify-between mb-1">
+          <div>
+            <span className={cn('font-bold font-mono tabular-nums leading-none', isHero ? 'text-[28px]' : 'text-[24px]')}>
+              {fmtImplied(implied, market.unit)}
+            </span>
+            <span className="text-xs text-muted-foreground font-medium ml-1">{market.unit}</span>
+          </div>
+          <MiniSparkline currentPrice={market.currentPrice} width={isHero ? 90 : 70} height={isHero ? 32 : 24} />
         </div>
 
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-3">
           <span className="text-xs text-muted-foreground">
             Contract: <span className="font-mono tabular-nums text-foreground font-medium">{formatPrice(market.currentPrice)}</span>
           </span>
@@ -110,44 +102,30 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
           )}
         </div>
 
-        {/* Bookbuilding progress for preliminary */}
+        {/* Mini payoff curve */}
+        {!isPreliminary && (
+          <div className="mb-3">
+            <MiniPayoffCurve market={market} width={isHero ? undefined : undefined} />
+          </div>
+        )}
+
+        {/* Bookbuilding progress */}
         {isPreliminary && market.participantCount !== undefined && market.minParticipants && (
-          <div className="mb-4">
+          <div className="mb-3">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <Users className="h-3 w-3" /> Bookbuilding
               </span>
               <span className="text-[10px] font-mono font-semibold text-info">
-                {market.participantCount}/{market.minParticipants} participants
+                {market.participantCount}/{market.minParticipants}
               </span>
             </div>
             <div className="range-track">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.min(100, (market.participantCount / market.minParticipants) * 100)}%`,
-                  background: 'linear-gradient(90deg, hsl(var(--info) / 0.7), hsl(var(--info)))',
-                }}
-              />
+              <div className="h-full rounded-full transition-all duration-500" style={{
+                width: `${Math.min(100, (market.participantCount / market.minParticipants) * 100)}%`,
+                background: 'linear-gradient(90deg, hsl(var(--info) / 0.7), hsl(var(--info)))',
+              }} />
             </div>
-          </div>
-        )}
-
-        {/* Range bar (hide for preliminary) */}
-        {!isPreliminary && (
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] font-mono font-semibold text-muted-foreground">
-                {fmtBound(market.lowerBound)}
-              </span>
-              <div className="flex-1 range-track">
-                <div className="range-fill" style={{ width: `${clamp(market.currentPrice * 100)}%` }} />
-              </div>
-              <span className="text-[10px] font-mono font-semibold text-muted-foreground">
-                {fmtBound(market.upperBound)}
-              </span>
-            </div>
-            <p className="text-[10px] text-muted-foreground text-center">Range · {market.unit}</p>
           </div>
         )}
 
@@ -157,15 +135,14 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
             <span className="data-value text-foreground">{formatCurrency(market.volume24h)}</span>
             <span>24h vol</span>
           </span>
-          <span className={cn(
-            'flex items-center gap-1',
-            closingSoon && 'text-warning font-semibold'
-          )}>
-            {closingSoon ? <Clock className="h-3 w-3" /> : <Calendar className="h-3 w-3" />}
-            {closingSoon
-              ? `${days}d left`
-              : new Date(market.resolutionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-            }
+          <span className="flex items-center gap-1.5">
+            <span className={cn('flex items-center gap-1', closingSoon && 'text-warning font-semibold')}>
+              {closingSoon ? <Clock className="h-3 w-3" /> : <Calendar className="h-3 w-3" />}
+              {closingSoon ? `${days}d left` : new Date(market.resolutionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+            <span className="text-primary font-medium flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              Details <ArrowRight className="h-3 w-3" />
+            </span>
           </span>
         </div>
       </div>
@@ -173,16 +150,33 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
   );
 }
 
+/** Tiny payoff curve preview */
+function MiniPayoffCurve({ market }: { market: Market }) {
+  const w = 120;
+  const h = 20;
+  const steps = 30;
+  const points: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const val = market.lowerBound + t * (market.upperBound - market.lowerBound);
+    const payoff = calculatePayoff(val, market.lowerBound, market.upperBound, market.payoffCurve);
+    const x = (t * w).toFixed(1);
+    const y = (h - payoff * (h - 2) - 1).toFixed(1);
+    points.push(`${i === 0 ? 'M' : 'L'}${x},${y}`);
+  }
+  const curveLabel = market.payoffCurve ? payoffCurveLabel(market.payoffCurve) : 'Linear';
+  return (
+    <div className="flex items-center gap-2 bg-secondary/40 rounded-lg px-2.5 py-1.5">
+      <svg width={w} height={h} className="shrink-0">
+        <path d={points.join(' ')} fill="none" stroke="hsl(var(--primary))" strokeWidth={1.5} strokeLinecap="round" />
+      </svg>
+      <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">{curveLabel}</span>
+    </div>
+  );
+}
+
 function fmtImplied(n: number, unit: string): string {
   if (unit === '$' || unit === '$/oz' || unit === '$/bbl') return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toFixed(1);
   if (unit === 'pts') return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
   return n.toFixed(2);
-}
-
-function fmtBound(n: number): string {
-  return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toString();
-}
-
-function clamp(n: number): number {
-  return Math.min(100, Math.max(0, n));
 }

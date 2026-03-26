@@ -11,6 +11,7 @@ import Resolved from "@/pages/Resolved";
 import Bookbuilding from "@/pages/Bookbuilding";
 import Admin from "@/pages/Admin";
 import Auth from "@/pages/Auth";
+import WalletPage from "@/pages/Wallet";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
                   <Route path="/" element={<Explore />} />
                   <Route path="/market/:id" element={<MarketDetail />} />
                   <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/wallet" element={<WalletPage />} />
                   <Route path="/resolved" element={<Resolved />} />
                   <Route path="/bookbuilding" element={<Bookbuilding />} />
                   <Route path="/admin" element={<Admin />} />

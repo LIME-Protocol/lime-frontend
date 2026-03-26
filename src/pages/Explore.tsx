@@ -7,7 +7,7 @@ import { daysUntil, formatCurrency, formatPrice, impliedValue } from '@/lib/type
 import type { Market, MarketStatus } from '@/lib/types';
 import MarketCard from '@/components/market/MarketCard';
 import MarketTable from '@/components/market/MarketTable';
-import SimilarMarkets from '@/components/market/SimilarMarkets';
+// SimilarMarkets removed from Explore — only used inside MarketDetail
 import EmptyState from '@/components/shared/EmptyState';
 import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
@@ -138,12 +138,7 @@ export default function Explore() {
         </Section>
       )}
 
-      {/* ── 💡 Related — Medium size similar markets on homepage ── */}
-      {trending.length > 0 && (
-        <Section emoji="💡" title="You Might Like" subtitle="Based on trending activity" delay={4}>
-          <SimilarMarkets currentMarketId={trending[0].id} category={trending[0].category} size="medium" maxItems={4} title="" />
-        </Section>
-      )}
+      {/* Related markets removed from homepage — only shown in market detail */}
 
       {/* ── All Markets ── */}
       <div className="space-y-4 animate-reveal-up stagger-5">
