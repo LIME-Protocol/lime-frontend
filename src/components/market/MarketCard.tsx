@@ -105,7 +105,7 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
         {/* Mini payoff curve */}
         {!isPreliminary && (
           <div className="mb-3">
-            <MiniPayoffCurve market={market} width={isHero ? undefined : undefined} />
+            <MiniPayoffCurve market={market} />
           </div>
         )}
 
