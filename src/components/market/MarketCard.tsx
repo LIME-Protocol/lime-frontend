@@ -102,13 +102,6 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
           )}
         </div>
 
-        {/* Mini payoff curve */}
-        {!isPreliminary && (
-          <div className="mb-3">
-            <MiniPayoffCurve market={market} />
-          </div>
-        )}
-
         {/* Bookbuilding progress */}
         {isPreliminary && market.participantCount !== undefined && market.minParticipants && (
           <div className="mb-3">
