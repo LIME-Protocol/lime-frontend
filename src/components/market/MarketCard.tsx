@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel, calculatePayoff } from '@/lib/types';
+import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel } from '@/lib/types';
 import StatusBadge from '@/components/shared/StatusBadge';
 import MiniSparkline from '@/components/market/MiniSparkline';
 import { cn } from '@/lib/utils';
@@ -143,30 +143,6 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
   );
 }
 
-/** Tiny payoff curve preview */
-function MiniPayoffCurve({ market }: { market: Market }) {
-  const w = 120;
-  const h = 20;
-  const steps = 30;
-  const points: string[] = [];
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const val = market.lowerBound + t * (market.upperBound - market.lowerBound);
-    const payoff = calculatePayoff(val, market.lowerBound, market.upperBound, market.payoffCurve);
-    const x = (t * w).toFixed(1);
-    const y = (h - payoff * (h - 2) - 1).toFixed(1);
-    points.push(`${i === 0 ? 'M' : 'L'}${x},${y}`);
-  }
-  const curveLabel = market.payoffCurve ? payoffCurveLabel(market.payoffCurve) : 'Linear';
-  return (
-    <div className="flex items-center gap-2 bg-secondary/40 rounded-lg px-2.5 py-1.5">
-      <svg width={w} height={h} className="shrink-0">
-        <path d={points.join(' ')} fill="none" stroke="hsl(var(--primary))" strokeWidth={1.5} strokeLinecap="round" />
-      </svg>
-      <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">{curveLabel}</span>
-    </div>
-  );
-}
 
 function fmtImplied(n: number, unit: string): string {
   if (unit === '$' || unit === '$/oz' || unit === '$/bbl') return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toFixed(1);
