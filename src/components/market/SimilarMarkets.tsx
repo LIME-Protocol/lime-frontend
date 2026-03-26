@@ -17,9 +17,11 @@ interface SimilarMarketsProps {
 }
 
 function getSimilarMarkets(currentId: string, category: string, max: number): Market[] {
-  const sameCategory = allMarkets.filter(m => m.id !== currentId && m.category === category && m.status === 'active');
-  const other = allMarkets.filter(m => m.id !== currentId && m.category !== category && m.status === 'active');
-  return [...sameCategory, ...other].slice(0, max);
+  // Same category, highest volume first, excluding current market
+  const sameCategory = allMarkets
+    .filter(m => m.id !== currentId && m.category === category && m.status === 'active')
+    .sort((a, b) => b.volume24h - a.volume24h);
+  return sameCategory.slice(0, max);
 }
 
 export default function SimilarMarkets({ currentMarketId, category, size = 'medium', maxItems, title }: SimilarMarketsProps) {
