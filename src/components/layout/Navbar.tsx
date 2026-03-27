@@ -5,18 +5,23 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from '@/hooks/use-theme';
 import { useBalances } from '@/hooks/use-wallet';
 
-const NAV_ITEMS = [
+interface NavItemDef {
+  label: string;
+  path: string;
+  icon: typeof Compass;
+  secondary?: boolean;
+}
+
+const NAV_ITEMS: NavItemDef[] = [
   { label: 'Explore', path: '/', icon: Compass },
   { label: 'Portfolio', path: '/portfolio', icon: Briefcase },
   { label: 'Wallet', path: '/wallet', icon: Wallet },
   { label: 'Resolved', path: '/resolved', icon: BarChart3 },
   { label: 'Bookbuilding', path: '/bookbuilding', icon: BookOpen, secondary: true },
   { label: 'Admin', path: '/admin', icon: Shield, secondary: true },
-] as const;
+];
 
-type NavItemType = typeof NAV_ITEMS[number];
-
-function NavItem({ item, active }: { item: NavItemType; active: boolean }) {
+function NavItem({ item, active }: { item: NavItemDef; active: boolean }) {
   const Icon = item.icon;
   return (
     <Link
