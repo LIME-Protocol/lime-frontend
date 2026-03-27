@@ -7,21 +7,27 @@ import { daysUntil, formatCurrency, formatPrice, impliedValue } from '@/lib/type
 import type { Market, MarketStatus } from '@/lib/types';
 import MarketCard from '@/components/market/MarketCard';
 import MarketTable from '@/components/market/MarketTable';
-// SimilarMarkets removed from Explore — only used inside MarketDetail
+import DashboardCard from '@/components/shared/DashboardCard';
+import Section from '@/components/shared/Section';
 import EmptyState from '@/components/shared/EmptyState';
-import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, List, Search, Flame, Clock, CheckCircle, Activity, Users, X, ArrowUpDown, TrendingUp, BarChart3, MessageCircle, Citrus } from 'lucide-react';
+import { LayoutGrid, List, Search, Flame, Clock, CheckCircle, Activity, Users, X, TrendingUp, BarChart3, Citrus } from 'lucide-react';
 
 type ViewMode = 'cards' | 'table';
 type StatusFilter = 'all' | 'active' | 'resolved';
-type SortKey = 'trending' | 'closing' | 'volume' | 'users' | 'comments';
+type SortKey = 'trending' | 'closing' | 'volume' | 'users';
 
 const sortOptions: { key: SortKey; label: string; icon: React.ReactNode }[] = [
   { key: 'trending', label: 'Trending', icon: <TrendingUp className="h-3.5 w-3.5" /> },
   { key: 'closing', label: 'Closing Date', icon: <Clock className="h-3.5 w-3.5" /> },
   { key: 'volume', label: 'Volume', icon: <BarChart3 className="h-3.5 w-3.5" /> },
   { key: 'users', label: 'Open Interest', icon: <Users className="h-3.5 w-3.5" /> },
+];
+
+const statusFilters: { key: StatusFilter; label: string; icon: React.ReactNode }[] = [
+  { key: 'all', label: 'All', icon: <Activity className="h-3.5 w-3.5" /> },
+  { key: 'active', label: 'Active', icon: <Flame className="h-3.5 w-3.5" /> },
+  { key: 'resolved', label: 'Resolved', icon: <CheckCircle className="h-3.5 w-3.5" /> },
 ];
 
 export default function Explore() {
@@ -51,7 +57,6 @@ export default function Explore() {
       return true;
     });
 
-    // Sort
     list = [...list].sort((a, b) => {
       if (sortBy === 'trending') {
         if (a.trending && !b.trending) return -1;
@@ -82,12 +87,6 @@ export default function Explore() {
     return ['All', ...Array.from(cats).sort()];
   }, [allMarkets]);
 
-  const statusFilters: { key: StatusFilter; label: string; icon: React.ReactNode }[] = [
-    { key: 'all', label: 'All', icon: <Activity className="h-3.5 w-3.5" /> },
-    { key: 'active', label: 'Active', icon: <Flame className="h-3.5 w-3.5" /> },
-    { key: 'resolved', label: 'Resolved', icon: <CheckCircle className="h-3.5 w-3.5" /> },
-  ];
-
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-8">
       {/* Hero Header */}
@@ -103,7 +102,7 @@ export default function Explore() {
         </div>
       </div>
 
-      {/* Stats bar — enhanced */}
+      {/* Stats bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-reveal-up stagger-1">
         <DashboardCard emoji="📊" label="Active Markets" value={String(activeMarkets.length)} sub="tradable now" color="primary" />
         <DashboardCard emoji="🔥" label="24h Volume" value={formatCurrency(totalVol)} sub="across all markets" color="warning" />
@@ -111,7 +110,7 @@ export default function Explore() {
         <DashboardCard emoji="⏳" label="Closing Next" value={closingSoon[0] ? `${daysUntil(closingSoon[0].resolutionDate)}d` : '—'} sub={closingSoon[0]?.title?.slice(0, 20) || ''} color="info" />
       </div>
 
-      {/* ── 🔥 Trending ── */}
+      {/* Trending */}
       {trending.length > 0 && (
         <Section emoji="🔥" title="Trending" subtitle="Most traded markets right now" delay={2}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -129,7 +128,7 @@ export default function Explore() {
         </Section>
       )}
 
-      {/* ── ⏳ Closing Soon ── */}
+      {/* Closing Soon */}
       {closingSoon.length > 0 && (
         <Section emoji="⏳" title="Closing Soon" subtitle="Markets approaching resolution" delay={3}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -138,14 +137,11 @@ export default function Explore() {
         </Section>
       )}
 
-      {/* Related markets removed from homepage — only shown in market detail */}
-
-      {/* ── All Markets ── */}
+      {/* All Markets */}
       <div className="space-y-4 animate-reveal-up stagger-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">All Markets</h2>
           <div className="flex items-center gap-2">
-            {/* Sort dropdown */}
             <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
               {sortOptions.map(so => (
                 <button key={so.key} onClick={() => setSortBy(so.key)} className={cn(
@@ -157,7 +153,6 @@ export default function Explore() {
                 </button>
               ))}
             </div>
-            {/* View toggle */}
             <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
               <button onClick={() => setView('cards')} className={cn('p-1.5 rounded-md transition-all', view === 'cards' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}>
                 <LayoutGrid className="h-4 w-4" />
@@ -169,7 +164,6 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Filters row */}
         <div className="flex flex-col gap-3">
           <div className="flex gap-1.5 overflow-x-auto pb-1">
             {statusFilters.map((sf) => (
@@ -219,41 +213,6 @@ export default function Explore() {
       ) : (
         <MarketTable markets={filtered} />
       )}
-    </div>
-  );
-}
-
-const colorMap: Record<string, string> = {
-  primary: 'text-primary',
-  warning: 'text-warning',
-  positive: 'text-positive',
-  info: 'text-info',
-};
-
-function DashboardCard({ emoji, label, value, sub, color }: { emoji: string; label: string; value: string; sub: string; color: string }) {
-  return (
-    <div className="surface-card px-4 py-3.5 group hover:border-primary/20 transition-colors">
-      <div className="flex items-center gap-2 mb-1.5">
-        <span className="text-base">{emoji}</span>
-        <p className="data-label">{label}</p>
-      </div>
-      <p className={cn('text-xl font-bold font-mono tabular-nums', colorMap[color] || 'text-foreground')}>{value}</p>
-      <p className="text-[10px] text-muted-foreground truncate mt-0.5">{sub}</p>
-    </div>
-  );
-}
-
-function Section({ emoji, title, subtitle, children, delay }: { emoji: string; title: string; subtitle?: string; children: React.ReactNode; delay: number }) {
-  return (
-    <div className={`space-y-3 animate-reveal-up stagger-${delay}`}>
-      <div className="flex items-center gap-3">
-        <span className="text-xl">{emoji}</span>
-        <div>
-          <h2 className="text-sm font-semibold">{title}</h2>
-          {subtitle && <p className="text-[11px] text-muted-foreground">{subtitle}</p>}
-        </div>
-      </div>
-      <div className="border-t border-border/50 pt-4">{children}</div>
     </div>
   );
 }

@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
 import { useMarket, useMarketTrades, useMarketOrders } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil, payoffCurveLabel } from '@/lib/types';
 import type { Market, Trade, OrderBook } from '@/lib/types';
+import { fmtImplied, clamp } from '@/lib/format';
 import PayoffChart from '@/components/market/PayoffChart';
 import PriceHistoryChart from '@/components/market/PriceHistoryChart';
 import SimilarMarkets from '@/components/market/SimilarMarkets';
@@ -14,6 +15,8 @@ import TradePanel from '@/components/market/TradePanel';
 import ContractExplainer from '@/components/market/ContractExplainer';
 import Comments from '@/components/market/Comments';
 import StatusBadge from '@/components/shared/StatusBadge';
+import MetricCard from '@/components/shared/MetricCard';
+import DetailItem from '@/components/shared/DetailItem';
 import InfoTip from '@/components/shared/InfoTip';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -76,11 +79,7 @@ export default function MarketDetail() {
   const resolvedPayoff = market.resolvedValue !== undefined
     ? calculatePayoff(market.resolvedValue, market.lowerBound, market.upperBound, market.payoffCurve) : undefined;
 
-  const fmtVal = (n: number) => {
-    if (market.unit === 'pts' || market.unit === '$' || market.unit === '$/oz' || market.unit === '$/bbl')
-      return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toFixed(1);
-    return n.toFixed(2);
-  };
+  const fmtVal = (n: number) => fmtImplied(n, market.unit);
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6">
@@ -89,7 +88,7 @@ export default function MarketDetail() {
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* ── Left column ── */}
+        {/* Left column */}
         <div className="lg:col-span-8 space-y-5">
           {/* Header */}
           <div className="animate-reveal-up">
@@ -115,19 +114,13 @@ export default function MarketDetail() {
             <MetricCard label="Open Interest" value={formatCurrency(market.openInterest)} />
           </div>
 
-          {/* ── Price History Chart ── */}
+          {/* Price History Chart */}
           <div className="surface-card p-5 animate-reveal-up stagger-2">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-sm font-semibold">Price History</h2>
               <InfoTip content="Historical contract price evolution. Shows how the market's consensus has shifted over time." />
             </div>
-            <PriceHistoryChart
-              marketId={market.id}
-              currentPrice={market.currentPrice}
-              unit={market.unit}
-              lowerBound={market.lowerBound}
-              upperBound={market.upperBound}
-            />
+            <PriceHistoryChart marketId={market.id} currentPrice={market.currentPrice} unit={market.unit} lowerBound={market.lowerBound} upperBound={market.upperBound} />
           </div>
 
           {/* Contract Range */}
@@ -201,7 +194,6 @@ export default function MarketDetail() {
             <ContractExplainer market={market} />
           </div>
 
-          {/* Similar Markets — Large */}
           <div className="surface-card p-5 animate-reveal-up stagger-6">
             <SimilarMarkets currentMarketId={market.id} category={market.category} size="large" title="Similar Markets" />
           </div>
@@ -226,7 +218,7 @@ export default function MarketDetail() {
           </div>
         </div>
 
-        {/* ── Right column ── */}
+        {/* Right column */}
         <div className="lg:col-span-4 space-y-4">
           <div className="surface-card p-5 glow-accent animate-reveal-up stagger-1">
             <div className="text-center mb-4">
@@ -276,7 +268,6 @@ export default function MarketDetail() {
             </div>
           )}
 
-          {/* Similar Markets — Small (sidebar) */}
           <div className="surface-card p-4 animate-reveal-up stagger-3">
             <SimilarMarkets currentMarketId={market.id} category={market.category} size="small" title="You might also like" maxItems={4} />
           </div>
@@ -285,31 +276,3 @@ export default function MarketDetail() {
     </div>
   );
 }
-
-function MetricCard({ label, value, sub, tooltip, highlight }: {
-  label: string; value: string; sub?: string; tooltip?: string; highlight?: boolean;
-}) {
-  return (
-    <div className={cn('surface-card px-4 py-3', highlight && 'glow-accent border-primary/20')}>
-      <p className="data-label mb-0.5">{label}{tooltip && <InfoTip content={tooltip} />}</p>
-      <p className={cn('text-lg font-bold font-mono tabular-nums', highlight && 'text-primary')}>
-        {value}{sub && <span className="text-xs font-normal text-muted-foreground ml-1">{sub}</span>}
-      </p>
-    </div>
-  );
-}
-
-function DetailItem({ label, value, mono, highlight, icon }: {
-  label: string; value: string; mono?: boolean; highlight?: boolean; icon?: React.ReactNode;
-}) {
-  return (
-    <div>
-      <p className="data-label mb-0.5">{label}</p>
-      <p className={cn('text-sm', mono && 'font-mono tabular-nums', highlight && 'text-positive font-semibold')}>
-        {icon && <span className="inline-flex mr-1 align-middle">{icon}</span>}{value}
-      </p>
-    </div>
-  );
-}
-
-function clamp(n: number) { return Math.min(100, Math.max(0, n)); }
