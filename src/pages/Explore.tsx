@@ -223,6 +223,13 @@ export default function Explore() {
   );
 }
 
+const colorMap: Record<string, string> = {
+  primary: 'text-primary',
+  warning: 'text-warning',
+  positive: 'text-positive',
+  info: 'text-info',
+};
+
 function DashboardCard({ emoji, label, value, sub, color }: { emoji: string; label: string; value: string; sub: string; color: string }) {
   return (
     <div className="surface-card px-4 py-3.5 group hover:border-primary/20 transition-colors">
@@ -230,7 +237,7 @@ function DashboardCard({ emoji, label, value, sub, color }: { emoji: string; lab
         <span className="text-base">{emoji}</span>
         <p className="data-label">{label}</p>
       </div>
-      <p className={cn('text-xl font-bold font-mono tabular-nums', `text-${color}`)}>{value}</p>
+      <p className={cn('text-xl font-bold font-mono tabular-nums', colorMap[color] || 'text-foreground')}>{value}</p>
       <p className="text-[10px] text-muted-foreground truncate mt-0.5">{sub}</p>
     </div>
   );

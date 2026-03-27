@@ -1,5 +1,9 @@
-import { markets } from '@/lib/mock-data';
+import { useMemo } from 'react';
+import { markets as mockMarkets } from '@/lib/mock-data';
+import { useMarkets } from '@/hooks/use-markets';
+import { dbMarketToMarket } from '@/lib/adapters';
 import { calculatePayoff, formatCurrency } from '@/lib/types';
+import type { Market } from '@/lib/types';
 import EmptyState from '@/components/shared/EmptyState';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Link } from 'react-router-dom';
@@ -7,7 +11,13 @@ import { BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Resolved() {
-  const resolved = markets.filter((m) => m.status === 'resolved');
+  const { data: dbMarkets } = useMarkets('resolved');
+
+  const resolved: Market[] = useMemo(() => {
+    const fromDb = (dbMarkets || []).map(dbMarketToMarket);
+    const fromMock = mockMarkets.filter((m) => m.status === 'resolved');
+    return fromDb.length > 0 ? [...fromDb, ...fromMock] : fromMock;
+  }, [dbMarkets]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
