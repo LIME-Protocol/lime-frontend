@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { usePositions, useUserOrders, useUserTrades } from '@/hooks/use-portfolio';
 import { categoryConfig } from '@/lib/mock-data';
 import StatusBadge from '@/components/shared/StatusBadge';
+import SummaryCard from '@/components/shared/SummaryCard';
 import EmptyState from '@/components/shared/EmptyState';
 import LoadingState from '@/components/shared/LoadingState';
 import { cn } from '@/lib/utils';
@@ -47,10 +48,7 @@ export default function Portfolio() {
     return true;
   };
 
-  const filterByCategory = (cat?: string) => {
-    if (categoryFilter === 'All') return true;
-    return cat === categoryFilter;
-  };
+  const filterByCategory = (cat?: string) => categoryFilter === 'All' || cat === categoryFilter;
 
   const filteredPositions = positions.filter((p: any) => filterByCategory(p.markets?.category) && filterByDate(p.updated_at));
   const filteredOrders = userOrders.filter((o: any) => filterByCategory(o.markets?.category) && filterByDate(o.created_at));
@@ -71,7 +69,6 @@ export default function Portfolio() {
         <p className="text-sm text-muted-foreground">Your positions, orders, and trade history</p>
       </div>
 
-      {/* Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-reveal-up stagger-1">
         <SummaryCard label="Open Positions" value={String(positions.length)} icon="📊" />
         <SummaryCard label="Exposure" value={`$${totalExposure.toFixed(0)}`} icon="💰" />
@@ -298,18 +295,6 @@ export default function Portfolio() {
           )}
         </>
       )}
-    </div>
-  );
-}
-
-function SummaryCard({ label, value, valueClass, icon }: { label: string; value: string; valueClass?: string; icon?: string }) {
-  return (
-    <div className="surface-card px-4 py-3">
-      <div className="flex items-center gap-1.5 mb-1">
-        {icon && <span className="text-sm">{icon}</span>}
-        <p className="data-label">{label}</p>
-      </div>
-      <p className={cn('text-lg font-bold font-mono tabular-nums', valueClass)}>{value}</p>
     </div>
   );
 }
