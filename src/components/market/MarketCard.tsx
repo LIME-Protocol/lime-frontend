@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel } from '@/lib/types';
+import { fmtImplied } from '@/lib/format';
 import StatusBadge from '@/components/shared/StatusBadge';
 import MiniSparkline from '@/components/market/MiniSparkline';
 import { cn } from '@/lib/utils';
@@ -143,9 +144,3 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
   );
 }
 
-
-function fmtImplied(n: number, unit: string): string {
-  if (unit === '$' || unit === '$/oz' || unit === '$/bbl') return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toFixed(1);
-  if (unit === 'pts') return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
-  return n.toFixed(2);
-}

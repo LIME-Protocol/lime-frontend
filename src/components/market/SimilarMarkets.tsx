@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { markets as allMarkets } from '@/lib/mock-data';
 import { Market, formatCurrency, formatPrice, impliedValue, daysUntil } from '@/lib/types';
+import { fmtImplied } from '@/lib/format';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { cn } from '@/lib/utils';
 import { TrendingUp, ArrowRight, Calendar } from 'lucide-react';
@@ -67,7 +68,7 @@ function LargeView({ markets, title }: { markets: Market[]; title?: string }) {
                 <h4 className="text-[13px] font-semibold leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">{m.title}</h4>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-lg font-bold font-mono tabular-nums">{fmtVal(implied, m.unit)}<span className="text-xs text-muted-foreground ml-1">{m.unit}</span></p>
+                    <p className="text-lg font-bold font-mono tabular-nums">{fmtImplied(implied, m.unit)}<span className="text-xs text-muted-foreground ml-1">{m.unit}</span></p>
                     <p className="text-[10px] text-muted-foreground">Contract: {formatPrice(m.currentPrice)}</p>
                   </div>
                   <div className="text-right text-[10px] text-muted-foreground">
@@ -106,7 +107,7 @@ function MediumView({ markets, title }: { markets: Market[]; title?: string }) {
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-sm font-bold font-mono tabular-nums">{fmtVal(implied, m.unit)}</p>
+                <p className="text-sm font-bold font-mono tabular-nums">{fmtImplied(implied, m.unit)}</p>
                 <p className="text-[10px] text-muted-foreground">{formatPrice(m.currentPrice)}</p>
               </div>
             </Link>
@@ -134,8 +135,3 @@ function SmallView({ markets, title }: { markets: Market[]; title?: string }) {
   );
 }
 
-function fmtVal(n: number, unit: string): string {
-  if (unit === '$' || unit === '$/oz' || unit === '$/bbl') return n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toFixed(1);
-  if (unit === 'pts') return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
-  return n.toFixed(2);
-}
