@@ -41,7 +41,7 @@ function NavItem({ item, active }: { item: NavItemDef; active: boolean }) {
   );
 }
 
-function MobileNavItem({ item, active }: { item: typeof NAV_ITEMS[number]; active: boolean }) {
+function MobileNavItem({ item, active }: { item: NavItemDef; active: boolean }) {
   const Icon = item.icon;
   return (
     <Link
