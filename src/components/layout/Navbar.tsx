@@ -14,7 +14,9 @@ const NAV_ITEMS = [
   { label: 'Admin', path: '/admin', icon: Shield, secondary: true },
 ] as const;
 
-function NavItem({ item, active }: { item: typeof NAV_ITEMS[number]; active: boolean }) {
+type NavItemType = typeof NAV_ITEMS[number];
+
+function NavItem({ item, active }: { item: NavItemType; active: boolean }) {
   const Icon = item.icon;
   return (
     <Link
