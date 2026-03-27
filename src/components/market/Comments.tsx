@@ -22,18 +22,18 @@ export default function Comments({ marketId }: { marketId: string }) {
   const [text, setText] = useState('');
   const [posting, setPosting] = useState(false);
 
-  const fetchComments = async () => {
-    const { data } = await supabase
-      .from('comments')
-      .select('*')
-      .eq('market_id', marketId)
-      .order('created_at', { ascending: false })
-      .limit(50);
-    setComments((data as unknown as Comment[]) || []);
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const fetchComments = async () => {
+      const { data } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('market_id', marketId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      setComments((data as unknown as Comment[]) || []);
+      setLoading(false);
+    };
+
     fetchComments();
 
     const channel = supabase
