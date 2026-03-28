@@ -154,7 +154,7 @@ export default function TradePanel({ market }: TradePanelProps) {
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Estimated cost</span>
-          <span className="data-value text-foreground text-[13px]">${(cost * 100).toFixed(2)}</span>
+          <span className="data-value text-foreground text-[13px]">${(cost).toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">
