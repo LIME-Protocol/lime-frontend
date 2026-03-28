@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { cn } from '@/lib/utils';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface PriceHistoryChartProps {
   marketId: string;
@@ -12,7 +11,7 @@ interface PriceHistoryChartProps {
 }
 
 function generatePriceHistory(currentPrice: number, days = 90) {
-  const data: { date: string; price: number; volume: number }[] = [];
+  const data: { date: string; buy: number; sell: number }[] = [];
   const now = new Date();
   let price = currentPrice * 0.7 + Math.random() * 0.2;
 
@@ -22,11 +21,10 @@ function generatePriceHistory(currentPrice: number, days = 90) {
     const drift = (currentPrice - price) * 0.03;
     const noise = (Math.random() - 0.5) * 0.04;
     price = Math.max(0.01, Math.min(0.99, price + drift + noise));
-    const volume = Math.floor(20000 + Math.random() * 80000 + (days - i) * 500);
     data.push({
       date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      price: Number(price.toFixed(3)),
-      volume,
+      buy: Number(price.toFixed(3)),
+      sell: Number((1 - price).toFixed(3)),
     });
   }
   return data;
@@ -42,9 +40,13 @@ export default function PriceHistoryChart({ marketId, currentPrice, unit, lowerB
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <defs>
-            <linearGradient id={`priceGrad-${marketId}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+            <linearGradient id={`buyGrad-${marketId}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="hsl(var(--positive))" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="hsl(var(--positive))" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id={`sellGrad-${marketId}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="hsl(var(--negative))" stopOpacity={0.15} />
+              <stop offset="100%" stopColor="hsl(var(--negative))" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
@@ -67,26 +69,50 @@ export default function PriceHistoryChart({ marketId, currentPrice, unit, lowerB
           <Tooltip
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null;
-              const p = payload[0].value as number;
+              const buyPrice = payload[0]?.value as number;
+              const sellPrice = payload[1]?.value as number;
               return (
-                <div className="surface-card px-3 py-2 text-xs shadow-xl border border-border/50">
-                  <p className="text-muted-foreground mb-1">{label}</p>
-                  <p className="font-mono font-semibold text-foreground">{(p * 100).toFixed(1)}¢</p>
+                <div className="surface-card px-3 py-2 text-xs shadow-xl border border-border/50 space-y-1">
+                  <p className="text-muted-foreground">{label}</p>
+                  <p className="text-positive font-mono font-semibold">
+                    Buy: {(buyPrice * 100).toFixed(1)}¢
+                  </p>
+                  <p className="text-negative font-mono font-semibold">
+                    Sell: {(sellPrice * 100).toFixed(1)}¢
+                  </p>
                   <p className="text-muted-foreground">
-                    Implied: <span className="text-foreground font-mono">{impliedFromPrice(p).toFixed(1)} {unit}</span>
+                    Implied: <span className="text-foreground font-mono">{impliedFromPrice(buyPrice).toFixed(1)} {unit}</span>
                   </p>
                 </div>
               );
             }}
           />
+          <Legend
+            verticalAlign="top"
+            align="right"
+            iconType="line"
+            wrapperStyle={{ fontSize: 11, paddingBottom: 4 }}
+          />
           <Area
             type="monotone"
-            dataKey="price"
-            stroke="hsl(var(--primary))"
+            dataKey="buy"
+            name="Buy Price"
+            stroke="hsl(var(--positive))"
             strokeWidth={2}
-            fill={`url(#priceGrad-${marketId})`}
+            fill={`url(#buyGrad-${marketId})`}
             dot={false}
-            activeDot={{ r: 4, fill: 'hsl(var(--primary))', stroke: 'hsl(var(--card))', strokeWidth: 2 }}
+            activeDot={{ r: 4, fill: 'hsl(var(--positive))', stroke: 'hsl(var(--card))', strokeWidth: 2 }}
+          />
+          <Area
+            type="monotone"
+            dataKey="sell"
+            name="Sell Price"
+            stroke="hsl(var(--negative))"
+            strokeWidth={1.5}
+            fill={`url(#sellGrad-${marketId})`}
+            dot={false}
+            strokeDasharray="4 2"
+            activeDot={{ r: 3, fill: 'hsl(var(--negative))', stroke: 'hsl(var(--card))', strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

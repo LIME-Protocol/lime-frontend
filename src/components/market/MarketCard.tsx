@@ -94,7 +94,9 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
 
         <div className="flex items-center gap-3 mb-3">
           <span className="text-xs text-muted-foreground">
-            Contract: <span className="font-mono tabular-nums text-foreground font-medium">{formatPrice(market.currentPrice)}</span>
+            Buy: <span className="font-mono tabular-nums text-positive font-medium">{formatPrice(market.currentPrice)}</span>
+            <span className="mx-1.5 text-border">|</span>
+            Sell: <span className="font-mono tabular-nums text-negative font-medium">{formatPrice(1 - market.currentPrice)}</span>
           </span>
           {isResolved && market.resolvedValue !== undefined && (
             <span className="text-xs text-positive font-medium font-mono tabular-nums">
