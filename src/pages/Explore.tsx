@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { markets as mockMarkets, categories, categoryConfig } from '@/lib/mock-data';
+import { markets as mockMarkets, categoryConfig } from '@/lib/mock-data';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
-import { daysUntil, formatCurrency, formatPrice, impliedValue } from '@/lib/types';
-import type { Market, MarketStatus } from '@/lib/types';
+import { daysUntil, formatCurrency, formatPrice } from '@/lib/types';
+import type { Market } from '@/lib/types';
 import MarketCard from '@/components/market/MarketCard';
 import MarketTable from '@/components/market/MarketTable';
 import DashboardCard from '@/components/shared/DashboardCard';
@@ -32,6 +31,7 @@ const statusFilters: { key: StatusFilter; label: string; icon: React.ReactNode }
 
 export default function Explore() {
   const [category, setCategory] = useState('All');
+  const [trendingCategory, setTrendingCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [view, setView] = useState<ViewMode>('cards');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -46,6 +46,25 @@ export default function Explore() {
   }, [dbMarkets]);
 
   const activeMarkets = useMemo(() => allMarkets.filter((m) => m.status === 'active'), [allMarkets]);
+
+  const allCategories = useMemo(() => {
+    const cats = new Set(allMarkets.map(m => m.category));
+    return ['All', ...Array.from(cats).sort()];
+  }, [allMarkets]);
+
+  /* ── Trending filtered by sector ── */
+  const trending = useMemo(() => {
+    const base = activeMarkets.filter((m) => m.trending);
+    const filtered = trendingCategory === 'All' ? base : base.filter((m) => m.category === trendingCategory);
+    return filtered.slice(0, 6);
+  }, [activeMarkets, trendingCategory]);
+
+  const closingSoon = useMemo(() =>
+    activeMarkets
+      .filter((m) => daysUntil(m.resolutionDate) <= 60)
+      .sort((a, b) => daysUntil(a.resolutionDate) - daysUntil(b.resolutionDate))
+      .slice(0, 4),
+    [activeMarkets]);
 
   const filtered = useMemo(() => {
     let list = allMarkets.filter((m) => {
@@ -72,20 +91,7 @@ export default function Explore() {
     return list;
   }, [allMarkets, category, search, statusFilter, sortBy]);
 
-  const trending = useMemo(() => activeMarkets.filter((m) => m.trending).slice(0, 6), [activeMarkets]);
-  const closingSoon = useMemo(() =>
-    activeMarkets
-      .filter((m) => daysUntil(m.resolutionDate) <= 60)
-      .sort((a, b) => daysUntil(a.resolutionDate) - daysUntil(b.resolutionDate))
-      .slice(0, 4),
-    [activeMarkets]);
-
   const totalVol = activeMarkets.reduce((s, m) => s + m.volume24h, 0);
-
-  const allCategories = useMemo(() => {
-    const cats = new Set(allMarkets.map(m => m.category));
-    return ['All', ...Array.from(cats).sort()];
-  }, [allMarkets]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-8">
@@ -110,23 +116,49 @@ export default function Explore() {
         <DashboardCard emoji="⏳" label="Closing Next" value={closingSoon[0] ? `${daysUntil(closingSoon[0].resolutionDate)}d` : '—'} sub={closingSoon[0]?.title?.slice(0, 20) || ''} color="info" />
       </div>
 
-      {/* Trending */}
-      {trending.length > 0 && (
-        <Section emoji="🔥" title="Trending" subtitle="Most traded markets right now" delay={2}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {trending.slice(0, 2).map((m, i) => (
-              <MarketCard key={m.id} market={m} index={i} variant="hero" />
-            ))}
-          </div>
-          {trending.length > 2 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
-              {trending.slice(2).map((m, i) => (
-                <MarketCard key={m.id} market={m} index={i + 2} />
+      {/* Trending with category selector */}
+      <Section emoji="🔥" title="Trending" subtitle="Most traded markets right now" delay={2}>
+        {/* Category chips above trending */}
+        <div className="flex gap-1.5 overflow-x-auto pb-3">
+          {allCategories.map((cat) => {
+            const cfg = categoryConfig[cat];
+            return (
+              <button
+                key={cat}
+                onClick={() => setTrendingCategory(cat)}
+                className={cn(
+                  'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 active:scale-95',
+                  trendingCategory === cat
+                    ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:text-foreground'
+                )}
+              >
+                {cfg && <span className="text-[12px]">{cfg.emoji}</span>}
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
+        {trending.length === 0 ? (
+          <EmptyState title="No trending markets" description={`No trending markets in ${trendingCategory}`} />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {trending.slice(0, 2).map((m, i) => (
+                <MarketCard key={m.id} market={m} index={i} variant="hero" />
               ))}
             </div>
-          )}
-        </Section>
-      )}
+            {trending.length > 2 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
+                {trending.slice(2).map((m, i) => (
+                  <MarketCard key={m.id} market={m} index={i + 2} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </Section>
 
       {/* Closing Soon */}
       {closingSoon.length > 0 && (
