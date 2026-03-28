@@ -12,6 +12,7 @@ import Bookbuilding from "@/pages/Bookbuilding";
 import Admin from "@/pages/Admin";
 import Auth from "@/pages/Auth";
 import WalletPage from "@/pages/Wallet";
+import About from "@/pages/About";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
                   <Route path="/resolved" element={<Resolved />} />
                   <Route path="/bookbuilding" element={<Bookbuilding />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/about" element={<About />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>

@@ -1,4 +1,5 @@
 import { OrderBook as OrderBookType } from '@/lib/types';
+import InfoTip from '@/components/shared/InfoTip';
 
 interface OrderBookProps {
   orderBook: OrderBookType;
@@ -10,6 +11,10 @@ export default function OrderBookComponent({ orderBook }: OrderBookProps) {
     orderBook.asks[orderBook.asks.length - 1]?.total ?? 0,
   );
 
+  const bestBid = orderBook.bids[0]?.price ?? 0;
+  const bestAsk = orderBook.asks[0]?.price ?? 0;
+  const midPrice = bestBid > 0 && bestAsk > 0 ? (bestBid + bestAsk) / 2 : bestBid || bestAsk;
+
   return (
     <div className="text-xs">
       <div className="grid grid-cols-3 gap-2 px-3 py-2 data-label border-b border-border/50">
@@ -17,6 +22,7 @@ export default function OrderBookComponent({ orderBook }: OrderBookProps) {
         <span className="text-right">Size</span>
         <span className="text-right">Total</span>
       </div>
+
       {/* Asks reversed */}
       <div className="border-b border-border/50">
         {[...orderBook.asks].reverse().map((level, i) => (
@@ -28,10 +34,25 @@ export default function OrderBookComponent({ orderBook }: OrderBookProps) {
           </div>
         ))}
       </div>
-      {/* Spread */}
-      <div className="px-3 py-2 text-center data-label border-b border-border/50 bg-secondary/20">
-        Spread <span className="font-mono tabular-nums font-semibold text-foreground ml-1">{(orderBook.spread * 100).toFixed(1)}¢</span>
+
+      {/* Spread + mid */}
+      <div className="px-3 py-2 text-center data-label border-b border-border/50 bg-secondary/20 flex items-center justify-center gap-3">
+        <span>
+          Spread{' '}
+          <span className="font-mono tabular-nums font-semibold text-foreground ml-1">
+            {(orderBook.spread * 100).toFixed(1)}¢
+          </span>
+        </span>
+        <span className="text-muted-foreground/60">|</span>
+        <span>
+          Mid{' '}
+          <span className="font-mono tabular-nums font-semibold text-foreground ml-1">
+            {(midPrice * 100).toFixed(1)}¢
+          </span>
+        </span>
+        <InfoTip content="Spread = Best Ask − Best Bid. In linear contracts, buyer pays the ask price and seller's cost is (100¢ − bid price). The mid price is the average of the two." />
       </div>
+
       {/* Bids */}
       <div>
         {orderBook.bids.map((level, i) => (

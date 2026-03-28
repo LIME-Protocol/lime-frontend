@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Briefcase, BarChart3, Shield, Citrus, LogIn, LogOut, Sun, Moon, BookOpen, Wallet } from 'lucide-react';
+import { Compass, Briefcase, BarChart3, Shield, Citrus, LogIn, LogOut, Sun, Moon, BookOpen, Wallet, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from '@/hooks/use-theme';
@@ -18,6 +18,7 @@ const NAV_ITEMS: NavItemDef[] = [
   { label: 'Wallet', path: '/wallet', icon: Wallet },
   { label: 'Resolved', path: '/resolved', icon: BarChart3 },
   { label: 'Bookbuilding', path: '/bookbuilding', icon: BookOpen, secondary: true },
+  { label: 'About', path: '/about', icon: Info, secondary: true },
   { label: 'Admin', path: '/admin', icon: Shield, secondary: true },
 ];
 

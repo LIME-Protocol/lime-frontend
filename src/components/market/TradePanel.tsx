@@ -20,7 +20,8 @@ export default function TradePanel({ market }: TradePanelProps) {
   const placeOrder = usePlaceOrder();
 
   const price = orderType === 'market' ? market.currentPrice : Number(limitPrice) / 100;
-  const cost = Number(quantity) * (side === 'buy' ? price : 1 - price);
+  const effectivePrice = side === 'buy' ? price : 1 - price;
+  const cost = Number(quantity) * effectivePrice;
 
   const handleSubmit = () => {
     if (!user) {
@@ -138,9 +139,14 @@ export default function TradePanel({ market }: TradePanelProps) {
         <div className="flex justify-between">
           <span className="text-muted-foreground">
             Price per contract
-            <InfoTip content="Your cost per contract. The contract settles between 0¢ and 100¢." side="left" />
+            <InfoTip
+              content={side === 'buy'
+                ? "Your cost per contract. Pays 0¢–100¢ at settlement."
+                : "As a seller, your cost is (100¢ − price). You profit if the value lands below the implied level."}
+              side="left"
+            />
           </span>
-          <span className="data-value text-foreground">{formatPrice(price)}</span>
+          <span className="data-value text-foreground">{formatPrice(effectivePrice)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Contracts</span>
@@ -148,14 +154,19 @@ export default function TradePanel({ market }: TradePanelProps) {
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Estimated cost</span>
-          <span className="data-value text-foreground text-[13px]">${(cost * 100).toFixed(2)}</span>
+          <span className="data-value text-foreground text-[13px]">${(cost).toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">
             Max payout
-            <InfoTip content="If the contract settles at 100¢ (value ≥ cap), each contract pays $1.00." side="left" />
+            <InfoTip
+              content={side === 'buy'
+                ? "If the value settles at the cap, each contract pays 100¢."
+                : "If the value settles at the floor, each contract pays 100¢ to the seller."}
+              side="left"
+            />
           </span>
-          <span className="data-value text-positive text-[13px]">${(Number(quantity) * 100).toFixed(2)}</span>
+          <span className="data-value text-positive text-[13px]">${(Number(quantity)).toFixed(2)}</span>
         </div>
       </div>
 
