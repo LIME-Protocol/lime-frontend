@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { markets as mockMarkets, categoryConfig } from '@/lib/mock-data';
 import { useMarkets } from '@/hooks/use-markets';
+import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { daysUntil, formatCurrency, formatPrice } from '@/lib/types';
 import type { Market } from '@/lib/types';
