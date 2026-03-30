@@ -4,9 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 export interface DashboardStats {
   activeMarkets: number;
   totalVolume24h: number;
-  totalOpenInterest: number;
-  resolved24h: number;
-  closingSoonId: string | null;
+  openPositionsValue: number;
+  openPositionsCount: number;
+  closing24h: number;
 }
 
 export function useDashboardStats() {
@@ -20,9 +20,9 @@ export function useDashboardStats() {
       return {
         activeMarkets: Number(raw.active_markets ?? 0),
         totalVolume24h: Number(raw.total_volume_24h ?? 0),
-        totalOpenInterest: Number(raw.total_open_interest ?? 0),
-        resolved24h: Number(raw.resolved_24h ?? 0),
-        closingSoonId: (raw.closing_soon_id as string) ?? null,
+        openPositionsValue: Number(raw.open_positions_value ?? 0),
+        openPositionsCount: Number(raw.open_positions_count ?? 0),
+        closing24h: Number(raw.closing_24h ?? 0),
       };
     },
     refetchInterval: 30_000,
