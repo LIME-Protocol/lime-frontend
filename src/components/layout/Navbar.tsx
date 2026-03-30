@@ -1,9 +1,11 @@
 import { useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Compass, Briefcase, BarChart3, Shield, Citrus, LogIn, LogOut, Sun, Moon,
+  Compass, Briefcase, BarChart3, Shield, LogIn, LogOut, Sun, Moon,
   BookOpen, Wallet, Info, Search, X, ChevronDown, User,
 } from 'lucide-react';
+import logoIcon from '@/assets/logo-icon.png';
+import logoFull from '@/assets/logo-full.png';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from '@/hooks/use-theme';
