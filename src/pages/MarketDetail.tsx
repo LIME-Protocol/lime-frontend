@@ -108,7 +108,7 @@ export default function MarketDetail() {
 
           {/* Key metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-reveal-up stagger-1">
-            <MetricCard label="Implied Value" value={fmtVal(implied)} sub={market.unit} tooltip="The market's best estimate for the final value." highlight />
+            <MetricCard label="Market Consensus" value={fmtVal(implied)} sub={market.unit} tooltip="The market's implied estimate for the final value, derived from current contract prices." highlight />
             <MetricCard label="Contract Price" value={formatPrice(market.currentPrice)} tooltip="Price of one contract in cents." />
             <MetricCard label="24h Volume" value={formatCurrency(market.volume24h)} />
             <MetricCard label="Open Interest" value={formatCurrency(market.openInterest)} />
@@ -151,11 +151,6 @@ export default function MarketDetail() {
                 <p className="text-[10px] text-muted-foreground">{market.unit}</p>
               </div>
             </div>
-            {market.referenceValue !== undefined && (
-              <div className="text-xs text-muted-foreground bg-secondary/40 rounded-lg px-3 py-2">
-                Current reference: <span className="font-mono font-semibold text-foreground">{fmtVal(market.referenceValue)} {market.unit}</span>
-              </div>
-            )}
           </div>
 
           {/* Payoff chart */}
@@ -222,7 +217,7 @@ export default function MarketDetail() {
         <div className="lg:col-span-4 space-y-4">
           <div className="surface-card p-5 glow-accent animate-reveal-up stagger-1">
             <div className="text-center mb-4">
-              <p className="data-label mb-1.5">Implied Value</p>
+              <p className="data-label mb-1.5">Market Consensus</p>
               <p className="text-[36px] font-bold font-mono tabular-nums leading-none">{fmtVal(implied)}</p>
               <p className="text-xs text-muted-foreground mt-1">{market.unit}</p>
             </div>
