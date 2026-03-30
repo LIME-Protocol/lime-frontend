@@ -84,10 +84,13 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
         {/* Price + Sparkline row */}
         <div className="flex items-center justify-between mb-1">
           <div>
-            <span className={cn('font-bold font-mono tabular-nums leading-none', isHero ? 'text-[28px]' : 'text-[24px]')}>
-              {fmtImplied(implied, market.unit)}
-            </span>
-            <span className="text-xs text-muted-foreground font-medium ml-1">{market.unit}</span>
+            <span className="text-[10px] text-muted-foreground font-medium">Market Consensus</span>
+            <div className="flex items-baseline gap-1">
+              <span className={cn('font-bold font-mono tabular-nums leading-none', isHero ? 'text-[28px]' : 'text-[24px]')}>
+                {fmtImplied(implied, market.unit)}
+              </span>
+              <span className="text-xs text-muted-foreground font-medium">{market.unit}</span>
+            </div>
           </div>
           <MiniSparkline currentPrice={market.currentPrice} width={isHero ? 90 : 70} height={isHero ? 32 : 24} />
         </div>
