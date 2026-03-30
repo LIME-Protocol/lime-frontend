@@ -206,7 +206,7 @@ export default function Explore() {
       )}
 
       {/* All Markets */}
-      <div className="space-y-4 animate-reveal-up stagger-5">
+      <div ref={allMarketsRef} className="space-y-4 animate-reveal-up stagger-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">All Markets</h2>
           <div className="flex items-center gap-2">
