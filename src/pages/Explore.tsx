@@ -97,7 +97,11 @@ export default function Explore() {
     return list;
   }, [allMarkets, category, search, statusFilter, sortBy]);
 
-  const totalVol = activeMarkets.reduce((s, m) => s + m.volume24h, 0);
+  const scrollToAllMarkets = (filter?: StatusFilter, sort?: SortKey) => {
+    if (filter) setStatusFilter(filter);
+    if (sort) setSortBy(sort);
+    setTimeout(() => allMarketsRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-8">
@@ -113,11 +117,39 @@ export default function Explore() {
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-reveal-up stagger-1">
-        <DashboardCard emoji="📊" label="Active Markets" value={String(activeMarkets.length)} sub="tradable now" color="primary" />
-        <DashboardCard emoji="🔥" label="24h Volume" value={formatCurrency(totalVol)} sub="across all markets" color="warning" />
-        <DashboardCard emoji="🏆" label="Top Mover" value={trending[0] ? formatPrice(trending[0].currentPrice) : '—'} sub={trending[0]?.title?.slice(0, 20) || ''} color="positive" />
-        <DashboardCard emoji="⏳" label="Closing Next" value={closingSoon[0] ? `${daysUntil(closingSoon[0].resolutionDate)}d` : '—'} sub={closingSoon[0]?.title?.slice(0, 20) || ''} color="info" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 animate-reveal-up stagger-1">
+        <DashboardCard
+          emoji="📊"
+          label="Active Markets"
+          value={String(stats?.activeMarkets ?? activeMarkets.length)}
+          sub="tradable now"
+          color="primary"
+          onClick={() => scrollToAllMarkets('active', 'trending')}
+        />
+        <DashboardCard
+          emoji="🔥"
+          label="24h Volume"
+          value={formatCurrency(stats?.totalVolume24h ?? 0)}
+          sub="traded in 24h"
+          color="warning"
+          onClick={() => scrollToAllMarkets('all', 'volume')}
+        />
+        <DashboardCard
+          emoji="💰"
+          label="AuM"
+          value={formatCurrency(stats?.totalOpenInterest ?? 0)}
+          sub="total open interest"
+          color="positive"
+          onClick={() => scrollToAllMarkets('active', 'users')}
+        />
+        <DashboardCard
+          emoji="✅"
+          label="Resolved 24h"
+          value={String(stats?.resolved24h ?? 0)}
+          sub="markets settled"
+          color="info"
+          onClick={() => scrollToAllMarkets('resolved', 'trending')}
+        />
       </div>
 
       {/* Trending with category selector */}
