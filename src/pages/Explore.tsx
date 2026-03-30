@@ -99,7 +99,7 @@ export default function Explore() {
       {/* Hero Header */}
       <div className="animate-reveal-up">
         <div className="flex items-center gap-3 mb-2">
-          <img src={logoIcon} alt="LIME" className="h-10 w-10 rounded-xl" />
+          <img src={logoIcon} alt="LIME" className="h-7" />
           <div>
             <h1 className="text-[22px] font-bold mb-0">Explore Markets</h1>
             <p className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">LIME · Linear Index Market Exchange</p>

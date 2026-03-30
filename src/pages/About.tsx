@@ -27,7 +27,7 @@ export default function About() {
       {/* Hero */}
       <div className="text-center space-y-4 py-8">
         <div className="inline-flex items-center gap-3">
-          <img src={logoIcon} alt="LIME" className="h-12 w-12 rounded-xl" />
+          <img src={logoIcon} alt="LIME" className="h-8" />
           <div className="text-left">
             <h1 className="text-2xl font-bold tracking-tight">LIME</h1>
             <p className="text-xs text-muted-foreground tracking-widest uppercase">Linear Index Market Exchange</p>
