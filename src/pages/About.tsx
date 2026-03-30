@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Citrus, ArrowLeft, Shield, Scale, BookOpen, TrendingUp, Users, FileText } from 'lucide-react';
+import { ArrowLeft, Shield, Scale, BookOpen, TrendingUp, Users, FileText } from 'lucide-react';
+import logoIcon from '@/assets/logo-icon.png';
 import Section from '@/components/shared/Section';
 
 function SectionCard({ icon: Icon, title, children }: { icon: typeof Shield; title: string; children: React.ReactNode }) {
@@ -26,9 +27,7 @@ export default function About() {
       {/* Hero */}
       <div className="text-center space-y-4 py-8">
         <div className="inline-flex items-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center">
-            <Citrus className="h-6 w-6 text-primary" />
-          </div>
+          <img src={logoIcon} alt="LIME" className="h-12 w-12 rounded-xl" />
           <div className="text-left">
             <h1 className="text-2xl font-bold tracking-tight">LIME</h1>
             <p className="text-xs text-muted-foreground tracking-widest uppercase">Linear Index Market Exchange</p>
