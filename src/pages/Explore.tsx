@@ -135,20 +135,20 @@ export default function Explore() {
           onClick={() => scrollToAllMarkets('all', 'volume')}
         />
         <DashboardCard
-          emoji="💰"
-          label="AuM"
-          value={formatCurrency(stats?.totalOpenInterest ?? 0)}
-          sub="total open interest"
+          emoji="📈"
+          label="Open Positions"
+          value={formatCurrency(stats?.openPositionsValue ?? 0)}
+          sub={`${stats?.openPositionsCount ?? 0} active positions`}
           color="positive"
           onClick={() => scrollToAllMarkets('active', 'users')}
         />
         <DashboardCard
-          emoji="✅"
-          label="Resolved 24h"
-          value={String(stats?.resolved24h ?? 0)}
-          sub="markets settled"
+          emoji="⏳"
+          label="Closing in 24h"
+          value={String(stats?.closing24h ?? 0)}
+          sub="markets expiring soon"
           color="info"
-          onClick={() => scrollToAllMarkets('resolved', 'trending')}
+          onClick={() => scrollToAllMarkets('active', 'closing')}
         />
       </div>
 
