@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import AuthForm from '@/components/auth/AuthForm';
-import { Citrus, Loader2, Check } from 'lucide-react';
+import { Loader2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import logoIcon from '@/assets/logo-icon.png';
+import logoFull from '@/assets/logo-full.png';
 
 export default function Auth() {
   const { user, loading } = useAuth();
