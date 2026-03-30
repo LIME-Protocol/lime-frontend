@@ -10,7 +10,8 @@ import DashboardCard from '@/components/shared/DashboardCard';
 import Section from '@/components/shared/Section';
 import EmptyState from '@/components/shared/EmptyState';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, List, Search, Flame, Clock, CheckCircle, Activity, Users, X, TrendingUp, BarChart3, Citrus } from 'lucide-react';
+import { LayoutGrid, List, Search, Flame, Clock, CheckCircle, Activity, Users, X, TrendingUp, BarChart3 } from 'lucide-react';
+import logoIcon from '@/assets/logo-icon.png';
 
 type ViewMode = 'cards' | 'table';
 type StatusFilter = 'all' | 'active' | 'resolved';
@@ -98,9 +99,7 @@ export default function Explore() {
       {/* Hero Header */}
       <div className="animate-reveal-up">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-10 w-10 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center">
-            <Citrus className="h-5 w-5 text-primary" />
-          </div>
+          <img src={logoIcon} alt="LIME" className="h-10 w-10 rounded-xl" />
           <div>
             <h1 className="text-[22px] font-bold mb-0">Explore Markets</h1>
             <p className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">LIME · Linear Index Market Exchange</p>
