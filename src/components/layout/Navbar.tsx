@@ -1,9 +1,11 @@
 import { useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Compass, Briefcase, BarChart3, Shield, Citrus, LogIn, LogOut, Sun, Moon,
+  Compass, Briefcase, BarChart3, Shield, LogIn, LogOut, Sun, Moon,
   BookOpen, Wallet, Info, Search, X, ChevronDown, User,
 } from 'lucide-react';
+import logoIcon from '@/assets/logo-icon.png';
+import logoFull from '@/assets/logo-full.png';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from '@/hooks/use-theme';
@@ -220,15 +222,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center h-14 gap-4">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2 shrink-0 mr-2">
-          <div className="h-8 w-8 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
-            <Citrus className="h-4 w-4 text-primary" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[15px] font-bold tracking-tight leading-tight">LIME</span>
-            <span className="text-[8px] font-medium text-muted-foreground leading-none tracking-widest uppercase">
-              Linear Index Market Exchange
-            </span>
-          </div>
+          <img src={logoIcon} alt="LIME" className="h-8 w-8 rounded-lg" />
+          <img src={logoFull} alt="LIME" className="hidden sm:block h-5" />
         </Link>
 
         {/* Desktop primary nav */}
