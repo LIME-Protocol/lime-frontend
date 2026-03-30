@@ -26,13 +26,8 @@ export default function Auth() {
       <div className="hidden lg:flex lg:w-[480px] bg-primary/5 border-r border-border flex-col justify-between p-10">
         <div>
           <div className="flex items-center gap-3 mb-8">
-            <div className="h-10 w-10 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center">
-              <Citrus className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <span className="text-lg font-bold">LIME</span>
-              <p className="text-[9px] font-medium text-muted-foreground tracking-widest uppercase">Linear Index Market Exchange</p>
-            </div>
+            <img src={logoIcon} alt="LIME" className="h-10 w-10 rounded-xl" />
+            <img src={logoFull} alt="LIME" className="h-6" />
           </div>
           <h2 className="text-2xl font-bold leading-tight mb-4">Trade expectations on future variables</h2>
           <p className="text-sm text-muted-foreground leading-relaxed mb-8">
@@ -61,11 +56,8 @@ export default function Auth() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md space-y-8 animate-reveal-up">
           <div className="text-center space-y-2 lg:hidden">
-            <div className="inline-flex h-12 w-12 rounded-xl bg-primary/15 border border-primary/20 items-center justify-center mx-auto">
-              <Citrus className="h-6 w-6 text-primary" />
-            </div>
-            <h1 className="text-xl font-bold">LIME</h1>
-            <p className="text-[9px] font-medium text-muted-foreground tracking-widest uppercase">Linear Index Market Exchange</p>
+            <img src={logoIcon} alt="LIME" className="h-12 w-12 rounded-xl mx-auto" />
+            <img src={logoFull} alt="LIME" className="h-5 mx-auto" />
           </div>
 
           <div className="lg:text-left text-center">
