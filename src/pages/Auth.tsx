@@ -55,7 +55,7 @@ export default function Auth() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md space-y-8 animate-reveal-up">
           <div className="text-center space-y-2 lg:hidden">
-            <img src={logoIcon} alt="LIME" className="h-12 w-12 rounded-xl mx-auto" />
+            <img src={logoIcon} alt="LIME" className="h-8 mx-auto" />
           </div>
 
           <div className="lg:text-left text-center">
