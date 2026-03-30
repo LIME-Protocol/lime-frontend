@@ -33,6 +33,8 @@ const statusFilters: { key: StatusFilter; label: string; icon: React.ReactNode }
 ];
 
 export default function Explore() {
+  const navigate = useNavigate();
+  const allMarketsRef = useRef<HTMLDivElement>(null);
   const [category, setCategory] = useState('All');
   const [trendingCategory, setTrendingCategory] = useState('All');
   const [search, setSearch] = useState('');
@@ -41,6 +43,7 @@ export default function Explore() {
   const [sortBy, setSortBy] = useState<SortKey>('trending');
 
   const { data: dbMarkets } = useMarkets();
+  const { data: stats } = useDashboardStats();
 
   const allMarkets: Market[] = useMemo(() => {
     const fromDb = (dbMarkets || []).map(dbMarketToMarket);
