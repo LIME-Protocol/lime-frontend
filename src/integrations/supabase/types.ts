@@ -430,6 +430,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_dashboard_stats: { Args: never; Returns: Json }
       get_market_last_price: { Args: { p_market_id: string }; Returns: number }
       place_order_and_match: {
         Args: {
