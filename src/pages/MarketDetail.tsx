@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
 import { useMarket, useMarketTrades, useMarketOrders } from '@/hooks/use-markets';
 import { useMarketRanges } from '@/hooks/use-market-ranges';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil, payoffCurveLabel } from '@/lib/types';
-import type { Market, Trade, OrderBook } from '@/lib/types';
+import type { Market, MarketRange, Trade, OrderBook } from '@/lib/types';
 import { fmtImplied, clamp } from '@/lib/format';
 import PayoffChart from '@/components/market/PayoffChart';
 import PriceHistoryChart from '@/components/market/PriceHistoryChart';
@@ -22,6 +22,7 @@ import DetailItem from '@/components/shared/DetailItem';
 import InfoTip from '@/components/shared/InfoTip';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getTopVolumeRange } from '@/lib/range-utils';
 
 export default function MarketDetail() {
   const { id } = useParams();
@@ -30,10 +31,41 @@ export default function MarketDetail() {
   const { data: dbOrders } = useMarketOrders(id);
   const { data: ranges } = useMarketRanges(id);
 
-  const market: Market | undefined = useMemo(() => {
+  const [selectedRangeId, setSelectedRangeId] = useState<string | null>(null);
+
+  const baseMarket: Market | undefined = useMemo(() => {
     if (dbMarket) return dbMarketToMarket(dbMarket);
     return mockMarkets.find((m) => m.id === id);
   }, [dbMarket, id]);
+
+  // Auto-select top volume range when ranges load
+  const effectiveRangeId = useMemo(() => {
+    if (!ranges || ranges.length === 0) return null;
+    if (selectedRangeId && ranges.find(r => r.id === selectedRangeId)) return selectedRangeId;
+    const top = getTopVolumeRange(ranges);
+    return top?.id ?? null;
+  }, [ranges, selectedRangeId]);
+
+  const selectedRange: MarketRange | undefined = useMemo(() => {
+    if (!effectiveRangeId || !ranges) return undefined;
+    return ranges.find(r => r.id === effectiveRangeId);
+  }, [ranges, effectiveRangeId]);
+
+  // Apply selected range overrides to market
+  const market: Market | undefined = useMemo(() => {
+    if (!baseMarket) return undefined;
+    if (!selectedRange) return baseMarket;
+    return {
+      ...baseMarket,
+      lowerBound: selectedRange.lowerBound,
+      upperBound: selectedRange.upperBound,
+      currentPrice: selectedRange.currentPrice,
+      volume24h: selectedRange.volume24h,
+      totalVolume: selectedRange.totalVolume,
+      openInterest: selectedRange.openInterest,
+      payoffCurve: selectedRange.payoffCurve ?? baseMarket.payoffCurve,
+    };
+  }, [baseMarket, selectedRange]);
 
   const trades: Trade[] = useMemo(() => {
     if (dbTrades && dbTrades.length > 0) {
@@ -109,6 +141,18 @@ export default function MarketDetail() {
             <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{market.description}</p>
           </div>
 
+          {/* Range Options — high up so user picks range first */}
+          {ranges && ranges.length > 1 && (
+            <div className="surface-card p-5 animate-reveal-up stagger-1">
+              <RangeOptions
+                ranges={ranges}
+                unit={market.unit}
+                activeRangeId={effectiveRangeId ?? undefined}
+                onSelectRange={setSelectedRangeId}
+              />
+            </div>
+          )}
+
           {/* Key metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-reveal-up stagger-1">
             <MetricCard label="Market Consensus" value={fmtVal(implied)} sub={market.unit} tooltip="The market's implied estimate for the final value, derived from current contract prices." highlight />
@@ -130,6 +174,7 @@ export default function MarketDetail() {
           <div className="surface-card p-5 animate-reveal-up stagger-3 glow-accent">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-sm font-semibold">Contract Range</h2>
+              {selectedRange && <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">{selectedRange.label}</span>}
               <InfoTip content="The payoff is determined by where the final value lands within this range." />
             </div>
             <div className="flex items-center gap-4 mb-4">
@@ -188,13 +233,6 @@ export default function MarketDetail() {
             </div>
           </div>
 
-          {/* Range Options */}
-          {ranges && ranges.length > 0 && (
-            <div className="surface-card p-5 animate-reveal-up stagger-5">
-              <RangeOptions ranges={ranges} unit={market.unit} activeRangeId={undefined} />
-            </div>
-          )}
-
           <div className="surface-card p-5 animate-reveal-up stagger-6">
             <ContractExplainer market={market} />
           </div>
@@ -239,7 +277,9 @@ export default function MarketDetail() {
                 </div>
                 <span className="text-[10px] font-mono font-semibold text-muted-foreground">{fmtVal(market.upperBound)}</span>
               </div>
-              <p className="text-[10px] text-muted-foreground text-center mt-1">Range · {market.unit}</p>
+              <p className="text-[10px] text-muted-foreground text-center mt-1">
+                {selectedRange ? selectedRange.label : 'Range'} · {market.unit}
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-2 text-center text-xs">
               <div className="bg-secondary/60 rounded-lg py-2.5">
