@@ -106,6 +106,62 @@ export type Database = {
           },
         ]
       }
+      market_ranges: {
+        Row: {
+          created_at: string
+          current_price: number | null
+          id: string
+          label: string
+          lower_bound: number
+          market_id: string
+          open_interest: number | null
+          payoff_curve: Json | null
+          status: string
+          total_volume: number | null
+          updated_at: string
+          upper_bound: number
+          volume_24h: number | null
+        }
+        Insert: {
+          created_at?: string
+          current_price?: number | null
+          id?: string
+          label: string
+          lower_bound: number
+          market_id: string
+          open_interest?: number | null
+          payoff_curve?: Json | null
+          status?: string
+          total_volume?: number | null
+          updated_at?: string
+          upper_bound: number
+          volume_24h?: number | null
+        }
+        Update: {
+          created_at?: string
+          current_price?: number | null
+          id?: string
+          label?: string
+          lower_bound?: number
+          market_id?: string
+          open_interest?: number | null
+          payoff_curve?: Json | null
+          status?: string
+          total_volume?: number | null
+          updated_at?: string
+          upper_bound?: number
+          volume_24h?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_ranges_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       markets: {
         Row: {
           category: string
