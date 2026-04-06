@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
 import { useMarket, useMarketTrades, useMarketOrders } from '@/hooks/use-markets';
+import { useMarketRanges } from '@/hooks/use-market-ranges';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil, payoffCurveLabel } from '@/lib/types';
 import type { Market, Trade, OrderBook } from '@/lib/types';
@@ -13,6 +14,7 @@ import OrderBookComponent from '@/components/market/OrderBookComponent';
 import TradeHistory from '@/components/market/TradeHistory';
 import TradePanel from '@/components/market/TradePanel';
 import ContractExplainer from '@/components/market/ContractExplainer';
+import RangeOptions from '@/components/market/RangeOptions';
 import Comments from '@/components/market/Comments';
 import StatusBadge from '@/components/shared/StatusBadge';
 import MetricCard from '@/components/shared/MetricCard';
@@ -26,6 +28,7 @@ export default function MarketDetail() {
   const { data: dbMarket } = useMarket(id);
   const { data: dbTrades } = useMarketTrades(id);
   const { data: dbOrders } = useMarketOrders(id);
+  const { data: ranges } = useMarketRanges(id);
 
   const market: Market | undefined = useMemo(() => {
     if (dbMarket) return dbMarketToMarket(dbMarket);
@@ -184,6 +187,13 @@ export default function MarketDetail() {
               )}
             </div>
           </div>
+
+          {/* Range Options */}
+          {ranges && ranges.length > 0 && (
+            <div className="surface-card p-5 animate-reveal-up stagger-5">
+              <RangeOptions ranges={ranges} unit={market.unit} activeRangeId={undefined} />
+            </div>
+          )}
 
           <div className="surface-card p-5 animate-reveal-up stagger-6">
             <ContractExplainer market={market} />
