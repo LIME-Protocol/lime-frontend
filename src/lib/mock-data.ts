@@ -1,4 +1,4 @@
-import { Market, Position, Order, Trade, OrderBook, AdminLog, PayoffCurve } from './types';
+import { Market, MarketRange, Position, Order, Trade, OrderBook, AdminLog, PayoffCurve } from './types';
 
 // ── Category config ──
 export const categoryConfig: Record<string, { emoji: string; label: string }> = {
@@ -735,6 +735,48 @@ export const markets: Market[] = [
     submittedBy: 'macro_whale',
     payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.5 },
   },
+];
+
+// ────────────────────────────────── Market Range Options ──────────────────────────────────
+
+export const marketRanges: MarketRange[] = [
+  // Fed Funds Rate — 3 ranges with different amplitudes/positions
+  { id: 'r1-1', marketId: 'm1', label: 'Narrow Cut', lowerBound: 3.0, upperBound: 4.0, status: 'active', currentPrice: 0.85, volume24h: 189_000, totalVolume: 3_200_000, openInterest: 580_000 },
+  { id: 'r1-2', marketId: 'm1', label: 'Base Range', lowerBound: 3.0, upperBound: 5.5, status: 'active', currentPrice: 0.72, volume24h: 412_800, totalVolume: 8_340_000, openInterest: 1_240_000 },
+  { id: 'r1-3', marketId: 'm1', label: 'Wide Hawkish', lowerBound: 4.0, upperBound: 6.0, status: 'preliminary', currentPrice: 0.38, volume24h: 12_000, totalVolume: 45_000, openInterest: 18_000 },
+
+  // US CPI
+  { id: 'r2-1', marketId: 'm2', label: 'Low Inflation', lowerBound: 1.0, upperBound: 3.0, status: 'active', currentPrice: 0.82, volume24h: 156_000, totalVolume: 2_800_000, openInterest: 490_000 },
+  { id: 'r2-2', marketId: 'm2', label: 'Base Range', lowerBound: 1.5, upperBound: 5.0, status: 'active', currentPrice: 0.28, volume24h: 287_400, totalVolume: 5_120_000, openInterest: 890_000 },
+  { id: 'r2-3', marketId: 'm2', label: 'High Inflation', lowerBound: 3.0, upperBound: 6.0, status: 'preliminary', currentPrice: 0.08, volume24h: 5_400, totalVolume: 22_000, openInterest: 8_000 },
+
+  // EUR/USD
+  { id: 'r3-1', marketId: 'm3', label: 'Strong Euro', lowerBound: 1.05, upperBound: 1.20, status: 'active', currentPrice: 0.74, volume24h: 312_000, totalVolume: 5_600_000, openInterest: 920_000 },
+  { id: 'r3-2', marketId: 'm3', label: 'Full Range', lowerBound: 0.95, upperBound: 1.20, status: 'active', currentPrice: 0.81, volume24h: 534_200, totalVolume: 9_800_000, openInterest: 1_670_000 },
+  { id: 'r3-3', marketId: 'm3', label: 'Weak Euro', lowerBound: 0.90, upperBound: 1.05, status: 'active', currentPrice: 0.93, volume24h: 198_000, totalVolume: 3_100_000, openInterest: 540_000 },
+
+  // S&P 500
+  { id: 'r5-1', marketId: 'm5', label: 'Bull Case', lowerBound: 5_500, upperBound: 7_000, status: 'active', currentPrice: 0.21, volume24h: 234_000, totalVolume: 4_100_000, openInterest: 720_000 },
+  { id: 'r5-2', marketId: 'm5', label: 'Base Range', lowerBound: 4_500, upperBound: 6_500, status: 'active', currentPrice: 0.83, volume24h: 678_900, totalVolume: 12_400_000, openInterest: 2_100_000 },
+  { id: 'r5-3', marketId: 'm5', label: 'Crash Hedge', lowerBound: 3_500, upperBound: 5_000, status: 'preliminary', currentPrice: 0.95, volume24h: 8_900, totalVolume: 34_000, openInterest: 12_000 },
+
+  // Gold
+  { id: 'r10-1', marketId: 'm10', label: 'Conservative', lowerBound: 2_200, upperBound: 2_800, status: 'active', currentPrice: 0.91, volume24h: 267_000, totalVolume: 4_500_000, openInterest: 780_000 },
+  { id: 'r10-2', marketId: 'm10', label: 'Wide Range', lowerBound: 1_800, upperBound: 3_200, status: 'active', currentPrice: 0.88, volume24h: 445_000, totalVolume: 7_900_000, openInterest: 1_350_000 },
+  { id: 'r10-3', marketId: 'm10', label: 'Super Bull', lowerBound: 2_800, upperBound: 4_000, status: 'preliminary', currentPrice: 0.12, volume24h: 6_200, totalVolume: 19_000, openInterest: 7_500 },
+
+  // Bitcoin (Resolved)
+  { id: 'r9-1', marketId: 'm9', label: 'Base Range', lowerBound: 30_000, upperBound: 120_000, status: 'active', currentPrice: 0.72, volume24h: 0, totalVolume: 14_200_000, openInterest: 0 },
+  { id: 'r9-2', marketId: 'm9', label: 'Moon Range', lowerBound: 80_000, upperBound: 200_000, status: 'active', currentPrice: 0.12, volume24h: 0, totalVolume: 3_800_000, openInterest: 0 },
+
+  // WTI Crude
+  { id: 'r6-1', marketId: 'm6', label: 'Low Range', lowerBound: 40, upperBound: 70, status: 'active', currentPrice: 0.89, volume24h: 145_000, totalVolume: 2_800_000, openInterest: 420_000 },
+  { id: 'r6-2', marketId: 'm6', label: 'Base Range', lowerBound: 50, upperBound: 100, status: 'active', currentPrice: 0.19, volume24h: 321_500, totalVolume: 6_700_000, openInterest: 980_000 },
+  { id: 'r6-3', marketId: 'm6', label: 'Spike Hedge', lowerBound: 80, upperBound: 130, status: 'preliminary', currentPrice: 0.05, volume24h: 3_100, totalVolume: 11_000, openInterest: 4_200 },
+
+  // BTC Floor Protection
+  { id: 'r19-1', marketId: 'm19', label: 'Base Range', lowerBound: 50_000, upperBound: 150_000, status: 'active', currentPrice: 0.34, volume24h: 356_000, totalVolume: 5_600_000, openInterest: 890_000 },
+  { id: 'r19-2', marketId: 'm19', label: 'Deep Hedge', lowerBound: 30_000, upperBound: 80_000, status: 'active', currentPrice: 0.94, volume24h: 189_000, totalVolume: 3_100_000, openInterest: 560_000 },
 ];
 
 // ────────────────────────────────── Order Book ──────────────────────────────────
