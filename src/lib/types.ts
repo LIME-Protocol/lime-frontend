@@ -46,6 +46,21 @@ export interface Market {
   submittedBy?: string;
 }
 
+// ── Market Range Option ──
+export interface MarketRange {
+  id: string;
+  marketId: string;
+  label: string;
+  lowerBound: number;
+  upperBound: number;
+  status: 'active' | 'preliminary';
+  currentPrice: number;
+  volume24h: number;
+  totalVolume: number;
+  openInterest: number;
+  payoffCurve?: PayoffCurve;
+}
+
 // ── Order Book ──
 export interface OrderBookLevel {
   price: number;   // 0–1
