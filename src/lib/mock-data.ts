@@ -352,11 +352,11 @@ export const markets: Market[] = [
     trending: false,
   },
 
-  // ── Non-linear payoff markets ──
+  // ── Additional markets ──
   {
     id: 'm16',
-    title: 'Fed Rate Cut Trigger (Sigmoid)',
-    description: 'Will the Fed cut rates below 4%? Sigmoid payoff — small changes near the threshold matter most.',
+    title: 'Fed Funds Rate — Mid 2026',
+    description: 'Where will the upper bound of the fed funds rate be by mid-2026?',
     category: 'Rates',
     variable: 'Fed Funds Upper',
     unit: '%',
@@ -374,12 +374,11 @@ export const markets: Market[] = [
     openInterest: 640_000,
     createdAt: '2025-05-01',
     trending: true,
-    payoffCurve: { type: 'sigmoid', label: 'Sigmoid', steepness: 12 },
   },
   {
     id: 'm17',
-    title: 'S&P 500 Above 6000? (Binary Step)',
-    description: 'Binary-style contract: pays 100¢ if S&P closes above 6,000, else 0¢. Step function payoff.',
+    title: 'S&P 500 — 5K–7K Range',
+    description: 'Linear payoff contract on S&P 500 with a 5,000–7,000 range. Where will the index close at year end?',
     category: 'Equities',
     variable: 'S&P 500',
     unit: 'pts',
@@ -397,12 +396,11 @@ export const markets: Market[] = [
     openInterest: 1_100_000,
     createdAt: '2025-04-01',
     trending: false,
-    payoffCurve: { type: 'step', label: 'Binary Step', stepThreshold: 0.5 },
   },
   {
     id: 'm18',
-    title: 'Gold Upside Accelerator (Convex)',
-    description: 'Convex payoff — rewards accelerate as Gold moves higher. More upside exposure at the top of the range.',
+    title: 'Gold — Wide Range 2026',
+    description: 'Linear payoff on Gold with a wide $2,000–$3,500 range for 2026.',
     category: 'Commodities',
     variable: 'Gold (XAU/USD)',
     unit: '$/oz',
@@ -419,12 +417,11 @@ export const markets: Market[] = [
     openInterest: 520_000,
     createdAt: '2025-05-15',
     trending: false,
-    payoffCurve: { type: 'convex', label: 'Convex', exponent: 2.5 },
   },
   {
     id: 'm19',
-    title: 'BTC Floor Protection (Concave)',
-    description: 'Concave payoff — most of the payout is captured early. Acts like downside protection on Bitcoin.',
+    title: 'BTC/USD — H2 2025',
+    description: 'Linear payoff on Bitcoin for the second half of 2025. Range: $50K–$150K.',
     category: 'Crypto',
     variable: 'BTC/USD',
     unit: '$',
@@ -442,7 +439,6 @@ export const markets: Market[] = [
     openInterest: 890_000,
     createdAt: '2025-06-01',
     trending: true,
-    payoffCurve: { type: 'concave', label: 'Concave', exponent: 2 },
   },
 
   // ── Politics ──
@@ -467,7 +463,6 @@ export const markets: Market[] = [
     openInterest: 920_000,
     createdAt: '2025-07-01',
     trending: true,
-    payoffCurve: { type: 'sigmoid' as const, label: 'Sigmoid', steepness: 10 },
   },
   {
     id: 'm21p',
@@ -538,7 +533,6 @@ export const markets: Market[] = [
     openInterest: 1_450_000,
     createdAt: '2025-08-01',
     trending: true,
-    payoffCurve: { type: 'convex' as const, label: 'Convex', exponent: 2 },
   },
 
   // ── Entertainment ──
@@ -563,7 +557,6 @@ export const markets: Market[] = [
     openInterest: 180_000,
     createdAt: '2025-09-01',
     trending: false,
-    payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.55 },
   },
   {
     id: 'm25ent',
@@ -610,7 +603,6 @@ export const markets: Market[] = [
     openInterest: 720_000,
     createdAt: '2026-01-01',
     trending: false,
-    payoffCurve: { type: 'concave' as const, label: 'Concave', exponent: 2 },
   },
   {
     id: 'm27t',
@@ -633,7 +625,6 @@ export const markets: Market[] = [
     openInterest: 1_120_000,
     createdAt: '2025-10-01',
     trending: true,
-    payoffCurve: { type: 'sigmoid' as const, label: 'Sigmoid', steepness: 6 },
   },
 
   // ── Sports ──
@@ -660,7 +651,6 @@ export const markets: Market[] = [
     participantCount: 18,
     minParticipants: 25,
     submittedBy: 'hoops_guru',
-    payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.57 },
   },
 
   // ── Preliminary (Bookbuilding) markets ──
@@ -687,7 +677,6 @@ export const markets: Market[] = [
     participantCount: 14,
     minParticipants: 25,
     submittedBy: 'trader42',
-    payoffCurve: { type: 'sigmoid' as const, label: 'Sigmoid', steepness: 8 },
   },
   {
     id: 'm21',
@@ -733,7 +722,6 @@ export const markets: Market[] = [
     createdAt: '2026-03-22',
     trending: false,
     submittedBy: 'macro_whale',
-    payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.5 },
   },
 ];
 

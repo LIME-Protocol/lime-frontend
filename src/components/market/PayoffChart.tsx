@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
 import { calculatePayoff, calculateSellPayoff } from '@/lib/types';
 import type { PayoffCurve } from '@/lib/types';
+import { formatAxisValue, formatAxisLabel } from '@/lib/chart-utils';
 import { cn } from '@/lib/utils';
 
 interface PayoffChartProps {
@@ -38,7 +39,8 @@ export default function PayoffChart({ lower, upper, currentPrice, unit, resolved
   }, [lower, upper, curve]);
 
   const impliedVal = lower + currentPrice * (upper - lower);
-  const formatVal = (v: number) => Math.abs(v) >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 0 }) : v.toFixed(1);
+  const tickFmt = (v: number) => formatAxisValue(v, unit);
+  const labelFmt = (v: number) => formatAxisLabel(v, unit);
 
   const isBuy = side === 'buy';
   const dataKey = isBuy ? 'buy' : 'sell';
@@ -77,7 +79,7 @@ export default function PayoffChart({ lower, upper, currentPrice, unit, resolved
       </div>
 
       <ResponsiveContainer width="100%" height={height}>
-        <AreaChart data={data} margin={{ top: 16, right: 12, bottom: 0, left: 0 }}>
+        <AreaChart data={data} margin={{ top: 16, right: 12, bottom: 20, left: 0 }}>
           <defs>
             <linearGradient id="payoffGradBuy" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="hsl(142, 60%, 42%)" stopOpacity={0.25} />
@@ -92,9 +94,15 @@ export default function PayoffChart({ lower, upper, currentPrice, unit, resolved
           <XAxis
             dataKey="value"
             tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-            tickFormatter={formatVal}
+            tickFormatter={tickFmt}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             tickLine={false}
+            label={{
+              value: unit || 'Value',
+              position: 'insideBottom',
+              offset: -10,
+              style: { fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 600 },
+            }}
           />
           <YAxis
             tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
@@ -115,26 +123,26 @@ export default function PayoffChart({ lower, upper, currentPrice, unit, resolved
               color: 'hsl(var(--foreground))',
             }}
             formatter={(value: number) => [`${(value * 100).toFixed(1)}¢`, isBuy ? 'Buyer Payoff' : 'Seller Payoff']}
-            labelFormatter={(label) => `${formatVal(Number(label))} ${unit}`}
+            labelFormatter={(label) => labelFmt(Number(label))}
           />
           <Area type={curve?.type === 'step' ? 'stepAfter' : 'monotone'} dataKey={dataKey} stroke={strokeColor} strokeWidth={2} fill={`url(#${gradientId})`} />
           <ReferenceLine x={lower} stroke="hsl(var(--border))" strokeDasharray="4 2" strokeWidth={1}
-            label={{ value: 'Floor', position: 'insideBottomLeft', fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
+            label={{ value: `Floor: ${labelFmt(lower)}`, position: 'insideBottomLeft', fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
           />
           <ReferenceLine x={upper} stroke="hsl(var(--border))" strokeDasharray="4 2" strokeWidth={1}
-            label={{ value: 'Cap', position: 'insideBottomRight', fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
+            label={{ value: `Cap: ${labelFmt(upper)}`, position: 'insideBottomRight', fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
           />
           <ReferenceLine x={Number(impliedVal.toFixed(2))} stroke="hsl(38, 92%, 56%)" strokeDasharray="4 4" strokeWidth={1.5}
-            label={{ value: `Implied: ${formatVal(impliedVal)}`, position: 'top', fill: 'hsl(38, 92%, 56%)', fontSize: 10, fontWeight: 600 }}
+            label={{ value: `Implied: ${labelFmt(impliedVal)}`, position: 'top', fill: 'hsl(38, 92%, 56%)', fontSize: 10, fontWeight: 600 }}
           />
           {referenceValue !== undefined && !resolvedValue && (
             <ReferenceLine x={referenceValue} stroke="hsl(210, 80%, 58%)" strokeDasharray="2 4" strokeWidth={1}
-              label={{ value: `Ref: ${formatVal(referenceValue)}`, position: 'insideTopRight', fill: 'hsl(210, 80%, 58%)', fontSize: 10 }}
+              label={{ value: `Ref: ${labelFmt(referenceValue)}`, position: 'insideTopRight', fill: 'hsl(210, 80%, 58%)', fontSize: 10 }}
             />
           )}
           {resolvedValue !== undefined && (
             <ReferenceLine x={resolvedValue} stroke="hsl(142, 60%, 42%)" strokeWidth={2.5}
-              label={{ value: `Settled: ${formatVal(resolvedValue)}`, position: 'top', fill: 'hsl(142, 60%, 42%)', fontSize: 10, fontWeight: 700 }}
+              label={{ value: `Settled: ${labelFmt(resolvedValue)}`, position: 'top', fill: 'hsl(142, 60%, 42%)', fontSize: 10, fontWeight: 700 }}
             />
           )}
         </AreaChart>

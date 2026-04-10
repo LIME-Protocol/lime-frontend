@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { formatAxisValue, formatAxisLabel } from '@/lib/chart-utils';
 
 interface PriceHistoryChartProps {
   marketId: string;
@@ -71,6 +72,7 @@ export default function PriceHistoryChart({ marketId, currentPrice, unit, lowerB
               if (!active || !payload?.length) return null;
               const buyPrice = payload[0]?.value as number;
               const sellPrice = payload[1]?.value as number;
+              const implied = impliedFromPrice(buyPrice);
               return (
                 <div className="surface-card px-3 py-2 text-xs shadow-xl border border-border/50 space-y-1">
                   <p className="text-muted-foreground">{label}</p>
@@ -81,7 +83,7 @@ export default function PriceHistoryChart({ marketId, currentPrice, unit, lowerB
                     Sell: {(sellPrice * 100).toFixed(1)}¢
                   </p>
                   <p className="text-muted-foreground">
-                    Implied: <span className="text-foreground font-mono">{impliedFromPrice(buyPrice).toFixed(1)} {unit}</span>
+                    Implied: <span className="text-foreground font-mono">{formatAxisLabel(implied, unit)}</span>
                   </p>
                 </div>
               );
