@@ -463,7 +463,6 @@ export const markets: Market[] = [
     openInterest: 920_000,
     createdAt: '2025-07-01',
     trending: true,
-    payoffCurve: { type: 'sigmoid' as const, label: 'Sigmoid', steepness: 10 },
   },
   {
     id: 'm21p',
@@ -534,7 +533,6 @@ export const markets: Market[] = [
     openInterest: 1_450_000,
     createdAt: '2025-08-01',
     trending: true,
-    payoffCurve: { type: 'convex' as const, label: 'Convex', exponent: 2 },
   },
 
   // ── Entertainment ──
@@ -559,7 +557,6 @@ export const markets: Market[] = [
     openInterest: 180_000,
     createdAt: '2025-09-01',
     trending: false,
-    payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.55 },
   },
   {
     id: 'm25ent',
@@ -606,7 +603,6 @@ export const markets: Market[] = [
     openInterest: 720_000,
     createdAt: '2026-01-01',
     trending: false,
-    payoffCurve: { type: 'concave' as const, label: 'Concave', exponent: 2 },
   },
   {
     id: 'm27t',
@@ -629,7 +625,6 @@ export const markets: Market[] = [
     openInterest: 1_120_000,
     createdAt: '2025-10-01',
     trending: true,
-    payoffCurve: { type: 'sigmoid' as const, label: 'Sigmoid', steepness: 6 },
   },
 
   // ── Sports ──
@@ -656,7 +651,6 @@ export const markets: Market[] = [
     participantCount: 18,
     minParticipants: 25,
     submittedBy: 'hoops_guru',
-    payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.57 },
   },
 
   // ── Preliminary (Bookbuilding) markets ──
@@ -683,7 +677,6 @@ export const markets: Market[] = [
     participantCount: 14,
     minParticipants: 25,
     submittedBy: 'trader42',
-    payoffCurve: { type: 'sigmoid' as const, label: 'Sigmoid', steepness: 8 },
   },
   {
     id: 'm21',
@@ -729,7 +722,6 @@ export const markets: Market[] = [
     createdAt: '2026-03-22',
     trending: false,
     submittedBy: 'macro_whale',
-    payoffCurve: { type: 'step' as const, label: 'Binary Step', stepThreshold: 0.5 },
   },
 ];
 
