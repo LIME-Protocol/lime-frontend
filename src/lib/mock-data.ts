@@ -352,11 +352,11 @@ export const markets: Market[] = [
     trending: false,
   },
 
-  // ── Non-linear payoff markets ──
+  // ── Additional markets ──
   {
     id: 'm16',
-    title: 'Fed Rate Cut Trigger (Sigmoid)',
-    description: 'Will the Fed cut rates below 4%? Sigmoid payoff — small changes near the threshold matter most.',
+    title: 'Fed Funds Rate — Mid 2026',
+    description: 'Where will the upper bound of the fed funds rate be by mid-2026?',
     category: 'Rates',
     variable: 'Fed Funds Upper',
     unit: '%',
