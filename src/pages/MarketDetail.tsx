@@ -6,7 +6,7 @@ import { useMarketRanges } from '@/hooks/use-market-ranges';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil, payoffCurveLabel } from '@/lib/types';
 import type { Market, MarketRange, Trade, OrderBook } from '@/lib/types';
-import { fmtImplied, clamp } from '@/lib/format';
+import { fmtImplied, clamp, getCategoryEmoji } from '@/lib/format';
 import PayoffChart from '@/components/market/PayoffChart';
 import PriceHistoryChart from '@/components/market/PriceHistoryChart';
 import SimilarMarkets from '@/components/market/SimilarMarkets';
@@ -128,7 +128,7 @@ export default function MarketDetail() {
           {/* Header */}
           <div className="animate-reveal-up">
             <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="text-lg">{market.emoji}</span>
+              <span className="text-lg">{getCategoryEmoji(market.category)}</span>
               <span className="data-label">{market.category}</span>
               <StatusBadge type="market" status={market.status} />
               {!isResolved && days <= 30 && (
