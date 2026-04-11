@@ -141,9 +141,9 @@ export default function MarketDetail() {
             <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{market.description}</p>
           </div>
 
-          {/* Range Options — high up so user picks range first */}
-          {ranges && ranges.length > 1 && (
-            <div className="surface-card p-5 animate-reveal-up stagger-1">
+          {/* Range Options — always visible so user sees active range */}
+          {ranges && ranges.length > 0 && (
+            <div className="animate-reveal-up stagger-1">
               <RangeOptions
                 ranges={ranges}
                 unit={market.unit}
