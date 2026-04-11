@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { markets as allMarkets } from '@/lib/mock-data';
 import { Market, formatCurrency, formatPrice, impliedValue, daysUntil } from '@/lib/types';
-import { fmtImplied } from '@/lib/format';
+import { fmtImplied, getCategoryEmoji } from '@/lib/format';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { cn } from '@/lib/utils';
 import { TrendingUp, ArrowRight, Calendar } from 'lucide-react';
@@ -62,7 +62,7 @@ function LargeView({ markets, title }: { markets: Market[]; title?: string }) {
               )}
               <div className="p-4">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-sm">{m.emoji}</span>
+                  <span className="text-sm">{getCategoryEmoji(m.category)}</span>
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{m.category}</span>
                 </div>
                 <h4 className="text-[13px] font-semibold leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">{m.title}</h4>
@@ -97,7 +97,7 @@ function MediumView({ markets, title }: { markets: Market[]; title?: string }) {
               {m.imageUrl ? (
                 <img src={m.imageUrl} alt={m.title} className="w-12 h-12 rounded-lg object-cover shrink-0" loading="lazy" />
               ) : (
-                <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-lg shrink-0">{m.emoji}</div>
+                <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-lg shrink-0">{getCategoryEmoji(m.category)}</div>
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-semibold leading-snug truncate group-hover:text-primary transition-colors">{m.title}</p>
@@ -124,7 +124,7 @@ function SmallView({ markets, title }: { markets: Market[]; title?: string }) {
       <p className="data-label">{title || 'You might also like'}</p>
       {markets.map((m) => (
         <Link key={m.id} to={`/market/${m.id}`} className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-secondary/60 transition-colors group">
-          <span className="text-sm shrink-0">{m.emoji}</span>
+          <span className="text-sm shrink-0">{getCategoryEmoji(m.category)}</span>
           <p className="text-[11px] font-medium truncate flex-1 group-hover:text-primary transition-colors">{m.title}</p>
           <span className="text-[11px] font-mono font-semibold tabular-nums text-muted-foreground shrink-0">
             {formatPrice(m.currentPrice)}

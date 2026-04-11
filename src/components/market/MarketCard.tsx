@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Market, formatCurrency, formatPrice, impliedValue, daysUntil, payoffCurveLabel } from '@/lib/types';
-import { fmtImplied } from '@/lib/format';
+import { fmtImplied, getCategoryEmoji } from '@/lib/format';
 import StatusBadge from '@/components/shared/StatusBadge';
 import MiniSparkline from '@/components/market/MiniSparkline';
 import { cn } from '@/lib/utils';
@@ -47,7 +47,7 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
       <div className={cn(isHero && 'p-5 pt-3')}>
         {!isHero && (
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <span className="text-[13px]">{market.emoji}</span>
+            <span className="text-[13px]">{getCategoryEmoji(market.category)}</span>
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{market.category}</span>
             <StatusBadge type="market" status={market.status} />
             {market.payoffCurve && market.payoffCurve.type !== 'linear' && (
@@ -65,7 +65,7 @@ export default function MarketCard({ market, index = 0, variant = 'default' }: M
 
         {/* Title */}
         <div className="flex items-start gap-2 mb-3">
-          {isHero && <span className="text-lg shrink-0 mt-0.5">{market.emoji}</span>}
+          {isHero && <span className="text-lg shrink-0 mt-0.5">{getCategoryEmoji(market.category)}</span>}
           <div className="min-w-0 flex-1">
             {isHero && market.payoffCurve && market.payoffCurve.type !== 'linear' && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent/10 text-accent text-[9px] font-semibold mb-1.5">
