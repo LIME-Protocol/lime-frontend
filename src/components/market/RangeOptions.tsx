@@ -19,11 +19,11 @@ export default function RangeOptions({ ranges, unit, activeRangeId, onSelectRang
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold">Range Options</h3>
+      <div className="flex items-center gap-2 mb-1">
+        <h3 className="text-sm font-semibold">Ranges</h3>
         <span className="text-[10px] text-muted-foreground">{ranges.length} available</span>
       </div>
-      <div className="space-y-2">
+      <div className="flex flex-wrap gap-1.5">
         {ranges.map((range) => {
           const isSelected = range.id === activeRangeId;
           const isBookbuilding = range.status === 'preliminary';
@@ -33,44 +33,33 @@ export default function RangeOptions({ ranges, unit, activeRangeId, onSelectRang
               key={range.id}
               onClick={() => onSelectRange?.(range.id)}
               className={cn(
-                'w-full flex items-center justify-between p-3 rounded-lg border transition-all text-left',
+                'flex items-center gap-2.5 px-3 py-2 rounded-lg border text-xs font-mono transition-all',
                 isSelected
-                  ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20'
-                  : 'border-border/50 bg-secondary/30 hover:bg-secondary/50 hover:border-border',
+                  ? 'border-primary bg-primary/10 ring-1 ring-primary/30 text-foreground'
+                  : 'border-border/50 bg-secondary/30 hover:bg-secondary/50 hover:border-border text-muted-foreground',
               )}
             >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className={cn('text-xs font-semibold', isSelected && 'text-primary')}>{range.label}</span>
-                  {isBookbuilding && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-warning/15 text-warning">
-                      BOOKBUILDING
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-muted-foreground font-mono">
-                  {formatBound(range.lowerBound)} – {formatBound(range.upperBound)} {unit}
-                </p>
-              </div>
+              {/* Bounds */}
+              <span className="font-semibold tabular-nums whitespace-nowrap">
+                {formatBound(range.lowerBound)}–{formatBound(range.upperBound)}
+                <span className="ml-0.5 text-[10px] font-normal">{unit}</span>
+              </span>
 
-              <div className="flex items-center gap-4 text-right shrink-0">
-                <div>
-                  <p className={cn('text-xs font-bold font-mono tabular-nums', isSelected && 'text-primary')}>{formatPrice(range.currentPrice)}</p>
-                  <p className="text-[10px] text-muted-foreground">price</p>
-                </div>
-                {!isBookbuilding && (
-                  <div className="hidden sm:block">
-                    <p className="text-xs font-semibold font-mono tabular-nums">{formatCurrency(range.volume24h)}</p>
-                    <p className="text-[10px] text-muted-foreground">24h vol</p>
-                  </div>
-                )}
-                {isBookbuilding && (
-                  <div className="hidden sm:block">
-                    <p className="text-xs font-semibold text-warning">Gathering</p>
-                    <p className="text-[10px] text-muted-foreground">interest</p>
-                  </div>
-                )}
-              </div>
+              {/* Price */}
+              <span className={cn('tabular-nums', isSelected && 'text-primary')}>
+                {formatPrice(range.currentPrice)}
+              </span>
+
+              {/* Total volume or bookbuilding badge */}
+              {isBookbuilding ? (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-warning/15 text-warning">
+                  BOOK
+                </span>
+              ) : (
+                <span className="tabular-nums text-[11px]">
+                  {formatCurrency(range.totalVolume)}
+                </span>
+              )}
             </button>
           );
         })}
