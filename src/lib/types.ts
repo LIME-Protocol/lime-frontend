@@ -37,6 +37,7 @@ export interface Market {
   trending?: boolean;
   payoffCurve?: PayoffCurve;
   imageUrl?: string;
+  /** @deprecated Use getCategoryEmoji(category) instead */
   emoji?: string;
   /** Number of unique participants (for preliminary → active transition) */
   participantCount?: number;
