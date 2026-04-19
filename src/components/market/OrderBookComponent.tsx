@@ -6,9 +6,21 @@ interface OrderBookProps {
 }
 
 export default function OrderBookComponent({ orderBook }: OrderBookProps) {
+  const isEmpty = orderBook.bids.length === 0 && orderBook.asks.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="text-xs px-3 py-8 text-center text-muted-foreground">
+        <p className="font-semibold mb-1">No open orders</p>
+        <p className="text-[11px]">Be the first to place a limit order in this market.</p>
+      </div>
+    );
+  }
+
   const maxTotal = Math.max(
     orderBook.bids[orderBook.bids.length - 1]?.total ?? 0,
     orderBook.asks[orderBook.asks.length - 1]?.total ?? 0,
+    1,
   );
 
   const bestBid = orderBook.bids[0]?.price ?? 0;

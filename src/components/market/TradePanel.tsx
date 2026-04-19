@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Market, formatPrice } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
 import { usePlaceOrder } from '@/hooks/use-trading';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
+import { useUserBalance } from '@/hooks/use-user-balance';
+import { Loader2, Wallet } from 'lucide-react';
 
 interface TradePanelProps {
   market: Market;
