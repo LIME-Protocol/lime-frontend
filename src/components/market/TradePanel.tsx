@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Market, formatPrice } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
 import { usePlaceOrder } from '@/hooks/use-trading';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
+import { useUserBalance } from '@/hooks/use-user-balance';
+import { Loader2, Wallet } from 'lucide-react';
 
 interface TradePanelProps {
   market: Market;
@@ -17,11 +19,14 @@ export default function TradePanel({ market }: TradePanelProps) {
   const [quantity, setQuantity] = useState('10');
   const [limitPrice, setLimitPrice] = useState((market.currentPrice * 100).toFixed(1));
   const { user } = useAuth();
+  const { data: balance } = useUserBalance();
   const placeOrder = usePlaceOrder();
 
   const price = orderType === 'market' ? market.currentPrice : Number(limitPrice) / 100;
   const effectivePrice = side === 'buy' ? price : 1 - price;
   const cost = Number(quantity) * effectivePrice;
+  const availableBalance = balance?.amount ?? 0;
+  const insufficientFunds = !!user && cost > availableBalance;
 
   const handleSubmit = () => {
     if (!user) {
@@ -170,28 +175,48 @@ export default function TradePanel({ market }: TradePanelProps) {
         </div>
       </div>
 
-      {/* Submit */}
+      {/* Balance + submit */}
       {!user ? (
         <p className="text-xs text-center text-muted-foreground py-2">
           Sign in to start trading
         </p>
       ) : (
-        <Button
-          onClick={handleSubmit}
-          disabled={placeOrder.isPending || Number(quantity) <= 0}
-          className={cn(
-            'w-full h-11 font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.97]',
-            side === 'buy'
-              ? 'bg-positive hover:bg-positive/90 text-primary-foreground shadow-lg shadow-positive/15'
-              : 'bg-negative hover:bg-negative/90 text-destructive-foreground shadow-lg shadow-negative/15'
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+            <span className="flex items-center gap-1">
+              <Wallet className="h-3 w-3" /> Available
+            </span>
+            <span className="font-mono tabular-nums text-foreground font-semibold">
+              ${availableBalance.toFixed(2)}
+            </span>
+          </div>
+
+          {insufficientFunds && (
+            <p className="text-[11px] text-center text-destructive px-1">
+              Insufficient balance.{' '}
+              <Link to="/wallet" className="underline font-semibold hover:text-destructive/80">
+                Deposit funds
+              </Link>
+            </p>
           )}
-        >
-          {placeOrder.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            `${side === 'buy' ? 'BUY' : 'SELL'} ${quantity} CONTRACTS`
-          )}
-        </Button>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={placeOrder.isPending || Number(quantity) <= 0 || insufficientFunds}
+            className={cn(
+              'w-full h-11 font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.97]',
+              side === 'buy'
+                ? 'bg-positive hover:bg-positive/90 text-primary-foreground shadow-lg shadow-positive/15'
+                : 'bg-negative hover:bg-negative/90 text-destructive-foreground shadow-lg shadow-negative/15'
+            )}
+          >
+            {placeOrder.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              `${side === 'buy' ? 'BUY' : 'SELL'} ${quantity} CONTRACTS`
+            )}
+          </Button>
+        </div>
       )}
     </div>
   );

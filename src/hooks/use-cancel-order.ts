@@ -22,6 +22,9 @@ export function useCancelOrder() {
       toast.success('Order cancelled');
       queryClient.invalidateQueries({ queryKey: ['user-orders'] });
       queryClient.invalidateQueries({ queryKey: ['market-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order-book'] });
+      queryClient.invalidateQueries({ queryKey: ['balance-usd'] });
+      queryClient.invalidateQueries({ queryKey: ['balances'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to cancel order');

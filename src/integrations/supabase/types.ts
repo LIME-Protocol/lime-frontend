@@ -507,6 +507,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_balance: {
+        Args: { p_currency: string; p_delta: number; p_user_id: string }
+        Returns: undefined
+      }
       cancel_order: { Args: { p_order_id: string }; Returns: Json }
       get_dashboard_stats: { Args: never; Returns: Json }
       get_market_last_price: { Args: { p_market_id: string }; Returns: number }

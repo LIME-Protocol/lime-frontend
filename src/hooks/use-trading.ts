@@ -42,10 +42,14 @@ export function usePlaceOrder() {
 
       // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['trades', variables.market_id] });
+      queryClient.invalidateQueries({ queryKey: ['market-trades-live', variables.market_id] });
+      queryClient.invalidateQueries({ queryKey: ['order-book', variables.market_id] });
       queryClient.invalidateQueries({ queryKey: ['market-orders', variables.market_id] });
       queryClient.invalidateQueries({ queryKey: ['positions'] });
       queryClient.invalidateQueries({ queryKey: ['user-orders'] });
       queryClient.invalidateQueries({ queryKey: ['market', variables.market_id] });
+      queryClient.invalidateQueries({ queryKey: ['balance-usd'] });
+      queryClient.invalidateQueries({ queryKey: ['balances'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to place order');

@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
-import { useMarket, useMarketTrades, useMarketOrders } from '@/hooks/use-markets';
+import { useMarket } from '@/hooks/use-markets';
+import { useOrderBook } from '@/hooks/use-order-book';
+import { useMarketTradesLive } from '@/hooks/use-market-trades';
 import { useMarketRanges } from '@/hooks/use-market-ranges';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { impliedValue, formatCurrency, formatPrice, calculatePayoff, daysUntil, payoffCurveLabel } from '@/lib/types';
@@ -27,8 +29,8 @@ import { getTopVolumeRange } from '@/lib/range-utils';
 export default function MarketDetail() {
   const { id } = useParams();
   const { data: dbMarket } = useMarket(id);
-  const { data: dbTrades } = useMarketTrades(id);
-  const { data: dbOrders } = useMarketOrders(id);
+  const { data: liveTrades } = useMarketTradesLive(id);
+  const { data: liveOrderBook } = useOrderBook(id);
   const { data: ranges } = useMarketRanges(id);
 
   const [selectedRangeId, setSelectedRangeId] = useState<string | null>(null);
@@ -67,37 +69,18 @@ export default function MarketDetail() {
     };
   }, [baseMarket, selectedRange]);
 
+  // Real DB markets always use live data (even when empty); only pure mocks use generated data
+  const isDbMarket = !!dbMarket;
+
   const trades: Trade[] = useMemo(() => {
-    if (dbTrades && dbTrades.length > 0) {
-      return dbTrades.map(t => ({
-        id: t.id, marketId: t.market_id, side: 'buy' as const,
-        price: Number(t.price), quantity: Number(t.quantity), timestamp: t.executed_at,
-      }));
-    }
+    if (isDbMarket) return liveTrades ?? [];
     return market ? generateTrades(market.id, market.currentPrice) : [];
-  }, [dbTrades, market]);
+  }, [isDbMarket, liveTrades, market]);
 
   const orderBook: OrderBook | null = useMemo(() => {
-    if (dbOrders && dbOrders.length > 0) {
-      const buyOrders = dbOrders.filter(o => o.side === 'buy').sort((a, b) => Number(b.price) - Number(a.price));
-      const sellOrders = dbOrders.filter(o => o.side === 'sell').sort((a, b) => Number(a.price) - Number(b.price));
-      let cumBid = 0;
-      const bids = buyOrders.slice(0, 8).map(o => {
-        const size = Number(o.quantity) - Number(o.filled_quantity);
-        cumBid += size;
-        return { price: Number(o.price), size, total: cumBid };
-      });
-      let cumAsk = 0;
-      const asks = sellOrders.slice(0, 8).map(o => {
-        const size = Number(o.quantity) - Number(o.filled_quantity);
-        cumAsk += size;
-        return { price: Number(o.price), size, total: cumAsk };
-      });
-      const spread = asks.length > 0 && bids.length > 0 ? Number((asks[0].price - bids[0].price).toFixed(3)) : 0;
-      return { bids, asks, spread };
-    }
+    if (isDbMarket) return liveOrderBook ?? { bids: [], asks: [], spread: 0 };
     return market ? generateOrderBook(market.currentPrice) : null;
-  }, [dbOrders, market]);
+  }, [isDbMarket, liveOrderBook, market]);
 
   if (!market) {
     return (
