@@ -11,13 +11,21 @@ import InvalidateButton from '@/components/admin/InvalidateButton';
 import ResolveForm from '@/components/admin/ResolveForm';
 import { cn } from '@/lib/utils';
 import { Plus, CheckCircle2, Shield, ClipboardList, Loader2, Search } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
+import RoleGate from '@/components/auth/RoleGate';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 
 type AdminTab = 'markets' | 'logs';
 
 export default function Admin() {
-  const { user, loading } = useAuth();
+  return (
+    <RoleGate role="admin">
+      <AdminContent />
+    </RoleGate>
+  );
+}
+
+function AdminContent() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<AdminTab>('markets');
   const [showForm, setShowForm] = useState(false);
@@ -39,8 +47,7 @@ export default function Admin() {
     },
   });
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user) return null;
 
   const allMarkets = [
     ...dbMarkets.map(m => ({ ...m, source: 'db' as const })),
