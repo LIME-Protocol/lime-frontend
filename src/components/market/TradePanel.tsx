@@ -19,11 +19,14 @@ export default function TradePanel({ market }: TradePanelProps) {
   const [quantity, setQuantity] = useState('10');
   const [limitPrice, setLimitPrice] = useState((market.currentPrice * 100).toFixed(1));
   const { user } = useAuth();
+  const { data: balance } = useUserBalance();
   const placeOrder = usePlaceOrder();
 
   const price = orderType === 'market' ? market.currentPrice : Number(limitPrice) / 100;
   const effectivePrice = side === 'buy' ? price : 1 - price;
   const cost = Number(quantity) * effectivePrice;
+  const availableBalance = balance?.amount ?? 0;
+  const insufficientFunds = !!user && cost > availableBalance;
 
   const handleSubmit = () => {
     if (!user) {
