@@ -8,7 +8,9 @@ import SummaryCard from '@/components/shared/SummaryCard';
 import EmptyState from '@/components/shared/EmptyState';
 import LoadingState from '@/components/shared/LoadingState';
 import { cn } from '@/lib/utils';
-import { Briefcase, History, FileText, Activity, Loader2, Filter, X, Calendar } from 'lucide-react';
+import { Briefcase, History, FileText, Activity, Loader2, Filter, X, Calendar, XCircle } from 'lucide-react';
+import { useCancelOrder } from '@/hooks/use-cancel-order';
+import { Button } from '@/components/ui/button';
 
 type Tab = 'positions' | 'orders' | 'trades';
 
@@ -17,6 +19,7 @@ export default function Portfolio() {
   const { data: positions = [], isLoading: posLoading } = usePositions();
   const { data: userOrders = [], isLoading: ordLoading } = useUserOrders();
   const { data: userTrades = [], isLoading: trLoading } = useUserTrades();
+  const cancelOrder = useCancelOrder();
   const [tab, setTab] = useState<Tab>('positions');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [dateFromFilter, setDateFromFilter] = useState('');
@@ -226,10 +229,13 @@ export default function Portfolio() {
                         <th className="text-right px-4 py-3 data-label">Filled</th>
                         <th className="text-center px-4 py-3 data-label">Status</th>
                         <th className="text-right px-4 py-3 data-label hidden md:table-cell">Date</th>
+                        <th className="text-right px-4 py-3 data-label">Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredOrders.map((o: any) => (
+                      {filteredOrders.map((o: any) => {
+                        const cancellable = o.status === 'open' || o.status === 'partial';
+                        return (
                         <tr key={o.id} className="border-b border-border/50 last:border-0 hover:bg-secondary/20 transition-colors">
                           <td className="px-4 py-3 text-[13px] font-medium">
                             <Link to={`/market/${o.market_id}`} className="hover:text-primary transition-colors">{o.markets?.title || o.market_id}</Link>
@@ -243,8 +249,22 @@ export default function Portfolio() {
                           <td className="px-4 py-3 text-right text-xs text-muted-foreground hidden md:table-cell">
                             {new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </td>
+                          <td className="px-4 py-3 text-right">
+                            {cancellable && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={cancelOrder.isPending}
+                                onClick={() => cancelOrder.mutate(o.id)}
+                                className="h-7 px-2 text-[11px] text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <XCircle className="h-3.5 w-3.5 mr-1" /> Cancel
+                              </Button>
+                            )}
+                          </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
