@@ -6,6 +6,15 @@ interface TradeHistoryProps {
 }
 
 export default function TradeHistory({ trades }: TradeHistoryProps) {
+  if (trades.length === 0) {
+    return (
+      <div className="text-xs px-3 py-8 text-center text-muted-foreground">
+        <p className="font-semibold mb-1">No trades yet</p>
+        <p className="text-[11px]">Executed trades will appear here in real time.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="text-xs">
       <div className="grid grid-cols-4 gap-2 px-3 py-2 data-label border-b border-border/50">
