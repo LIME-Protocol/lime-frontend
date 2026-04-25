@@ -47,23 +47,26 @@ export function useUserTrades() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return [];
 
-      const { data: buyTrades } = await supabase
-        .from('trades')
-        .select('*, markets(title)')
-        .eq('buyer_user_id', session.user.id)
-        .order('executed_at', { ascending: false })
-        .limit(25);
+      // Use SECURITY DEFINER RPC: returns only the caller's own trades
+      // with side derived server-side. Identifier columns are otherwise
+      // ungranted on the trades table.
+      const { data, error } = await supabase.rpc('get_my_trades', {
+        p_market_id: undefined,
+        p_limit: 50,
+      });
+      if (error) throw error;
 
-      const { data: sellTrades } = await supabase
-        .from('trades')
-        .select('*, markets(title)')
-        .eq('seller_user_id', session.user.id)
-        .order('executed_at', { ascending: false })
-        .limit(25);
-
-      const all = [...(buyTrades || []), ...(sellTrades || [])];
-      all.sort((a, b) => new Date(b.executed_at).getTime() - new Date(a.executed_at).getTime());
-      return all.slice(0, 50);
+      // Hydrate market titles in a single query
+      const ids = Array.from(new Set((data ?? []).map((t: any) => t.market_id)));
+      const titles: Record<string, string> = {};
+      if (ids.length > 0) {
+        const { data: mkts } = await supabase
+          .from('markets')
+          .select('id, title')
+          .in('id', ids);
+        (mkts ?? []).forEach((m: any) => { titles[m.id] = m.title; });
+      }
+      return (data ?? []).map((t: any) => ({ ...t, markets: { title: titles[t.market_id] ?? '' } }));
     },
   });
 }

@@ -13,6 +13,7 @@ import { useBalances } from '@/hooks/use-wallet';
 import { markets as mockMarkets, categoryConfig } from '@/lib/mock-data';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
+import NotificationBell from '@/components/layout/NotificationBell';
 
 /* ── Types ── */
 interface NavItemDef {
@@ -239,6 +240,7 @@ export default function Navbar() {
         {/* Right actions */}
         <div className="flex items-center gap-1 ml-auto md:ml-0">
           <ThemeToggle />
+          {user && <NotificationBell />}
           {user ? (
             <AccountDropdown />
           ) : (

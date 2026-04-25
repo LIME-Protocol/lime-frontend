@@ -231,6 +231,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          market_id: string | null
+          metadata: Json | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          market_id?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          market_id?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -504,22 +540,84 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_trades: {
+        Row: {
+          executed_at: string | null
+          id: string | null
+          market_id: string | null
+          price: number | null
+          quantity: number | null
+        }
+        Insert: {
+          executed_at?: string | null
+          id?: string | null
+          market_id?: string | null
+          price?: number | null
+          quantity?: number | null
+        }
+        Update: {
+          executed_at?: string | null
+          id?: string | null
+          market_id?: string | null
+          price?: number | null
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       adjust_balance: {
         Args: { p_currency: string; p_delta: number; p_user_id: string }
         Returns: undefined
       }
+      approve_withdrawal: {
+        Args: { p_external_ref?: string; p_tx_id: string }
+        Returns: Json
+      }
       cancel_order: { Args: { p_order_id: string }; Returns: Json }
       get_dashboard_stats: { Args: never; Returns: Json }
       get_market_last_price: { Args: { p_market_id: string }; Returns: number }
+      get_my_trades: {
+        Args: { p_limit?: number; p_market_id?: string }
+        Returns: {
+          buy_order_id: string
+          buyer_user_id: string
+          executed_at: string
+          id: string
+          market_id: string
+          price: number
+          quantity: number
+          sell_order_id: string
+          seller_user_id: string
+          side: string
+        }[]
+      }
+      get_public_username: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      notify_user: {
+        Args: {
+          p_body?: string
+          p_market_id?: string
+          p_metadata?: Json
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
       }
       place_order_and_match: {
         Args: {
@@ -532,6 +630,21 @@ export type Database = {
         }
         Returns: Json
       }
+      promote_overdue_markets: { Args: never; Returns: number }
+      reject_withdrawal: {
+        Args: { p_reason?: string; p_tx_id: string }
+        Returns: Json
+      }
+      request_withdrawal: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_destination: string
+          p_method: string
+        }
+        Returns: Json
+      }
+      settle_market: { Args: { p_market_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
@@ -552,6 +665,7 @@ export type Database = {
         | "resolved"
         | "invalidated"
         | "cancelled"
+        | "pending_resolution"
       order_side: "buy" | "sell"
       order_status: "open" | "partial" | "filled" | "cancelled"
       order_type: "market" | "limit"
@@ -702,6 +816,7 @@ export const Constants = {
         "resolved",
         "invalidated",
         "cancelled",
+        "pending_resolution",
       ],
       order_side: ["buy", "sell"],
       order_status: ["open", "partial", "filled", "cancelled"],

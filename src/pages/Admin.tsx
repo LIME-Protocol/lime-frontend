@@ -10,11 +10,12 @@ import ApproveButton from '@/components/admin/ApproveButton';
 import InvalidateButton from '@/components/admin/InvalidateButton';
 import ResolveForm from '@/components/admin/ResolveForm';
 import { cn } from '@/lib/utils';
-import { Plus, CheckCircle2, Shield, ClipboardList, Loader2, Search } from 'lucide-react';
+import { Plus, CheckCircle2, Shield, ClipboardList, Loader2, Search, ArrowUpRight } from 'lucide-react';
 import RoleGate from '@/components/auth/RoleGate';
+import PendingWithdrawals from '@/components/admin/PendingWithdrawals';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 
-type AdminTab = 'markets' | 'logs';
+type AdminTab = 'markets' | 'withdrawals' | 'logs';
 
 export default function Admin() {
   return (
@@ -63,8 +64,9 @@ function AdminContent() {
   ];
 
   const tabs: { key: AdminTab; label: string; icon: React.ReactNode }[] = [
-    { key: 'markets', label: 'Markets', icon: <Shield className="h-3.5 w-3.5" /> },
-    { key: 'logs', label: 'Audit Trail', icon: <ClipboardList className="h-3.5 w-3.5" /> },
+    { key: 'markets',     label: 'Markets',      icon: <Shield className="h-3.5 w-3.5" /> },
+    { key: 'withdrawals', label: 'Withdrawals',  icon: <ArrowUpRight className="h-3.5 w-3.5" /> },
+    { key: 'logs',        label: 'Audit Trail',  icon: <ClipboardList className="h-3.5 w-3.5" /> },
   ];
 
   return (
@@ -147,6 +149,12 @@ function AdminContent() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {tab === 'withdrawals' && (
+        <div className="animate-fade-in">
+          <PendingWithdrawals />
         </div>
       )}
 
