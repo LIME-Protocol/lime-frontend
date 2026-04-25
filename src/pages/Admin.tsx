@@ -152,6 +152,12 @@ function AdminContent() {
         </div>
       )}
 
+      {tab === 'withdrawals' && (
+        <div className="animate-fade-in">
+          <PendingWithdrawals />
+        </div>
+      )}
+
       {tab === 'logs' && (
         <div className="surface-card overflow-hidden animate-fade-in">
           <div className="overflow-x-auto">
