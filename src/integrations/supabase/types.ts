@@ -578,6 +578,10 @@ export type Database = {
         Args: { p_currency: string; p_delta: number; p_user_id: string }
         Returns: undefined
       }
+      approve_withdrawal: {
+        Args: { p_external_ref?: string; p_tx_id: string }
+        Returns: Json
+      }
       cancel_order: { Args: { p_order_id: string }; Returns: Json }
       get_dashboard_stats: { Args: never; Returns: Json }
       get_market_last_price: { Args: { p_market_id: string }; Returns: number }
@@ -627,6 +631,19 @@ export type Database = {
         Returns: Json
       }
       promote_overdue_markets: { Args: never; Returns: number }
+      reject_withdrawal: {
+        Args: { p_reason?: string; p_tx_id: string }
+        Returns: Json
+      }
+      request_withdrawal: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_destination: string
+          p_method: string
+        }
+        Returns: Json
+      }
       settle_market: { Args: { p_market_id: string }; Returns: Json }
     }
     Enums: {
