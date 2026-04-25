@@ -3,12 +3,15 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import { useBalances, useTransactions, useDeposit } from '@/hooks/use-wallet';
 import LoadingState from '@/components/shared/LoadingState';
-import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Wallet, CreditCard, Building2, Bitcoin, ArrowDownLeft, ArrowUpRight, Loader2, Copy, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import WithdrawForm from '@/components/wallet/WithdrawForm';
+import SimulationBanner from '@/components/wallet/SimulationBanner';
+
+type WalletTab = 'deposit' | 'withdraw';
 
 type DepositMethod = 'crypto_btc' | 'crypto_eth' | 'crypto_usdc' | 'wire' | 'card' | 'pix';
 
@@ -32,6 +35,7 @@ export default function WalletPage() {
   const { data: balances = [], isLoading: balLoading } = useBalances();
   const { data: transactions = [], isLoading: txLoading } = useTransactions();
   const deposit = useDeposit();
+  const [tab, setTab] = useState<WalletTab>('deposit');
   const [selectedMethod, setSelectedMethod] = useState<DepositMethod | null>(null);
   const [amount, setAmount] = useState('');
   const [copied, setCopied] = useState(false);
@@ -81,6 +85,8 @@ export default function WalletPage() {
         </div>
       </div>
 
+      <SimulationBanner />
+
       {/* Balance card */}
       <div className="surface-card p-6 animate-reveal-up stagger-1 glow-accent">
         <p className="data-label mb-2">Available Balance</p>
@@ -90,7 +96,34 @@ export default function WalletPage() {
         <p className="text-xs text-muted-foreground mt-1">USD</p>
       </div>
 
-      {/* Deposit section */}
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-border animate-reveal-up stagger-2">
+        {([
+          { key: 'deposit',  label: 'Deposit',  icon: <ArrowDownLeft className="h-3.5 w-3.5" /> },
+          { key: 'withdraw', label: 'Withdraw', icon: <ArrowUpRight className="h-3.5 w-3.5" /> },
+        ] as const).map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors -mb-px',
+              tab === t.key
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border',
+            )}
+          >
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'withdraw' && (
+        <div className="animate-fade-in">
+          <WithdrawForm availableUsd={totalUsd} />
+        </div>
+      )}
+
+      {tab === 'deposit' && (
       <div className="space-y-4 animate-reveal-up stagger-2">
         <h2 className="text-sm font-semibold">Deposit Funds</h2>
 
