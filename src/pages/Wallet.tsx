@@ -198,6 +198,7 @@ export default function WalletPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* Transaction history */}
       <div className="space-y-3 animate-reveal-up stagger-3">
