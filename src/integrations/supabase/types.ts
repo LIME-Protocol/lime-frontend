@@ -579,6 +579,8 @@ export type Database = {
         }
         Returns: Json
       }
+      promote_overdue_markets: { Args: never; Returns: number }
+      settle_market: { Args: { p_market_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
@@ -599,6 +601,7 @@ export type Database = {
         | "resolved"
         | "invalidated"
         | "cancelled"
+        | "pending_resolution"
       order_side: "buy" | "sell"
       order_status: "open" | "partial" | "filled" | "cancelled"
       order_type: "market" | "limit"
@@ -749,6 +752,7 @@ export const Constants = {
         "resolved",
         "invalidated",
         "cancelled",
+        "pending_resolution",
       ],
       order_side: ["buy", "sell"],
       order_status: ["open", "partial", "filled", "cancelled"],
