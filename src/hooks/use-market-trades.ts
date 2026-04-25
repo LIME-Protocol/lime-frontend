@@ -19,7 +19,7 @@ export function useMarketTradesLive(marketId: string | undefined, limit = 30) {
     queryFn: async (): Promise<Trade[]> => {
       if (!isUuid) return [];
       const { data, error } = await supabase
-        .from('trades')
+        .from('public_trades')
         .select('id, market_id, price, quantity, executed_at')
         .eq('market_id', marketId!)
         .order('executed_at', { ascending: false })

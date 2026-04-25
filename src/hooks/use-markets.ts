@@ -42,7 +42,7 @@ export function useMarketTrades(marketId: string | undefined) {
     queryFn: async () => {
       if (!marketId) return [];
       const { data, error } = await supabase
-        .from('trades')
+        .from('public_trades')
         .select('*')
         .eq('market_id', marketId)
         .order('executed_at', { ascending: false })
