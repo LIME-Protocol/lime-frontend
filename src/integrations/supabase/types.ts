@@ -504,7 +504,56 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      public_trades: {
+        Row: {
+          executed_at: string | null
+          id: string | null
+          market_id: string | null
+          price: number | null
+          quantity: number | null
+        }
+        Insert: {
+          executed_at?: string | null
+          id?: string | null
+          market_id?: string | null
+          price?: number | null
+          quantity?: number | null
+        }
+        Update: {
+          executed_at?: string | null
+          id?: string | null
+          market_id?: string | null
+          price?: number | null
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       adjust_balance: {
