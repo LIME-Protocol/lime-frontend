@@ -545,6 +545,21 @@ export type Database = {
       cancel_order: { Args: { p_order_id: string }; Returns: Json }
       get_dashboard_stats: { Args: never; Returns: Json }
       get_market_last_price: { Args: { p_market_id: string }; Returns: number }
+      get_my_trades: {
+        Args: { p_limit?: number; p_market_id?: string }
+        Returns: {
+          buy_order_id: string
+          buyer_user_id: string
+          executed_at: string
+          id: string
+          market_id: string
+          price: number
+          quantity: number
+          sell_order_id: string
+          seller_user_id: string
+          side: string
+        }[]
+      }
       get_public_username: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
