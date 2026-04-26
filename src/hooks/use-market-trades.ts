@@ -40,8 +40,8 @@ export function useMarketTradesLive(marketId: string | undefined, limit = 30) {
 
   useEffect(() => {
     if (!isUuid) return;
-    const channel = supabase
-      .channel(`trades:${marketId}`)
+    const channel = supabase.channel(`trades:${marketId}:${Math.random().toString(36).slice(2)}`);
+    channel
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'trades', filter: `market_id=eq.${marketId}` },
