@@ -66,8 +66,8 @@ export function useOrderBook(marketId: string | undefined) {
 
   useEffect(() => {
     if (!isUuid) return;
-    const channel = supabase
-      .channel(`orderbook:${marketId}`)
+    const channel = supabase.channel(`orderbook:${marketId}:${Math.random().toString(36).slice(2)}`);
+    channel
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders', filter: `market_id=eq.${marketId}` },
