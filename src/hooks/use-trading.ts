@@ -15,16 +15,24 @@ export function usePlaceOrder() {
 
   return useMutation({
     mutationFn: async (params: PlaceOrderParams) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Please sign in to trade');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Please sign in to trade');
 
-      const { data, error } = await supabase.functions.invoke('place-order', {
-        body: params,
+      // Direct RPC call — auth enforced via auth.uid() inside the function.
+      // Removes edge function hop + cold start latency.
+      const { data, error } = await supabase.rpc('place_order_and_match', {
+        p_user_id: user.id,
+        p_market_id: params.market_id,
+        p_side: params.side,
+        p_order_type: params.order_type,
+        p_quantity: params.quantity,
+        p_price: params.price,
       });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      return data;
+      const result = data as { error?: string; status?: string; filled?: number };
+      if (result?.error) throw new Error(result.error);
+      return result;
     },
     onSuccess: (data, variables) => {
       const filled = data.filled || 0;
