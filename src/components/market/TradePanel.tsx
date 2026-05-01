@@ -28,6 +28,7 @@ export default function TradePanel({ market }: TradePanelProps) {
   const cost = Number(quantity) * effectivePrice;
   const availableBalance = balance?.amount ?? 0;
   const insufficientFunds = !!user && cost > availableBalance;
+  const isDemoMarket = !isUuid(market.id);
 
   const handleSubmit = () => {
     if (!user) {
