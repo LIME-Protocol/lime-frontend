@@ -1,17 +1,33 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
-import { useBalances, useTransactions, useDeposit } from '@/hooks/use-wallet';
+import { useDeposit } from '@/hooks/use-wallet';
+import { useWalletSummary } from '@/hooks/use-wallet-summary';
 import LoadingState from '@/components/shared/LoadingState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Wallet, CreditCard, Building2, Bitcoin, ArrowDownLeft, ArrowUpRight, Loader2, Copy, CheckCircle2 } from 'lucide-react';
+import {
+  Wallet,
+  CreditCard,
+  Building2,
+  Bitcoin,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Loader2,
+  Copy,
+  CheckCircle2,
+  TrendingUp,
+  TrendingDown,
+  Lock,
+  History,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import WithdrawForm from '@/components/wallet/WithdrawForm';
 import SimulationBanner from '@/components/wallet/SimulationBanner';
+import ActivityFeed from '@/components/wallet/ActivityFeed';
 
-type WalletTab = 'deposit' | 'withdraw';
+type WalletTab = 'deposit' | 'withdraw' | 'activity';
 
 type DepositMethod = 'crypto_btc' | 'crypto_eth' | 'crypto_usdc' | 'wire' | 'card' | 'pix';
 
@@ -32,8 +48,7 @@ const mockAddresses: Record<string, string> = {
 
 export default function WalletPage() {
   const { user, loading: authLoading } = useAuth();
-  const { data: balances = [], isLoading: balLoading } = useBalances();
-  const { data: transactions = [], isLoading: txLoading } = useTransactions();
+  const { data: summary, isLoading: sumLoading } = useWalletSummary();
   const deposit = useDeposit();
   const [tab, setTab] = useState<WalletTab>('deposit');
   const [selectedMethod, setSelectedMethod] = useState<DepositMethod | null>(null);
@@ -43,8 +58,11 @@ export default function WalletPage() {
   if (authLoading) return <LoadingState />;
   if (!user) return <Navigate to="/auth" replace />;
 
-  const usdBalance = balances.find((b: any) => b.currency === 'USD');
-  const totalUsd = usdBalance ? Number(usdBalance.amount) : 0;
+  const available = summary?.available ?? 0;
+  const reserved = summary?.reserved ?? 0;
+  const total = summary?.total ?? 0;
+  const pnl = summary?.lifetime_pnl ?? 0;
+  const pnlPositive = pnl >= 0;
 
   const handleDeposit = async () => {
     if (!selectedMethod || !amount || Number(amount) <= 0) {
@@ -56,8 +74,8 @@ export default function WalletPage() {
       toast.success(`$${Number(amount).toLocaleString()} deposited successfully`);
       setAmount('');
       setSelectedMethod(null);
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      toast.error((err as Error).message);
     }
   };
 
@@ -87,13 +105,54 @@ export default function WalletPage() {
 
       <SimulationBanner />
 
-      {/* Balance card */}
-      <div className="surface-card p-6 animate-reveal-up stagger-1 glow-accent">
-        <p className="data-label mb-2">Available Balance</p>
-        <p className="text-[40px] font-bold font-mono tabular-nums leading-none">
-          ${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">USD</p>
+      {/* Balance breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 animate-reveal-up stagger-1">
+        <div className="surface-card p-5 glow-accent">
+          <p className="data-label mb-2 flex items-center gap-1.5">
+            <Wallet className="h-3 w-3" /> Available
+          </p>
+          <p className="text-[28px] font-bold font-mono tabular-nums leading-none">
+            ${available.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+          <p className="text-[10px] text-muted-foreground mt-1.5">Free to trade or withdraw</p>
+        </div>
+
+        <div className="surface-card p-5">
+          <p className="data-label mb-2 flex items-center gap-1.5">
+            <Lock className="h-3 w-3" /> Reserved
+          </p>
+          <p className="text-[28px] font-bold font-mono tabular-nums leading-none text-muted-foreground">
+            ${reserved.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+          <p className="text-[10px] text-muted-foreground mt-1.5">Locked in open orders</p>
+        </div>
+
+        <div className="surface-card p-5">
+          <p className="data-label mb-2 flex items-center gap-1.5">
+            {pnlPositive ? <TrendingUp className="h-3 w-3 text-positive" /> : <TrendingDown className="h-3 w-3 text-negative" />}
+            Lifetime profit
+          </p>
+          <p
+            className={cn(
+              'text-[28px] font-bold font-mono tabular-nums leading-none',
+              pnlPositive ? 'text-positive' : 'text-negative',
+            )}
+          >
+            {pnlPositive ? '+' : '−'}${Math.abs(pnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+          <p className="text-[10px] text-muted-foreground mt-1.5">Realized PnL across all markets</p>
+        </div>
+      </div>
+
+      {sumLoading && (
+        <p className="text-[11px] text-muted-foreground text-center -mt-3">Updating balances…</p>
+      )}
+
+      <div className="text-[11px] text-muted-foreground -mt-2">
+        Total equity:{' '}
+        <span className="font-mono font-semibold text-foreground">
+          ${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </span>
       </div>
 
       {/* Tabs */}
@@ -101,6 +160,7 @@ export default function WalletPage() {
         {([
           { key: 'deposit',  label: 'Deposit',  icon: <ArrowDownLeft className="h-3.5 w-3.5" /> },
           { key: 'withdraw', label: 'Withdraw', icon: <ArrowUpRight className="h-3.5 w-3.5" /> },
+          { key: 'activity', label: 'Activity', icon: <History className="h-3.5 w-3.5" /> },
         ] as const).map((t) => (
           <button
             key={t.key}
@@ -119,7 +179,17 @@ export default function WalletPage() {
 
       {tab === 'withdraw' && (
         <div className="animate-fade-in">
-          <WithdrawForm availableUsd={totalUsd} />
+          <WithdrawForm
+            availableUsd={available}
+            dailyLimit={summary?.daily_limit}
+            dailyRemaining={summary?.daily_remaining}
+          />
+        </div>
+      )}
+
+      {tab === 'activity' && (
+        <div className="animate-fade-in">
+          <ActivityFeed />
         </div>
       )}
 
@@ -199,63 +269,6 @@ export default function WalletPage() {
         )}
       </div>
       )}
-
-      {/* Transaction history */}
-      <div className="space-y-3 animate-reveal-up stagger-3">
-        <h2 className="text-sm font-semibold">Transaction History</h2>
-        {txLoading ? (
-          <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
-        ) : transactions.length === 0 ? (
-          <div className="surface-card p-8 text-center">
-            <p className="text-sm text-muted-foreground">No transactions yet</p>
-          </div>
-        ) : (
-          <div className="surface-card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left px-4 py-3 data-label">Type</th>
-                    <th className="text-left px-4 py-3 data-label">Method</th>
-                    <th className="text-right px-4 py-3 data-label">Amount</th>
-                    <th className="text-center px-4 py-3 data-label">Status</th>
-                    <th className="text-right px-4 py-3 data-label hidden md:table-cell">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx: any) => (
-                    <tr key={tx.id} className="border-b border-border/50 last:border-0 hover:bg-secondary/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <span className={cn('flex items-center gap-1.5 text-xs font-semibold', tx.type === 'deposit' ? 'text-positive' : 'text-negative')}>
-                          {tx.type === 'deposit' ? <ArrowDownLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
-                          {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground capitalize">{tx.method.replace(/_/g, ' ')}</td>
-                      <td className="px-4 py-3 text-right font-mono tabular-nums text-xs font-semibold">
-                        ${Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={cn(
-                          'inline-flex px-2 py-0.5 rounded-md text-[10px] font-semibold',
-                          tx.status === 'confirmed' ? 'bg-positive/10 text-positive' :
-                          tx.status === 'pending' ? 'bg-warning/10 text-warning' :
-                          'bg-negative/10 text-negative'
-                        )}>
-                          {tx.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-xs text-muted-foreground hidden md:table-cell">
-                        {new Date(tx.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
