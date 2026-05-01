@@ -538,6 +538,36 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawal_destinations: {
+        Row: {
+          created_at: string
+          destination: string
+          id: string
+          label: string
+          last_used_at: string
+          method: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destination: string
+          id?: string
+          label: string
+          last_used_at?: string
+          method: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          id?: string
+          label?: string
+          last_used_at?: string
+          method?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_trades: {
@@ -583,6 +613,7 @@ export type Database = {
         Returns: Json
       }
       cancel_order: { Args: { p_order_id: string }; Returns: Json }
+      cancel_withdrawal: { Args: { p_tx_id: string }; Returns: Json }
       get_dashboard_stats: { Args: never; Returns: Json }
       get_market_last_price: { Args: { p_market_id: string }; Returns: number }
       get_my_trades: {
@@ -601,6 +632,7 @@ export type Database = {
         }[]
       }
       get_public_username: { Args: { _user_id: string }; Returns: string }
+      get_wallet_summary: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -645,6 +677,10 @@ export type Database = {
         Returns: Json
       }
       settle_market: { Args: { p_market_id: string }; Returns: Json }
+      upsert_withdrawal_destination: {
+        Args: { p_destination: string; p_label: string; p_method: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

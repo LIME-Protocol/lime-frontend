@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 import { usePlaceOrder } from '@/hooks/use-trading';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserBalance } from '@/hooks/use-user-balance';
-import { Loader2, Wallet } from 'lucide-react';
+import { isUuid } from '@/lib/uuid';
+import { Loader2, Wallet, Info } from 'lucide-react';
 
 interface TradePanelProps {
   market: Market;
@@ -27,6 +28,7 @@ export default function TradePanel({ market }: TradePanelProps) {
   const cost = Number(quantity) * effectivePrice;
   const availableBalance = balance?.amount ?? 0;
   const insufficientFunds = !!user && cost > availableBalance;
+  const isDemoMarket = !isUuid(market.id);
 
   const handleSubmit = () => {
     if (!user) {
@@ -191,7 +193,7 @@ export default function TradePanel({ market }: TradePanelProps) {
             </span>
           </div>
 
-          {insufficientFunds && (
+          {insufficientFunds && !isDemoMarket && (
             <p className="text-[11px] text-center text-destructive px-1">
               Insufficient balance.{' '}
               <Link to="/wallet" className="underline font-semibold hover:text-destructive/80">
@@ -200,9 +202,27 @@ export default function TradePanel({ market }: TradePanelProps) {
             </p>
           )}
 
+          {isDemoMarket && (
+            <div className="flex items-start gap-2 px-3 py-2 rounded-md border border-warning/30 bg-warning/5 text-[11px] text-muted-foreground">
+              <Info className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+              <span>
+                Demo market — trading is disabled. Visit a live market from{' '}
+                <Link to="/explore" className="underline font-semibold text-foreground">
+                  Explore
+                </Link>{' '}
+                to place real orders.
+              </span>
+            </div>
+          )}
+
           <Button
             onClick={handleSubmit}
-            disabled={placeOrder.isPending || Number(quantity) <= 0 || insufficientFunds}
+            disabled={
+              placeOrder.isPending ||
+              Number(quantity) <= 0 ||
+              insufficientFunds ||
+              isDemoMarket
+            }
             className={cn(
               'w-full h-11 font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.97]',
               side === 'buy'
@@ -212,6 +232,8 @@ export default function TradePanel({ market }: TradePanelProps) {
           >
             {placeOrder.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
+            ) : isDemoMarket ? (
+              'TRADING DISABLED'
             ) : (
               `${side === 'buy' ? 'BUY' : 'SELL'} ${quantity} CONTRACTS`
             )}

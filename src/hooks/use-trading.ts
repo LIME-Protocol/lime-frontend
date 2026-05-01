@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { isUuid } from '@/lib/uuid';
 
 interface PlaceOrderParams {
   market_id: string;
@@ -15,11 +16,14 @@ export function usePlaceOrder() {
 
   return useMutation({
     mutationFn: async (params: PlaceOrderParams) => {
+      if (!isUuid(params.market_id)) {
+        throw new Error('This is a demo market and is not available for trading yet.');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Please sign in to trade');
 
       // Direct RPC call — auth enforced via auth.uid() inside the function.
-      // Removes edge function hop + cold start latency.
       const { data, error } = await supabase.rpc('place_order_and_match', {
         p_user_id: user.id,
         p_market_id: params.market_id,
@@ -29,7 +33,13 @@ export function usePlaceOrder() {
         p_price: params.price,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Friendlier message for the common UUID/missing market case
+        if (/uuid/i.test(error.message)) {
+          throw new Error('This market is not available for trading yet.');
+        }
+        throw error;
+      }
       const result = data as { error?: string; status?: string; filled?: number };
       if (result?.error) throw new Error(result.error);
       return result;
@@ -58,6 +68,8 @@ export function usePlaceOrder() {
       queryClient.invalidateQueries({ queryKey: ['market', variables.market_id] });
       queryClient.invalidateQueries({ queryKey: ['balance-usd'] });
       queryClient.invalidateQueries({ queryKey: ['balances'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-activity'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to place order');
