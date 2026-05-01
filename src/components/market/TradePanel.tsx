@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 import { usePlaceOrder } from '@/hooks/use-trading';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserBalance } from '@/hooks/use-user-balance';
-import { Loader2, Wallet } from 'lucide-react';
+import { isUuid } from '@/lib/uuid';
+import { Loader2, Wallet, Info } from 'lucide-react';
 
 interface TradePanelProps {
   market: Market;
