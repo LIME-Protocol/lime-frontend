@@ -51,7 +51,7 @@ export function useMarketTrades(marketId: string | undefined) {
       return data;
     },
     enabled: !!marketId,
-    refetchInterval: 5000,
+    staleTime: 5_000,
   });
 }
 
