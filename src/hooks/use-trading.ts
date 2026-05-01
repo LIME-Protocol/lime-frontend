@@ -68,6 +68,8 @@ export function usePlaceOrder() {
       queryClient.invalidateQueries({ queryKey: ['market', variables.market_id] });
       queryClient.invalidateQueries({ queryKey: ['balance-usd'] });
       queryClient.invalidateQueries({ queryKey: ['balances'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-activity'] });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to place order');
