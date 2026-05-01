@@ -53,28 +53,20 @@ export function useUnifiedActivity(limit = 50) {
         method: t.method,
       }));
 
-      const trades: ActivityItem[] = (tradesRes.data ?? []).map(
-        (tr: {
-          id: string;
-          market_id: string;
-          price: number;
-          quantity: number;
-          executed_at: string;
-          side: 'buy' | 'sell';
-        }) => {
-          const price = Number(tr.price);
-          const qty = Number(tr.quantity);
-          const cost = qty * (tr.side === 'buy' ? price : 1 - price);
-          return {
-            id: `trade-${tr.id}`,
-            kind: 'trade' as const,
-            timestamp: tr.executed_at,
-            amount: -cost, // money committed for that side
-            description: `${tr.side === 'buy' ? 'Bought' : 'Sold'} ${qty} contracts @ ${(price * 100).toFixed(1)}¢`,
-            status: 'filled' as const,
-          };
-        },
-      );
+      const trades: ActivityItem[] = (tradesRes.data ?? []).map((tr) => {
+        const price = Number(tr.price);
+        const qty = Number(tr.quantity);
+        const side = (tr.side === 'sell' ? 'sell' : 'buy') as 'buy' | 'sell';
+        const cost = qty * (side === 'buy' ? price : 1 - price);
+        return {
+          id: `trade-${tr.id}`,
+          kind: 'trade' as const,
+          timestamp: tr.executed_at,
+          amount: -cost,
+          description: `${side === 'buy' ? 'Bought' : 'Sold'} ${qty} contracts @ ${(price * 100).toFixed(1)}¢`,
+          status: 'filled' as const,
+        };
+      });
 
       return [...tx, ...trades]
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
