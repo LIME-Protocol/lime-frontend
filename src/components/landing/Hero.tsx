@@ -13,13 +13,13 @@ export default function Hero() {
 
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 md:pt-28 md:pb-32 grid md:grid-cols-[1.1fr_1fr] gap-14 items-center">
         <div className="space-y-7 animate-reveal-up">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-widest text-muted-foreground font-['DM_Sans']">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-widest text-muted-foreground font-['Satoshi']">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" aria-hidden="true" />
             Linear Index Market Exchange
           </span>
 
           <h1
-            className="font-['Space_Grotesk'] text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight"
+            className="font-['Satoshi'] text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight"
             style={{ textWrap: 'balance' as never }}
           >
             Trade the <em className="not-italic text-primary">range</em>,
@@ -27,7 +27,7 @@ export default function Hero() {
             not the outcome.
           </h1>
 
-          <p className="font-['DM_Sans'] text-lg text-muted-foreground max-w-xl leading-relaxed">
+          <p className="font-['Satoshi'] text-lg text-muted-foreground max-w-xl leading-relaxed">
             LIME is a continuous-payoff prediction market. Take positions on where a
             real-world variable will land — rates, weather, indices — and get paid on a
             scale from 0¢ to 100¢ instead of all-or-nothing.
@@ -62,7 +62,7 @@ export default function Hero() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <div className="data-label">Sample contract</div>
-              <div className="font-['Space_Grotesk'] text-sm font-semibold mt-1">
+              <div className="font-['Satoshi'] text-sm font-semibold mt-1">
                 Fed Funds Rate · Dec 2026
               </div>
             </div>
