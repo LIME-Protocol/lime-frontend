@@ -13,6 +13,7 @@ import Admin from "@/pages/Admin";
 import Auth from "@/pages/Auth";
 import WalletPage from "@/pages/Wallet";
 import About from "@/pages/About";
+import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/landing" element={<Landing />} />
           <Route
             path="*"
             element={
