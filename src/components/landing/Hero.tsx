@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
-import AnimatedHeroChart from './AnimatedHeroChart';
 
 export default function Hero() {
   return (
@@ -71,8 +70,9 @@ export default function Hero() {
               Live
             </span>
           </div>
-
-          <AnimatedHeroChart />
+          <div className="h-48 rounded-lg border border-dashed border-border/60 bg-card/30 flex items-center justify-center">
+            <span className="font-['Satoshi'] text-xs uppercase tracking-widest text-muted-foreground">Chart placeholder</span>
+          </div>
 
           <div className="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-border/60">
             <Stat label="Floor" value="3.50%" />
