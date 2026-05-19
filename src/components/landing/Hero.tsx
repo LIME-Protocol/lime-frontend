@@ -72,7 +72,7 @@ export default function Hero() {
             </span>
           </div>
 
-          <HeroPayoffSVG />
+          <AnimatedHeroChart />
 
           <div className="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-border/60">
             <Stat label="Floor" value="3.50%" />
@@ -97,57 +97,5 @@ function Stat({ label, value, highlight = false }: { label: string; value: strin
         {value}
       </div>
     </div>
-  );
-}
-
-function HeroPayoffSVG() {
-  // Animated dashed curve sweeping floor → cap, drawn with CSS keyframes
-  const W = 460;
-  const H = 200;
-  return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      className="w-full h-auto"
-      role="img"
-      aria-label="Linear payoff curve from floor to cap"
-    >
-      <defs>
-        <linearGradient id="hero-fill" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
-        </linearGradient>
-      </defs>
-      {/* baseline */}
-      <line x1="0" y1={H - 1} x2={W} y2={H - 1} stroke="hsl(var(--border))" />
-      {/* grid ticks */}
-      {[0.25, 0.5, 0.75].map((t) => (
-        <line
-          key={t}
-          x1={W * t}
-          y1="0"
-          x2={W * t}
-          y2={H}
-          stroke="hsl(var(--border) / 0.4)"
-          strokeDasharray="2 4"
-        />
-      ))}
-      {/* payoff area */}
-      <path d={`M0 ${H} L${W} 0 L${W} ${H} Z`} fill="url(#hero-fill)" />
-      {/* payoff line */}
-      <line
-        x1="0"
-        y1={H}
-        x2={W}
-        y2="0"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      {/* edge markers */}
-      <circle cx="0" cy={H} r="4" fill="hsl(var(--primary))" />
-      <circle cx={W} cy="0" r="4" fill="hsl(var(--primary))" />
-      <text x="6" y={H - 8} fontSize="10" fill="hsl(var(--muted-foreground))" fontFamily="JetBrains Mono, monospace">0¢</text>
-      <text x={W - 28} y="14" fontSize="10" fill="hsl(var(--muted-foreground))" fontFamily="JetBrains Mono, monospace">100¢</text>
-    </svg>
   );
 }
