@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
+import AnimatedHeroChart from './AnimatedHeroChart';
 
 export default function Hero() {
   return (
