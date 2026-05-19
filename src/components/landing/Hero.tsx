@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowDown } from 'lucide-react';
+import AnimatedHeroChart from './AnimatedHeroChart';
 
 export default function Hero() {
   return (
@@ -13,13 +14,13 @@ export default function Hero() {
 
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 md:pt-28 md:pb-32 grid md:grid-cols-[1.1fr_1fr] gap-14 items-center">
         <div className="space-y-7 animate-reveal-up">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-widest text-muted-foreground font-['DM_Sans']">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3 py-1 text-[11px] uppercase tracking-widest text-muted-foreground font-['Satoshi']">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" aria-hidden="true" />
             Linear Index Market Exchange
           </span>
 
           <h1
-            className="font-['Space_Grotesk'] text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight"
+            className="font-['Satoshi'] text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight"
             style={{ textWrap: 'balance' as never }}
           >
             Trade the <em className="not-italic text-primary">range</em>,
@@ -27,7 +28,7 @@ export default function Hero() {
             not the outcome.
           </h1>
 
-          <p className="font-['DM_Sans'] text-lg text-muted-foreground max-w-xl leading-relaxed">
+          <p className="font-['Satoshi'] text-lg text-muted-foreground max-w-xl leading-relaxed">
             LIME is a continuous-payoff prediction market. Take positions on where a
             real-world variable will land — rates, weather, indices — and get paid on a
             scale from 0¢ to 100¢ instead of all-or-nothing.
@@ -62,7 +63,7 @@ export default function Hero() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <div className="data-label">Sample contract</div>
-              <div className="font-['Space_Grotesk'] text-sm font-semibold mt-1">
+              <div className="font-['Satoshi'] text-sm font-semibold mt-1">
                 Fed Funds Rate · Dec 2026
               </div>
             </div>
@@ -71,7 +72,7 @@ export default function Hero() {
             </span>
           </div>
 
-          <HeroPayoffSVG />
+          <AnimatedHeroChart />
 
           <div className="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-border/60">
             <Stat label="Floor" value="3.50%" />
@@ -96,57 +97,5 @@ function Stat({ label, value, highlight = false }: { label: string; value: strin
         {value}
       </div>
     </div>
-  );
-}
-
-function HeroPayoffSVG() {
-  // Animated dashed curve sweeping floor → cap, drawn with CSS keyframes
-  const W = 460;
-  const H = 200;
-  return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      className="w-full h-auto"
-      role="img"
-      aria-label="Linear payoff curve from floor to cap"
-    >
-      <defs>
-        <linearGradient id="hero-fill" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
-        </linearGradient>
-      </defs>
-      {/* baseline */}
-      <line x1="0" y1={H - 1} x2={W} y2={H - 1} stroke="hsl(var(--border))" />
-      {/* grid ticks */}
-      {[0.25, 0.5, 0.75].map((t) => (
-        <line
-          key={t}
-          x1={W * t}
-          y1="0"
-          x2={W * t}
-          y2={H}
-          stroke="hsl(var(--border) / 0.4)"
-          strokeDasharray="2 4"
-        />
-      ))}
-      {/* payoff area */}
-      <path d={`M0 ${H} L${W} 0 L${W} ${H} Z`} fill="url(#hero-fill)" />
-      {/* payoff line */}
-      <line
-        x1="0"
-        y1={H}
-        x2={W}
-        y2="0"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      {/* edge markers */}
-      <circle cx="0" cy={H} r="4" fill="hsl(var(--primary))" />
-      <circle cx={W} cy="0" r="4" fill="hsl(var(--primary))" />
-      <text x="6" y={H - 8} fontSize="10" fill="hsl(var(--muted-foreground))" fontFamily="JetBrains Mono, monospace">0¢</text>
-      <text x={W - 28} y="14" fontSize="10" fill="hsl(var(--muted-foreground))" fontFamily="JetBrains Mono, monospace">100¢</text>
-    </svg>
   );
 }

@@ -28,17 +28,17 @@ export default function Landing() {
         >
           <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
             <div className="max-w-2xl mb-12 md:mb-16 space-y-4">
-              <span className="text-[11px] uppercase tracking-widest text-primary font-medium font-['DM_Sans']">
+              <span className="text-[11px] uppercase tracking-widest text-primary font-medium font-['Satoshi']">
                 How it works
               </span>
               <h2
                 id="how-title"
-                className="font-['Space_Grotesk'] text-3xl md:text-5xl font-semibold tracking-tight leading-[1.05]"
+                className="font-['Satoshi'] text-3xl md:text-5xl font-semibold tracking-tight leading-[1.05]"
                 style={{ textWrap: 'balance' as never }}
               >
                 Drag the value. Watch the payoff.
               </h2>
-              <p className="font-['DM_Sans'] text-base md:text-lg text-muted-foreground leading-relaxed">
+              <p className="font-['Satoshi'] text-base md:text-lg text-muted-foreground leading-relaxed">
                 A contract is defined by a Variable, a Range [Floor, Cap], and a
                 Resolution Date. Payoff scales linearly between the two bounds.
               </p>

@@ -39,18 +39,18 @@ function SectionShell({
     >
       <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
         <div className="max-w-2xl mb-12 md:mb-16 space-y-4">
-          <span className="text-[11px] uppercase tracking-widest text-primary font-medium font-['DM_Sans']">
+          <span className="text-[11px] uppercase tracking-widest text-primary font-medium font-['Satoshi']">
             {eyebrow}
           </span>
           <h2
             id={`${id}-title`}
-            className="font-['Space_Grotesk'] text-3xl md:text-5xl font-semibold tracking-tight leading-[1.05]"
+            className="font-['Satoshi'] text-3xl md:text-5xl font-semibold tracking-tight leading-[1.05]"
             style={{ textWrap: 'balance' as never }}
           >
             {title}
           </h2>
           {description && (
-            <p className="font-['DM_Sans'] text-base md:text-lg text-muted-foreground leading-relaxed">
+            <p className="font-['Satoshi'] text-base md:text-lg text-muted-foreground leading-relaxed">
               {description}
             </p>
           )}
@@ -81,7 +81,7 @@ export function ProtocolSection() {
         {stats.map((s) => (
           <div key={s.label} className="bg-background p-7">
             <div className="data-label mb-3">{s.label}</div>
-            <div className="font-['Space_Grotesk'] text-3xl md:text-4xl font-semibold tracking-tight tabular-nums">
+            <div className="font-['Satoshi'] text-3xl md:text-4xl font-semibold tracking-tight tabular-nums">
               {s.value}
             </div>
           </div>
@@ -108,7 +108,7 @@ export function OrderBookSection() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="surface-card p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <span className="font-['Space_Grotesk'] font-semibold">BUY side</span>
+            <span className="font-['Satoshi'] font-semibold">BUY side</span>
             <span className="font-mono tabular-nums text-3xl font-bold text-primary">
               ${buy.toFixed(2)}
             </span>
@@ -121,7 +121,7 @@ export function OrderBookSection() {
             />
           </div>
           <div className="flex items-center justify-between pt-4 border-t border-border/60">
-            <span className="font-['Space_Grotesk'] font-semibold text-muted-foreground">
+            <span className="font-['Satoshi'] font-semibold text-muted-foreground">
               SELL side
             </span>
             <span className="font-mono tabular-nums text-3xl font-bold text-muted-foreground">
@@ -144,10 +144,10 @@ export function OrderBookSection() {
 
         <div className="surface-card p-6 space-y-5 bg-card/60">
           <div className="data-label">Spread</div>
-          <div className="font-['Space_Grotesk'] text-5xl font-semibold tabular-nums">
+          <div className="font-['Satoshi'] text-5xl font-semibold tabular-nums">
             {spread.toFixed(2)}¢
           </div>
-          <p className="text-sm text-muted-foreground font-['DM_Sans'] leading-relaxed">
+          <p className="text-sm text-muted-foreground font-['Satoshi'] leading-relaxed">
             Difference between the best Ask and best Bid. Tighter spread means deeper
             liquidity. LIME uses Price-Time Priority matching — the same engine modern
             exchanges run on.
@@ -203,7 +203,7 @@ export function CurvesSection() {
               />
             </svg>
             <div className="flex items-center justify-between">
-              <span className="font-['Space_Grotesk'] font-semibold text-sm">{c.name}</span>
+              <span className="font-['Satoshi'] font-semibold text-sm">{c.name}</span>
               <span
                 className={`text-[10px] uppercase tracking-widest font-medium ${
                   c.status === 'live' ? 'text-primary' : 'text-muted-foreground'
@@ -260,8 +260,8 @@ export function UseCasesSection() {
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <u.icon className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
-            <h3 className="font-['Space_Grotesk'] text-xl font-semibold">{u.title}</h3>
-            <p className="font-['DM_Sans'] text-sm text-muted-foreground leading-relaxed">
+            <h3 className="font-['Satoshi'] text-xl font-semibold">{u.title}</h3>
+            <p className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
               {u.body}
             </p>
             <div className="pt-4 border-t border-border/60">
@@ -296,7 +296,7 @@ export function LifecycleSection() {
             <div className="font-mono tabular-nums text-[11px] text-muted-foreground">
               0{i + 1}
             </div>
-            <div className="font-['Space_Grotesk'] font-semibold">{p}</div>
+            <div className="font-['Satoshi'] font-semibold">{p}</div>
             <div
               className={`h-1 w-8 rounded-full ${
                 i === 2 ? 'bg-primary' : 'bg-border'
@@ -342,8 +342,8 @@ export function WhyLimeSection() {
         {reasons.map((r) => (
           <div key={r.title} className="surface-card p-7 space-y-4">
             <r.icon className="h-6 w-6 text-primary" aria-hidden="true" />
-            <h3 className="font-['Space_Grotesk'] text-lg font-semibold">{r.title}</h3>
-            <p className="font-['DM_Sans'] text-sm text-muted-foreground leading-relaxed">
+            <h3 className="font-['Satoshi'] text-lg font-semibold">{r.title}</h3>
+            <p className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
               {r.body}
             </p>
           </div>
@@ -393,10 +393,10 @@ export function FAQSection() {
       <Accordion type="single" collapsible className="max-w-3xl">
         {faqs.map((f, i) => (
           <AccordionItem key={i} value={`item-${i}`} className="border-border/60">
-            <AccordionTrigger className="font-['Space_Grotesk'] text-left text-base hover:no-underline hover:text-primary">
+            <AccordionTrigger className="font-['Satoshi'] text-left text-base hover:no-underline hover:text-primary">
               {f.q}
             </AccordionTrigger>
-            <AccordionContent className="font-['DM_Sans'] text-sm text-muted-foreground leading-relaxed">
+            <AccordionContent className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
               {f.a}
             </AccordionContent>
           </AccordionItem>
@@ -424,12 +424,12 @@ export function CTASection() {
           />
           <h2
             id="cta-title"
-            className="relative font-['Space_Grotesk'] text-4xl md:text-6xl font-semibold tracking-tight"
+            className="relative font-['Satoshi'] text-4xl md:text-6xl font-semibold tracking-tight"
             style={{ textWrap: 'balance' as never }}
           >
             Open your first position.
           </h2>
-          <p className="relative max-w-xl mx-auto text-muted-foreground font-['DM_Sans']">
+          <p className="relative max-w-xl mx-auto text-muted-foreground font-['Satoshi']">
             Browse live markets, place a Buy or Sell at any price between 0¢ and 100¢,
             and let the orderbook do the rest.
           </p>
@@ -457,10 +457,10 @@ export function CTASection() {
 export function LandingFooter() {
   return (
     <footer className="border-t border-border/60">
-      <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-sm text-muted-foreground font-['DM_Sans']">
+      <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-sm text-muted-foreground font-['Satoshi']">
         <div className="space-y-1">
           <div
-            className="font-['Space_Grotesk'] text-foreground font-semibold"
+            className="font-['Satoshi'] text-foreground font-semibold"
             translate="no"
           >
             LIME

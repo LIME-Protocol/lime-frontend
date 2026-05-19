@@ -19,14 +19,14 @@ export default function LandingNav() {
         <Link to="/landing" className="flex items-center gap-2.5 group" aria-label="LIME home">
           <img src={logoIcon} alt="" width={28} height={28} className="h-7 w-7" aria-hidden="true" />
           <span
-            className="font-['Space_Grotesk'] text-base font-semibold tracking-tight"
+            className="font-['Satoshi'] text-base font-semibold tracking-tight"
             translate="no"
           >
             LIME
           </span>
         </Link>
 
-        <ul className="hidden md:flex items-center gap-7 text-sm text-muted-foreground font-['DM_Sans']">
+        <ul className="hidden md:flex items-center gap-7 text-sm text-muted-foreground font-['Satoshi']">
           {links.map((l) => (
             <li key={l.href}>
               <a
