@@ -29,13 +29,13 @@ export default function Hero() {
 
           <p className="font-['Satoshi'] text-lg text-muted-foreground max-w-xl leading-relaxed">
             LIME is a continuous-payoff prediction market. Take positions on where a
-            real-world variable will land — rates, weather, indices — and get paid on a
+            real-world variable will land: rates, weather, indices, and get paid on a
             scale from 0¢ to 100¢ instead of all-or-nothing.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
-              to="/"
+              to="/app"
               className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Launch App

@@ -26,13 +26,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route path="/landing" element={<Landing />} />
+          <Route path="/" element={<Landing />} />
           <Route
             path="*"
             element={
               <AppLayout>
                 <Routes>
-                  <Route path="/" element={<Explore />} />
+                  <Route path="/app" element={<Explore />} />
                   <Route path="/market/:id" element={<MarketDetail />} />
                   <Route path="/portfolio" element={<Portfolio />} />
                   <Route path="/wallet" element={<WalletPage />} />

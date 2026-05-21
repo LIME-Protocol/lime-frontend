@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import {
   Activity,
   Cloud,
@@ -7,13 +7,13 @@ import {
   ShieldCheck,
   Sparkles,
   ArrowUpRight,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from "@/components/ui/accordion";
 
 /* ────────────────────────────────────────────── */
 /*  Section shell                                 */
@@ -45,7 +45,7 @@ function SectionShell({
           <h2
             id={`${id}-title`}
             className="font-['Satoshi'] text-3xl md:text-5xl font-semibold tracking-tight leading-[1.05]"
-            style={{ textWrap: 'balance' as never }}
+            style={{ textWrap: "balance" as never }}
           >
             {title}
           </h2>
@@ -66,9 +66,9 @@ function SectionShell({
 /* ────────────────────────────────────────────── */
 export function ProtocolSection() {
   const stats = [
-    { label: 'Payoff range', value: '0¢–100¢' },
-    { label: 'Settlement', value: 'On-chain ready' },
-    { label: 'Curve types', value: '5' },
+    { label: "Payoff range", value: "0¢–100¢" },
+    { label: "Settlement", value: "On-chain ready" },
+    { label: "Curve types", value: "5" },
   ];
   return (
     <SectionShell
@@ -136,8 +136,8 @@ export function OrderBookSection() {
             />
           </div>
           <div className="text-xs text-muted-foreground pt-2">
-            <span className="font-mono tabular-nums">{buy.toFixed(2)}</span> +{' '}
-            <span className="font-mono tabular-nums">{sell.toFixed(2)}</span> ={' '}
+            <span className="font-mono tabular-nums">{buy.toFixed(2)}</span> +{" "}
+            <span className="font-mono tabular-nums">{sell.toFixed(2)}</span> ={" "}
             <span className="font-mono tabular-nums text-foreground">1.00</span>
           </div>
         </div>
@@ -148,18 +148,22 @@ export function OrderBookSection() {
             {spread.toFixed(2)}¢
           </div>
           <p className="text-sm text-muted-foreground font-['Satoshi'] leading-relaxed">
-            Difference between the best Ask and best Bid. Tighter spread means deeper
-            liquidity. LIME uses Price-Time Priority matching — the same engine modern
-            exchanges run on.
+            Difference between the best Ask and best Bid. Tighter spread means
+            deeper liquidity. LIME uses Price-Time Priority matching — the same
+            engine modern exchanges run on.
           </p>
           <div className="pt-4 border-t border-border/60 grid grid-cols-2 gap-4 text-sm">
             <div>
               <div className="data-label">Best Ask</div>
-              <div className="font-mono tabular-nums font-semibold mt-1">$0.66</div>
+              <div className="font-mono tabular-nums font-semibold mt-1">
+                $0.66
+              </div>
             </div>
             <div>
               <div className="data-label">Best Bid</div>
-              <div className="font-mono tabular-nums font-semibold mt-1">$0.62</div>
+              <div className="font-mono tabular-nums font-semibold mt-1">
+                $0.62
+              </div>
             </div>
           </div>
         </div>
@@ -171,12 +175,16 @@ export function OrderBookSection() {
 /* ────────────────────────────────────────────── */
 /*  Curve gallery                                 */
 /* ────────────────────────────────────────────── */
-const curves: { name: string; status: 'live' | 'soon'; path: string }[] = [
-  { name: 'Linear', status: 'live', path: 'M0 80 L120 0' },
-  { name: 'Sigmoid', status: 'soon', path: 'M0 80 C40 80, 60 40, 60 40 S100 0, 120 0' },
-  { name: 'Binary', status: 'soon', path: 'M0 80 L60 80 L60 0 L120 0' },
-  { name: 'Convex', status: 'soon', path: 'M0 80 Q90 80, 120 0' },
-  { name: 'Concave', status: 'soon', path: 'M0 80 Q30 0, 120 0' },
+const curves: { name: string; status: "live" | "soon"; path: string }[] = [
+  { name: "Linear", status: "live", path: "M0 80 L120 0" },
+  {
+    name: "Sigmoid",
+    status: "soon",
+    path: "M0 80 C40 80, 60 40, 60 40 S100 0, 120 0",
+  },
+  { name: "Binary", status: "soon", path: "M0 80 L60 80 L60 0 L120 0" },
+  { name: "Convex", status: "soon", path: "M0 80 Q90 80, 120 0" },
+  { name: "Concave", status: "soon", path: "M0 80 Q30 0, 120 0" },
 ];
 
 export function CurvesSection() {
@@ -193,23 +201,33 @@ export function CurvesSection() {
             key={c.name}
             className="surface-card p-5 space-y-4 group hover:border-primary/30 transition-colors"
           >
-            <svg viewBox="0 0 120 80" className="w-full h-20" aria-hidden="true">
+            <svg
+              viewBox="0 0 120 80"
+              className="w-full h-20"
+              aria-hidden="true"
+            >
               <path
                 d={c.path}
                 fill="none"
-                stroke={c.status === 'live' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground) / 0.5)'}
+                stroke={
+                  c.status === "live"
+                    ? "hsl(var(--primary))"
+                    : "hsl(var(--muted-foreground) / 0.5)"
+                }
                 strokeWidth="2.5"
                 strokeLinecap="round"
               />
             </svg>
             <div className="flex items-center justify-between">
-              <span className="font-['Satoshi'] font-semibold text-sm">{c.name}</span>
+              <span className="font-['Satoshi'] font-semibold text-sm">
+                {c.name}
+              </span>
               <span
                 className={`text-[10px] uppercase tracking-widest font-medium ${
-                  c.status === 'live' ? 'text-primary' : 'text-muted-foreground'
+                  c.status === "live" ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                {c.status === 'live' ? 'MVP' : 'Soon'}
+                {c.status === "live" ? "MVP" : "Soon"}
               </span>
             </div>
           </div>
@@ -225,21 +243,21 @@ export function CurvesSection() {
 const useCases = [
   {
     icon: Activity,
-    title: 'Macro indicators',
-    body: 'Trade the path of the Fed Funds Rate, CPI prints, or unemployment numbers as a range, not a binary call.',
-    example: 'Fed Funds · Dec 2026 · 3.50–5.50%',
+    title: "Macro indicators",
+    body: "Trade the path of the Fed Funds Rate, CPI prints, or unemployment numbers as a range, not a binary call.",
+    example: "Fed Funds · Dec 2026 · 3.50–5.50%",
   },
   {
     icon: Cloud,
-    title: 'Climate & weather',
-    body: 'Hedge or speculate on temperature, rainfall, and storm intensity with continuous payoffs tied to NOAA data.',
-    example: 'NYC avg temp · Jan 2027 · 28–42°F',
+    title: "Climate & weather",
+    body: "Hedge or speculate on temperature, rainfall, and storm intensity with continuous payoffs tied to NOAA data.",
+    example: "NYC avg temp · Jan 2027 · 28–42°F",
   },
   {
     icon: Trophy,
-    title: 'Sports & events',
-    body: 'Express conviction on a player\u2019s season total or a team\u2019s win count without limiting yourself to yes / no.',
-    example: 'Season wins · NBA team · 35–55',
+    title: "Sports & events",
+    body: "Express conviction on a player\u2019s season total or a team\u2019s win count without limiting yourself to yes / no.",
+    example: "Season wins · NBA team · 35–55",
   },
 ];
 
@@ -260,7 +278,9 @@ export function UseCasesSection() {
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <u.icon className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
-            <h3 className="font-['Satoshi'] text-xl font-semibold">{u.title}</h3>
+            <h3 className="font-['Satoshi'] text-xl font-semibold">
+              {u.title}
+            </h3>
             <p className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
               {u.body}
             </p>
@@ -280,7 +300,7 @@ export function UseCasesSection() {
 /* ────────────────────────────────────────────── */
 /*  Lifecycle                                     */
 /* ────────────────────────────────────────────── */
-const phases = ['Draft', 'Pending', 'Active', 'Resolved', 'Settled'];
+const phases = ["Draft", "Pending", "Active", "Resolved", "Settled"];
 
 export function LifecycleSection() {
   return (
@@ -299,7 +319,7 @@ export function LifecycleSection() {
             <div className="font-['Satoshi'] font-semibold">{p}</div>
             <div
               className={`h-1 w-8 rounded-full ${
-                i === 2 ? 'bg-primary' : 'bg-border'
+                i === 2 ? "bg-primary" : "bg-border"
               }`}
               aria-hidden="true"
             />
@@ -316,18 +336,18 @@ export function LifecycleSection() {
 const reasons = [
   {
     icon: LineChart,
-    title: 'Continuous payoffs',
-    body: 'Get paid in proportion to how right you were — not a binary win or zero.',
+    title: "Continuous payoffs",
+    body: "Get paid in proportion to how right you were — not a binary win or zero.",
   },
   {
     icon: ShieldCheck,
-    title: 'Transparent settlement',
-    body: 'Every market declares its data source up front. No off-chain discretion at resolution.',
+    title: "Transparent settlement",
+    body: "Every market declares its data source up front. No off-chain discretion at resolution.",
   },
   {
     icon: Sparkles,
-    title: 'Built to scale on-chain',
-    body: 'Architecture is Solana-ready so the same orderbook can move from off-chain MVP to on-chain settlement.',
+    title: "Built to scale on-chain",
+    body: "Architecture is Solana-ready so the same orderbook can move from off-chain MVP to on-chain settlement.",
   },
 ];
 
@@ -342,7 +362,9 @@ export function WhyLimeSection() {
         {reasons.map((r) => (
           <div key={r.title} className="surface-card p-7 space-y-4">
             <r.icon className="h-6 w-6 text-primary" aria-hidden="true" />
-            <h3 className="font-['Satoshi'] text-lg font-semibold">{r.title}</h3>
+            <h3 className="font-['Satoshi'] text-lg font-semibold">
+              {r.title}
+            </h3>
             <p className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
               {r.body}
             </p>
@@ -358,41 +380,41 @@ export function WhyLimeSection() {
 /* ────────────────────────────────────────────── */
 const faqs = [
   {
-    q: 'What is a linear contract?',
-    a: 'A LIME contract pays out between 0¢ and 100¢ based on where the observed value falls between the Floor and the Cap at resolution. If the value lands below the Floor, payoff is 0¢; above the Cap, 100¢; in between, it scales linearly.',
+    q: "What is a linear contract?",
+    a: "A LIME contract pays out between 0¢ and 100¢ based on where the observed value falls between the Floor and the Cap at resolution. If the value lands below the Floor, payoff is 0¢; above the Cap, 100¢; in between, it scales linearly.",
   },
   {
-    q: 'How is the settlement value chosen?',
-    a: 'Every market declares its authoritative data source when it\u2019s created — for example, the FOMC press release or a NOAA station. At the resolution date, LIME reads that source and computes payoffs.',
+    q: "How is the settlement value chosen?",
+    a: "Every market declares its authoritative data source when it\u2019s created — for example, the FOMC press release or a NOAA station. At the resolution date, LIME reads that source and computes payoffs.",
   },
   {
-    q: 'Is LIME custodial?',
-    a: 'The MVP runs an off-chain orderbook with custodied balances so the experience is fast and free of gas. The architecture is built to migrate to on-chain settlement on Solana without breaking the trading flow.',
+    q: "Is LIME custodial?",
+    a: "The MVP runs an off-chain orderbook with custodied balances so the experience is fast and free of gas. The architecture is built to migrate to on-chain settlement on Solana without breaking the trading flow.",
   },
   {
-    q: 'How does the order book match trades?',
-    a: 'Price-Time Priority. The best price wins; on ties, the earlier order wins. The same logic powers traditional financial exchanges.',
+    q: "How does the order book match trades?",
+    a: "Price-Time Priority. The best price wins; on ties, the earlier order wins. The same logic powers traditional financial exchanges.",
   },
   {
-    q: 'What fees does LIME charge?',
-    a: 'Trading fees and withdrawal fees are disclosed at the time of each transaction inside the app. The protocol does not take a cut of contract payoffs.',
+    q: "What fees does LIME charge?",
+    a: "Trading fees and withdrawal fees are disclosed at the time of each transaction inside the app. The protocol does not take a cut of contract payoffs.",
   },
   {
-    q: 'Can I lose more than I put in?',
-    a: 'No. Maximum loss per contract is the price you paid (Buy side) or 100¢ minus the price you received (Sell side). There is no leverage on LIME contracts.',
+    q: "Can I lose more than I put in?",
+    a: "No. Maximum loss per contract is the price you paid (Buy side) or 100¢ minus the price you received (Sell side). There is no leverage on LIME contracts.",
   },
 ];
 
 export function FAQSection() {
   return (
-    <SectionShell
-      id="faq"
-      eyebrow="Questions"
-      title="Things people ask first."
-    >
+    <SectionShell id="faq" eyebrow="Questions" title="Things people ask first.">
       <Accordion type="single" collapsible className="max-w-3xl">
         {faqs.map((f, i) => (
-          <AccordionItem key={i} value={`item-${i}`} className="border-border/60">
+          <AccordionItem
+            key={i}
+            value={`item-${i}`}
+            className="border-border/60"
+          >
             <AccordionTrigger className="font-['Satoshi'] text-left text-base hover:no-underline hover:text-primary">
               {f.q}
             </AccordionTrigger>
@@ -406,9 +428,6 @@ export function FAQSection() {
   );
 }
 
-/* ────────────────────────────────────────────── */
-/*  Final CTA                                     */
-/* ────────────────────────────────────────────── */
 export function CTASection() {
   return (
     <section className="border-b border-border/60" aria-labelledby="cta-title">
@@ -418,24 +437,24 @@ export function CTASection() {
             className="pointer-events-none absolute inset-0 opacity-30"
             style={{
               background:
-                'radial-gradient(closest-side, hsl(var(--primary) / 0.3), transparent 70%)',
+                "radial-gradient(closest-side, hsl(var(--primary) / 0.3), transparent 70%)",
             }}
             aria-hidden="true"
           />
           <h2
             id="cta-title"
             className="relative font-['Satoshi'] text-4xl md:text-6xl font-semibold tracking-tight"
-            style={{ textWrap: 'balance' as never }}
+            style={{ textWrap: "balance" as never }}
           >
             Open your first position.
           </h2>
           <p className="relative max-w-xl mx-auto text-muted-foreground font-['Satoshi']">
-            Browse live markets, place a Buy or Sell at any price between 0¢ and 100¢,
-            and let the orderbook do the rest.
+            Browse live markets, place a Buy or Sell at any price between 0¢ and
+            100¢, and let the orderbook do the rest.
           </p>
           <div className="relative">
             <Link
-              to="/"
+              to="/app"
               className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Launch the App
