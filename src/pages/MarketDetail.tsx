@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { markets as mockMarkets, generateOrderBook, generateTrades } from '@/lib/mock-data';
 import { useMarket } from '@/hooks/use-markets';
 import { useOrderBook } from '@/hooks/use-order-book';
 import { useMarketTradesLive } from '@/hooks/use-market-trades';
@@ -15,6 +14,7 @@ import SimilarMarkets from '@/components/market/SimilarMarkets';
 import OrderBookComponent from '@/components/market/OrderBookComponent';
 import TradeHistory from '@/components/market/TradeHistory';
 import TradePanel from '@/components/market/TradePanel';
+import MarketCollateralPanel from '@/components/market/MarketCollateralPanel';
 import ContractExplainer from '@/components/market/ContractExplainer';
 import RangeOptions from '@/components/market/RangeOptions';
 import Comments from '@/components/market/Comments';
@@ -22,13 +22,14 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import MetricCard from '@/components/shared/MetricCard';
 import DetailItem from '@/components/shared/DetailItem';
 import InfoTip from '@/components/shared/InfoTip';
+import LoadingState from '@/components/shared/LoadingState';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTopVolumeRange } from '@/lib/range-utils';
 
 export default function MarketDetail() {
   const { id } = useParams();
-  const { data: dbMarket } = useMarket(id);
+  const { data: dbMarket, isLoading: marketLoading } = useMarket(id);
   const { data: liveTrades } = useMarketTradesLive(id);
   const { data: liveOrderBook } = useOrderBook(id);
   const { data: ranges } = useMarketRanges(id);
@@ -37,8 +38,8 @@ export default function MarketDetail() {
 
   const baseMarket: Market | undefined = useMemo(() => {
     if (dbMarket) return dbMarketToMarket(dbMarket);
-    return mockMarkets.find((m) => m.id === id);
-  }, [dbMarket, id]);
+    return undefined;
+  }, [dbMarket]);
 
   // Auto-select top volume range when ranges load
   const effectiveRangeId = useMemo(() => {
@@ -69,18 +70,17 @@ export default function MarketDetail() {
     };
   }, [baseMarket, selectedRange]);
 
-  // Real DB markets always use live data (even when empty); only pure mocks use generated data
-  const isDbMarket = !!dbMarket;
-
   const trades: Trade[] = useMemo(() => {
-    if (isDbMarket) return liveTrades ?? [];
-    return market ? generateTrades(market.id, market.currentPrice) : [];
-  }, [isDbMarket, liveTrades, market]);
+    return liveTrades ?? [];
+  }, [liveTrades]);
 
   const orderBook: OrderBook | null = useMemo(() => {
-    if (isDbMarket) return liveOrderBook ?? { bids: [], asks: [], spread: 0 };
-    return market ? generateOrderBook(market.currentPrice) : null;
-  }, [isDbMarket, liveOrderBook, market]);
+    return liveOrderBook ?? { bids: [], asks: [], spread: 0 };
+  }, [liveOrderBook]);
+
+  if (marketLoading) {
+    return <LoadingState />;
+  }
 
   if (!market) {
     return (
@@ -276,15 +276,19 @@ export default function MarketDetail() {
             </div>
           </div>
 
+          <div className="surface-card p-5 animate-reveal-up stagger-2">
+            <MarketCollateralPanel market={market} />
+          </div>
+
           {!isResolved && (
-            <div className="surface-card p-5 animate-reveal-up stagger-2">
+            <div className="surface-card p-5 animate-reveal-up stagger-3">
               <h3 className="text-sm font-semibold mb-4">Trade</h3>
               <TradePanel market={market} />
             </div>
           )}
 
           {isResolved && (
-            <div className="surface-card p-5 animate-reveal-up stagger-2">
+            <div className="surface-card p-5 animate-reveal-up stagger-3">
               <div className="text-center space-y-2">
                 <p className="data-label">Market Resolved</p>
                 <p className="text-3xl font-bold font-mono tabular-nums text-positive">{((resolvedPayoff ?? 0) * 100).toFixed(1)}¢</p>

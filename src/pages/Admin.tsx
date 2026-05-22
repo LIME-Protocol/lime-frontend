@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useMarkets } from '@/hooks/use-markets';
-import { markets as mockMarkets, adminLogs } from '@/lib/mock-data';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import CreateMarketForm from '@/components/admin/CreateMarketForm';
@@ -50,18 +49,14 @@ function AdminContent() {
 
   if (!user) return null;
 
-  const allMarkets = [
-    ...dbMarkets.map(m => ({ ...m, source: 'db' as const })),
-    ...mockMarkets.map(m => ({ id: m.id, title: m.title, category: m.category, status: m.status, lower_bound: m.lowerBound, upper_bound: m.upperBound, unit: m.unit, resolution_date: m.resolutionDate, final_observed_value: m.resolvedValue ?? null, metric_name: m.variable, settlement_source: m.settlementSource, source: 'mock' as const })),
-  ].filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
+  const allMarkets = dbMarkets
+    .map(m => ({ ...m, source: 'db' as const }))
+    .filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
 
-  const combinedLogs = [
-    ...dbLogs.map((l: any) => ({
+  const combinedLogs = dbLogs.map((l: any) => ({
       id: l.id, action: l.action, detail: l.metadata ? JSON.stringify(l.metadata) : '', timestamp: l.created_at,
       operator: l.actor_id || 'system', marketTitle: l.entity_type + ' ' + (l.entity_id || '').slice(0, 8),
-    })),
-    ...adminLogs,
-  ];
+    }));
 
   const tabs: { key: AdminTab; label: string; icon: React.ReactNode }[] = [
     { key: 'markets',     label: 'Markets',      icon: <Shield className="h-3.5 w-3.5" /> },

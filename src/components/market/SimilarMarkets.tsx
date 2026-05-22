@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { markets as allMarkets } from '@/lib/mock-data';
 import { Market, formatCurrency, formatPrice, impliedValue, daysUntil } from '@/lib/types';
 import { fmtImplied, getCategoryEmoji } from '@/lib/format';
 import StatusBadge from '@/components/shared/StatusBadge';
-import { cn } from '@/lib/utils';
-import { TrendingUp, ArrowRight, Calendar } from 'lucide-react';
+import { useMarkets } from '@/hooks/use-markets';
+import { dbMarketToMarket } from '@/lib/adapters';
+import { ArrowRight, Calendar } from 'lucide-react';
 
 type SimilarSize = 'large' | 'medium' | 'small';
 
@@ -17,7 +17,7 @@ interface SimilarMarketsProps {
   title?: string;
 }
 
-function getSimilarMarkets(currentId: string, category: string, max: number): Market[] {
+function getSimilarMarkets(allMarkets: Market[], currentId: string, category: string, max: number): Market[] {
   // Same category, highest volume first, excluding current market
   const sameCategory = allMarkets
     .filter(m => m.id !== currentId && m.category === category && m.status === 'active')
@@ -26,8 +26,12 @@ function getSimilarMarkets(currentId: string, category: string, max: number): Ma
 }
 
 export default function SimilarMarkets({ currentMarketId, category, size = 'medium', maxItems, title }: SimilarMarketsProps) {
+  const { data: dbMarkets = [] } = useMarkets();
   const count = maxItems ?? (size === 'large' ? 4 : size === 'medium' ? 3 : 2);
-  const markets = useMemo(() => getSimilarMarkets(currentMarketId, category, count), [currentMarketId, category, count]);
+  const markets = useMemo(
+    () => getSimilarMarkets(dbMarkets.map(dbMarketToMarket), currentMarketId, category, count),
+    [dbMarkets, currentMarketId, category, count],
+  );
 
   if (markets.length === 0) return null;
 
@@ -134,4 +138,3 @@ function SmallView({ markets, title }: { markets: Market[]; title?: string }) {
     </div>
   );
 }
-

@@ -1,12 +1,11 @@
 import { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { markets as mockMarkets, categoryConfig, marketRanges } from '@/lib/mock-data';
+import { categoryConfig } from '@/lib/categories';
 import { useMarkets } from '@/hooks/use-markets';
 import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { daysUntil, formatCurrency, formatPrice } from '@/lib/types';
 import type { Market } from '@/lib/types';
-import { applyTopRange } from '@/lib/range-utils';
 import MarketCard from '@/components/market/MarketCard';
 import MarketTable from '@/components/market/MarketTable';
 import DashboardCard from '@/components/shared/DashboardCard';
@@ -47,13 +46,7 @@ export default function Explore() {
   const { data: stats } = useDashboardStats();
 
   const allMarkets: Market[] = useMemo(() => {
-    const fromDb = (dbMarkets || []).map(dbMarketToMarket);
-    const raw = fromDb.length > 0 ? [...fromDb, ...mockMarkets] : mockMarkets;
-    // Apply top-volume range overrides for display
-    return raw.map(m => {
-      const mRanges = marketRanges.filter(r => r.marketId === m.id);
-      return applyTopRange(m, mRanges);
-    });
+    return (dbMarkets || []).map(dbMarketToMarket);
   }, [dbMarkets]);
 
   const activeMarkets = useMemo(() => allMarkets.filter((m) => m.status === 'active'), [allMarkets]);

@@ -5,6 +5,7 @@ import type { Market } from '@/lib/types';
 export function dbMarketToMarket(db: DbMarket): Market {
   return {
     id: db.id,
+    onchainMarketId: db.onchain_market_id == null ? undefined : String(db.onchain_market_id),
     title: db.title,
     description: db.description || '',
     category: db.category,

@@ -4,11 +4,12 @@ import { Market, formatPrice } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import InfoTip from '@/components/shared/InfoTip';
 import { cn } from '@/lib/utils';
-import { usePlaceOrder } from '@/hooks/use-trading';
+import { useSubmitSignedLimitOrder } from '@/hooks/use-trading';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserBalance } from '@/hooks/use-user-balance';
 import { isUuid } from '@/lib/uuid';
-import { Loader2, Wallet, Info } from 'lucide-react';
+import { FileSignature, Loader2, Wallet, Info } from 'lucide-react';
+import { isMatchingEngineConfigured } from '@/services/order-submission';
 
 interface TradePanelProps {
   market: Market;
@@ -16,19 +17,22 @@ interface TradePanelProps {
 
 export default function TradePanel({ market }: TradePanelProps) {
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
-  const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
   const [quantity, setQuantity] = useState('10');
   const [limitPrice, setLimitPrice] = useState((market.currentPrice * 100).toFixed(1));
+  const [expiryMinutes, setExpiryMinutes] = useState('60');
   const { user } = useAuth();
   const { data: balance } = useUserBalance();
-  const placeOrder = usePlaceOrder();
+  const submitSignedLimitOrder = useSubmitSignedLimitOrder();
 
-  const price = orderType === 'market' ? market.currentPrice : Number(limitPrice) / 100;
+  const price = Number(limitPrice) / 100;
   const effectivePrice = side === 'buy' ? price : 1 - price;
   const cost = Number(quantity) * effectivePrice;
   const availableBalance = balance?.amount ?? 0;
   const insufficientFunds = !!user && cost > availableBalance;
   const isDemoMarket = !isUuid(market.id);
+  const hasOnchainMarket = Boolean(market.onchainMarketId);
+  const hasMatchingEngine = isMatchingEngineConfigured();
+  const tradingDisabled = isDemoMarket || !hasOnchainMarket || !hasMatchingEngine;
 
   const handleSubmit = () => {
     if (!user) {
@@ -36,17 +40,23 @@ export default function TradePanel({ market }: TradePanelProps) {
       return;
     }
 
-    placeOrder.mutate({
+    submitSignedLimitOrder.mutate({
       market_id: market.id,
-      side,
-      order_type: orderType,
+      onchain_market_id: market.onchainMarketId,
+      action: side,
       quantity: Number(quantity),
-      price: Number(price.toFixed(4)),
+      limit_price: Number(price.toFixed(4)),
+      expiry_minutes: Number(expiryMinutes),
     });
   };
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <FileSignature className="h-4 w-4 text-primary" />
+        <h3 className="text-sm font-semibold">Limit Order</h3>
+      </div>
+
       {/* Buy / Sell toggle */}
       <div className="grid grid-cols-2 gap-2">
         <button
@@ -73,51 +83,33 @@ export default function TradePanel({ market }: TradePanelProps) {
         </button>
       </div>
 
-      {/* Order type */}
-      <div className="flex rounded-lg bg-secondary p-0.5">
-        <button
-          onClick={() => setOrderType('market')}
-          className={cn(
-            'flex-1 py-1.5 text-[11px] font-semibold rounded-md transition-all',
-            orderType === 'market' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground'
-          )}
-        >
-          Market
-        </button>
-        <button
-          onClick={() => setOrderType('limit')}
-          className={cn(
-            'flex-1 py-1.5 text-[11px] font-semibold rounded-md transition-all',
-            orderType === 'limit' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground'
-          )}
-        >
-          Limit
-        </button>
-      </div>
-
       {/* Limit price */}
-      {orderType === 'limit' && (
-        <div>
-          <label className="data-label block mb-1.5">
-            Price (¢)
-            <InfoTip content="The price in cents you're willing to pay per contract. Contracts pay out 0¢ to 100¢ at settlement." />
+      <div>
+        <div className="flex items-center gap-1 mb-1.5">
+          <label htmlFor="limit-price" className="data-label">
+            Limit Price (cents)
           </label>
-          <input
-            type="number" min="0.1" max="99.9" step="0.1"
-            value={limitPrice}
-            onChange={(e) => setLimitPrice(e.target.value)}
-            className="w-full h-10 px-3 rounded-lg surface-inset text-sm font-mono tabular-nums text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 placeholder:text-muted-foreground"
-          />
+          <InfoTip content="The maximum price for Buy orders or minimum price for Sell orders, expressed in cents of maximum payout." />
         </div>
-      )}
+        <input
+          id="limit-price"
+          type="number" min="0.1" max="99.9" step="0.1"
+          value={limitPrice}
+          onChange={(e) => setLimitPrice(e.target.value)}
+          className="w-full h-10 px-3 rounded-lg surface-inset text-sm font-mono tabular-nums text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 placeholder:text-muted-foreground"
+        />
+      </div>
 
       {/* Quantity */}
       <div>
-        <label className="data-label block mb-1.5">
-          Contracts
-          <InfoTip content="Each contract pays between 0¢ and 100¢ depending on where the final value lands in the range." />
-        </label>
+        <div className="flex items-center gap-1 mb-1.5">
+          <label htmlFor="position-quantity" className="data-label">
+            Position Quantity
+          </label>
+          <InfoTip content="Quantity determines maximum payout exposure before the Market resolution is applied." />
+        </div>
         <input
+          id="position-quantity"
           type="number" min="1"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
@@ -141,14 +133,30 @@ export default function TradePanel({ market }: TradePanelProps) {
         </div>
       </div>
 
+      <div>
+        <div className="flex items-center gap-1 mb-1.5">
+          <label htmlFor="order-expiry" className="data-label">
+            Order Expiration (minutes)
+          </label>
+          <InfoTip content="The signed order can only be matched before this expiration." />
+        </div>
+        <input
+          id="order-expiry"
+          type="number" min="1" step="1"
+          value={expiryMinutes}
+          onChange={(e) => setExpiryMinutes(e.target.value)}
+          className="w-full h-10 px-3 rounded-lg surface-inset text-sm font-mono tabular-nums text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
+        />
+      </div>
+
       {/* Cost summary */}
       <div className="space-y-2 py-3 border-t border-b border-border/50 text-xs">
         <div className="flex justify-between">
           <span className="text-muted-foreground">
-            Price per contract
+            Price per quantity
             <InfoTip
               content={side === 'buy'
-                ? "Your cost per contract. Pays 0¢–100¢ at settlement."
+                ? "Your cost per unit of Position Quantity. Payout depends on the Market resolution."
                 : "As a seller, your cost is (100¢ − price). You profit if the value lands below the implied level."}
               side="left"
             />
@@ -156,11 +164,11 @@ export default function TradePanel({ market }: TradePanelProps) {
           <span className="data-value text-foreground">{formatPrice(effectivePrice)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Contracts</span>
+          <span className="text-muted-foreground">Position Quantity</span>
           <span className="data-value text-foreground">{quantity}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Estimated cost</span>
+          <span className="text-muted-foreground">Required collateral</span>
           <span className="data-value text-foreground text-[13px]">${(cost).toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
@@ -186,7 +194,7 @@ export default function TradePanel({ market }: TradePanelProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
             <span className="flex items-center gap-1">
-              <Wallet className="h-3 w-3" /> Available
+              <Wallet className="h-3 w-3" /> Available Collateral
             </span>
             <span className="font-mono tabular-nums text-foreground font-semibold">
               ${availableBalance.toFixed(2)}
@@ -202,26 +210,34 @@ export default function TradePanel({ market }: TradePanelProps) {
             </p>
           )}
 
-          {isDemoMarket && (
+          {tradingDisabled && (
             <div className="flex items-start gap-2 px-3 py-2 rounded-md border border-warning/30 bg-warning/5 text-[11px] text-muted-foreground">
               <Info className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
-              <span>
-                Demo market — trading is disabled. Visit a live market from{' '}
-                <Link to="/explore" className="underline font-semibold text-foreground">
-                  Explore
-                </Link>{' '}
-                to place real orders.
-              </span>
+              {isDemoMarket ? (
+                <span>
+                  Demo market — trading is disabled. Visit a live market from{' '}
+                  <Link to="/explore" className="underline font-semibold text-foreground">
+                    Explore
+                  </Link>{' '}
+                  to place real orders.
+                </span>
+              ) : !hasOnchainMarket ? (
+                <span>This Market has not been linked to an on-chain Program market yet.</span>
+              ) : (
+                <span>Matching engine submission is not configured yet.</span>
+              )}
             </div>
           )}
 
           <Button
             onClick={handleSubmit}
             disabled={
-              placeOrder.isPending ||
+              submitSignedLimitOrder.isPending ||
               Number(quantity) <= 0 ||
+              Number(limitPrice) <= 0 ||
+              Number(expiryMinutes) <= 0 ||
               insufficientFunds ||
-              isDemoMarket
+              tradingDisabled
             }
             className={cn(
               'w-full h-11 font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.97]',
@@ -230,12 +246,12 @@ export default function TradePanel({ market }: TradePanelProps) {
                 : 'bg-negative hover:bg-negative/90 text-destructive-foreground shadow-lg shadow-negative/15'
             )}
           >
-            {placeOrder.isPending ? (
+            {submitSignedLimitOrder.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
-            ) : isDemoMarket ? (
+            ) : tradingDisabled ? (
               'TRADING DISABLED'
             ) : (
-              `${side === 'buy' ? 'BUY' : 'SELL'} ${quantity} CONTRACTS`
+              `SIGN ${side === 'buy' ? 'BUY' : 'SELL'} LIMIT ORDER`
             )}
           </Button>
         </div>
