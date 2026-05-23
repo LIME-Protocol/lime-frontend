@@ -1,4 +1,4 @@
-import { LimeClient, SolanaCollateral, SolanaSettlement } from '@lime/solana';
+import { LimeClient, SolanaCollateral, SolanaMarketService, SolanaSettlement } from '@lime/solana';
 import type { AnchorWalletLike } from '@lime/solana';
 import type { Connection } from '@solana/web3.js';
 
@@ -10,6 +10,7 @@ export function createLimeSdk(connection: Connection, wallet: AnchorWalletLike) 
 
   return {
     client,
+    market: new SolanaMarketService(client),
     collateral: new SolanaCollateral(client),
     settlement: new SolanaSettlement(client),
   };

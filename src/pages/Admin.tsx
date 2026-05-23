@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
-import { useMarkets } from '@/hooks/use-markets';
+import { useMarkets, type DbMarket } from '@/hooks/use-markets';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import CreateMarketForm from '@/components/admin/CreateMarketForm';
@@ -13,12 +13,25 @@ import { Plus, CheckCircle2, Shield, ClipboardList, Loader2, Search, ArrowUpRigh
 import RoleGate from '@/components/auth/RoleGate';
 import PendingWithdrawals from '@/components/admin/PendingWithdrawals';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
+import OnchainSetupCard from '@/components/admin/OnchainSetupCard';
+import InitializeOnchainButton from '@/components/admin/InitializeOnchainButton';
+import type { Tables } from '@/integrations/supabase/types';
 
 type AdminTab = 'markets' | 'withdrawals' | 'logs';
+type AuditLog = Tables<'audit_logs'>;
+type AdminMarket = DbMarket & { source: 'db' };
+type CombinedLog = {
+  id: string;
+  action: AuditLog['action'];
+  detail: string;
+  timestamp: string;
+  operator: string;
+  marketTitle: string;
+};
 
 export default function Admin() {
   return (
-    <RoleGate role="admin">
+    <RoleGate role="admin" unauthorizedRedirectTo="/app">
       <AdminContent />
     </RoleGate>
   );
@@ -34,7 +47,7 @@ function AdminContent() {
 
   const { data: dbMarkets = [] } = useMarkets();
 
-  const { data: dbLogs = [] } = useQuery({
+  const { data: dbLogs = [] } = useQuery<AuditLog[]>({
     queryKey: ['audit-logs'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -49,11 +62,11 @@ function AdminContent() {
 
   if (!user) return null;
 
-  const allMarkets = dbMarkets
+  const allMarkets: AdminMarket[] = dbMarkets
     .map(m => ({ ...m, source: 'db' as const }))
     .filter(m => !searchQ || m.title.toLowerCase().includes(searchQ.toLowerCase()));
 
-  const combinedLogs = dbLogs.map((l: any) => ({
+  const combinedLogs: CombinedLog[] = dbLogs.map((l) => ({
       id: l.id, action: l.action, detail: l.metadata ? JSON.stringify(l.metadata) : '', timestamp: l.created_at,
       operator: l.actor_id || 'system', marketTitle: l.entity_type + ' ' + (l.entity_id || '').slice(0, 8),
     }));
@@ -83,6 +96,8 @@ function AdminContent() {
         </Button>
       </div>
 
+      <OnchainSetupCard />
+
       {showForm && <CreateMarketForm onClose={() => setShowForm(false)} userId={user.id} queryClient={queryClient} />}
 
       <div className="flex gap-1 border-b border-border animate-reveal-up stagger-1">
@@ -104,7 +119,7 @@ function AdminContent() {
           </div>
 
           <div className="animate-fade-in space-y-3">
-            {allMarkets.map((m: any, i: number) => (
+            {allMarkets.map((m, i) => (
               <div key={m.id} className="surface-card p-5 animate-reveal-up" style={{ animationDelay: `${i * 40}ms` }}>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -126,7 +141,10 @@ function AdminContent() {
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
                     {(m.status === 'pending' || m.status === 'draft') && m.source === 'db' && (
-                      <ApproveButton marketId={m.id} queryClient={queryClient} />
+                      <>
+                        {!m.onchain_market_id && <InitializeOnchainButton market={m} queryClient={queryClient} />}
+                        <ApproveButton marketId={m.id} onchainMarketId={m.onchain_market_id} queryClient={queryClient} />
+                      </>
                     )}
                     {m.status === 'active' && m.source === 'db' && (
                       <>
@@ -167,7 +185,7 @@ function AdminContent() {
                 </tr>
               </thead>
               <tbody>
-                {combinedLogs.map((log: any) => (
+                {combinedLogs.map((log) => (
                   <tr key={log.id} className="border-b border-border/50 last:border-0 hover:bg-secondary/20 transition-colors">
                     <td className="px-4 py-3"><StatusBadge type="log" status={log.action} /></td>
                     <td className="px-4 py-3 text-[13px] font-medium truncate max-w-[200px]">{log.marketTitle}</td>

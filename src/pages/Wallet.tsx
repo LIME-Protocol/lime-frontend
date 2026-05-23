@@ -11,12 +11,9 @@ import {
   Wallet,
   CreditCard,
   Building2,
-  Bitcoin,
   ArrowDownLeft,
   ArrowUpRight,
   Loader2,
-  Copy,
-  CheckCircle2,
   TrendingUp,
   TrendingDown,
   Lock,
@@ -29,22 +26,13 @@ import ActivityFeed from '@/components/wallet/ActivityFeed';
 
 type WalletTab = 'deposit' | 'withdraw' | 'activity';
 
-type DepositMethod = 'crypto_btc' | 'crypto_eth' | 'crypto_usdc' | 'wire' | 'card' | 'pix';
+type DepositMethod = 'wire' | 'card' | 'pix';
 
 const methods: { key: DepositMethod; label: string; icon: React.ReactNode; description: string }[] = [
   { key: 'card', label: 'Credit / Debit Card', icon: <CreditCard className="h-5 w-5" />, description: 'Visa, Mastercard, Amex — instant' },
   { key: 'wire', label: 'Bank Wire', icon: <Building2 className="h-5 w-5" />, description: 'ACH or SWIFT — 1-3 business days' },
-  { key: 'pix', label: 'PIX', icon: <span className="text-lg">🇧🇷</span>, description: 'Transferência instantânea — Brasil' },
-  { key: 'crypto_usdc', label: 'USDC', icon: <span className="text-lg font-bold text-blue-500">$</span>, description: 'ERC-20 or Solana — near instant' },
-  { key: 'crypto_btc', label: 'Bitcoin', icon: <Bitcoin className="h-5 w-5 text-orange-500" />, description: 'BTC on-chain — ~30 min' },
-  { key: 'crypto_eth', label: 'Ethereum', icon: <span className="text-lg">⟠</span>, description: 'ETH on-chain — ~5 min' },
+  { key: 'pix', label: 'PIX', icon: <span className="text-lg">BR</span>, description: 'Transferencia instantanea — Brasil' },
 ];
-
-const mockAddresses: Record<string, string> = {
-  crypto_btc: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-  crypto_eth: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-  crypto_usdc: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-};
 
 export default function WalletPage() {
   const { user, loading: authLoading } = useAuth();
@@ -53,7 +41,6 @@ export default function WalletPage() {
   const [tab, setTab] = useState<WalletTab>('deposit');
   const [selectedMethod, setSelectedMethod] = useState<DepositMethod | null>(null);
   const [amount, setAmount] = useState('');
-  const [copied, setCopied] = useState(false);
 
   if (authLoading) return <LoadingState />;
   if (!user) return <Navigate to="/auth" replace />;
@@ -78,16 +65,6 @@ export default function WalletPage() {
       toast.error((err as Error).message);
     }
   };
-
-  const copyAddress = (addr: string) => {
-    navigator.clipboard.writeText(addr);
-    setCopied(true);
-    toast.success('Address copied');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const isCrypto = selectedMethod?.startsWith('crypto_');
-  const cryptoAddr = selectedMethod ? mockAddresses[selectedMethod] : null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
@@ -224,19 +201,6 @@ export default function WalletPage() {
               <ArrowDownLeft className="h-4 w-4 text-positive" />
               Deposit via {methods.find(m => m.key === selectedMethod)?.label}
             </h3>
-
-            {isCrypto && cryptoAddr && (
-              <div className="bg-secondary/60 rounded-lg p-4 space-y-2">
-                <p className="text-[11px] text-muted-foreground">Send funds to this address:</p>
-                <div className="flex items-center gap-2">
-                  <code className="text-xs font-mono bg-background/60 px-3 py-2 rounded-lg flex-1 truncate text-foreground">{cryptoAddr}</code>
-                  <Button variant="outline" size="sm" onClick={() => copyAddress(cryptoAddr)} className="shrink-0">
-                    {copied ? <CheckCircle2 className="h-3.5 w-3.5 text-positive" /> : <Copy className="h-3.5 w-3.5" />}
-                  </Button>
-                </div>
-                <p className="text-[10px] text-warning">⚠️ Only send {selectedMethod.replace('crypto_', '').toUpperCase()} to this address</p>
-              </div>
-            )}
 
             <div className="space-y-2">
               <label className="data-label">Amount (USD)</label>
