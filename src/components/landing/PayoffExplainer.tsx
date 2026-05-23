@@ -7,9 +7,9 @@ import { Slider } from '@/components/ui/slider';
  * Formula: (observed − floor) / (cap − floor) × 100¢, clamped to [0, 100].
  */
 export default function PayoffExplainer() {
-  const floor = 3.5;
-  const cap = 5.5;
-  const [observed, setObserved] = useState(4.25);
+  const floor = 200;
+  const cap = 800;
+  const [observed, setObserved] = useState(440);
 
   const payoff = useMemo(() => {
     const raw = ((observed - floor) / (cap - floor)) * 100;
@@ -25,24 +25,24 @@ export default function PayoffExplainer() {
 
   return (
     <div className="grid md:grid-cols-2 gap-8 items-stretch">
-      <div className="surface-card p-6 space-y-5">
+      <div data-landing-card className="surface-card p-6 space-y-5">
         <div className="flex items-baseline justify-between">
           <span className="data-label">Observed value</span>
           <span className="font-mono tabular-nums text-2xl font-semibold">
-            {observed.toFixed(2)}%
+            ${observed.toFixed(0)}B
           </span>
         </div>
         <Slider
           aria-label="Observed value"
           value={[observed]}
-          min={floor - 0.5}
-          max={cap + 0.5}
-          step={0.05}
+          min={floor}
+          max={cap}
+          step={10}
           onValueChange={(v) => setObserved(v[0])}
         />
         <div className="flex justify-between text-[11px] font-mono tabular-nums text-muted-foreground">
-          <span>Floor {floor.toFixed(2)}%</span>
-          <span>Cap {cap.toFixed(2)}%</span>
+          <span>Floor ${floor}B</span>
+          <span>Cap ${cap}B</span>
         </div>
 
         <div className="pt-4 border-t border-border/60 space-y-2">
@@ -61,7 +61,7 @@ export default function PayoffExplainer() {
         </div>
       </div>
 
-      <div className="surface-card p-6 flex flex-col">
+      <div data-landing-card className="surface-card p-6 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <span className="data-label">Linear payoff curve</span>
           <span className="text-[11px] font-mono tabular-nums text-muted-foreground">

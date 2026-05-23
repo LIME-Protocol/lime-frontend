@@ -14,6 +14,7 @@ import Auth from "@/pages/Auth";
 import WalletPage from "@/pages/Wallet";
 import About from "@/pages/About";
 import Landing from "@/pages/Landing";
+import Waitlist from "@/pages/Waitlist";
 import NotFound from "@/pages/NotFound";
 import { SolanaProviders } from "@/components/solana/SolanaProviders";
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Landing />} />
             <Route path="/landing" element={<Landing />} />
+            <Route path="/waitlist" element={<Waitlist />} />
             <Route
               path="*"
               element={

@@ -1,8 +1,11 @@
+import { useRef } from 'react';
 import LandingNav from '@/components/landing/LandingNav';
 import Hero from '@/components/landing/Hero';
 import PayoffExplainer from '@/components/landing/PayoffExplainer';
+import { useLandingAnimations } from '@/hooks/use-landing-animations';
 import {
   ProtocolSection,
+  ComparisonSection,
   OrderBookSection,
   CurvesSection,
   UseCasesSection,
@@ -11,18 +14,24 @@ import {
   FAQSection,
   CTASection,
   LandingFooter,
+  InlineWaitlistCTA,
 } from '@/components/landing/Sections';
 
 export default function Landing() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  useLandingAnimations(rootRef);
+
   return (
-    <div className="dark min-h-screen bg-background text-foreground" style={{ colorScheme: 'dark' }}>
+    <div ref={rootRef} className="dark min-h-screen bg-background text-foreground" style={{ colorScheme: 'dark' }}>
       <LandingNav />
       <main>
         <Hero />
         <ProtocolSection />
+        <ComparisonSection />
 
         <section
           id="how-it-works"
+          data-landing-reveal
           className="border-b border-border/60 scroll-mt-24"
           aria-labelledby="how-title"
         >
@@ -39,11 +48,12 @@ export default function Landing() {
                 Drag the value. Watch the payoff.
               </h2>
               <p className="font-['Satoshi'] text-base md:text-lg text-muted-foreground leading-relaxed">
-                A contract is defined by a Variable, a Range [Floor, Cap], and a
-                Resolution Date. Payoff scales linearly between the two bounds.
+                The launch example is Anthropic IPO valuation. Set a $200B to $800B
+                range, price the contract at 40¢, and the market is implying $440B.
               </p>
             </div>
             <PayoffExplainer />
+            <InlineWaitlistCTA label="Join Waitlist" />
           </div>
         </section>
 

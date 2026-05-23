@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import {
   Activity,
   Cloud,
-  Trophy,
   LineChart,
   ShieldCheck,
   Sparkles,
   ArrowUpRight,
+  ArrowRight,
 } from "lucide-react";
 import {
   Accordion,
@@ -34,6 +34,7 @@ function SectionShell({
   return (
     <section
       id={id}
+      data-landing-reveal
       className="border-b border-border/60 scroll-mt-24"
       aria-labelledby={`${id}-title`}
     >
@@ -61,25 +62,42 @@ function SectionShell({
   );
 }
 
+export function InlineWaitlistCTA({ label = "Join Waitlist" }: { label?: string }) {
+  return (
+    <div className="mt-10">
+      <Link
+        to="/waitlist"
+        className="group inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        {label}
+        <ArrowRight
+          className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </Link>
+    </div>
+  );
+}
+
 /* ────────────────────────────────────────────── */
 /*  Protocol overview                             */
 /* ────────────────────────────────────────────── */
 export function ProtocolSection() {
   const stats = [
     { label: "Payoff range", value: "0¢–100¢" },
-    { label: "Settlement", value: "On-chain ready" },
-    { label: "Curve types", value: "5" },
+    { label: "Example range", value: "$200B–$800B" },
+    { label: "Market price", value: "40¢" },
   ];
   return (
     <SectionShell
       id="protocol"
-      eyebrow="The Protocol"
-      title="A continuous-outcome prediction market."
-      description="Binary markets force you into yes or no. LIME contracts pay out on a continuous scale tied to a real-world value, so your exposure mirrors how the world actually unfolds."
+      eyebrow="Market design"
+      title="Prediction markets for numbers, not just yes or no."
+      description="Binary markets ask whether an event happens. LIME asks where a value lands, then settles proportionally across the range."
     >
       <div className="grid md:grid-cols-3 gap-px bg-border/60 rounded-xl overflow-hidden border border-border/60">
         {stats.map((s) => (
-          <div key={s.label} className="bg-background p-7">
+          <div key={s.label} data-landing-card className="bg-background p-7">
             <div className="data-label mb-3">{s.label}</div>
             <div className="font-['Satoshi'] text-3xl md:text-4xl font-semibold tracking-tight tabular-nums">
               {s.value}
@@ -91,22 +109,50 @@ export function ProtocolSection() {
   );
 }
 
+export function ComparisonSection() {
+  return (
+    <SectionShell
+      id="comparison"
+      eyebrow="Binary vs linear"
+      title="Same prediction market idea. More expressive payoff."
+      description="LIME keeps the familiar market price, collateral, and settlement flow, but changes what the contract pays at the end."
+    >
+      <div className="grid md:grid-cols-2 gap-6">
+        <article data-landing-card className="surface-card p-7 space-y-4">
+          <div className="data-label">Binary prediction markets</div>
+          <h3 className="font-['Satoshi'] text-xl font-semibold">Outcome buckets</h3>
+          <p className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
+            Markets like Polymarket or Kalshi settle to yes or no. If Anthropic IPO valuation is above a threshold, one side gets 100¢ and the other gets 0¢.
+          </p>
+        </article>
+        <article data-landing-card className="surface-card p-7 space-y-4 border-primary/30 bg-primary/[0.04]">
+          <div className="data-label text-primary">Linear LIME markets</div>
+          <h3 className="font-['Satoshi'] text-xl font-semibold">Continuous settlement</h3>
+          <p className="font-['Satoshi'] text-sm text-muted-foreground leading-relaxed">
+            LIME contracts tie payoff to the realized number. If Anthropic prices inside a $200B to $800B range, the payout follows that value proportionally.
+          </p>
+        </article>
+      </div>
+    </SectionShell>
+  );
+}
+
 /* ────────────────────────────────────────────── */
 /*  Order book demo                               */
 /* ────────────────────────────────────────────── */
 export function OrderBookSection() {
-  const buy = 0.62;
-  const sell = 0.38;
-  const spread = 0.04;
+  const buy = 0.4;
+  const sell = 0.6;
+  const spread = 0.03;
   return (
     <SectionShell
       id="order-book"
       eyebrow="Order book"
-      title="Buy and Sell always sum to $1.00."
-      description="Every contract has two sides. The Buy and Sell prices represent the market's split view, and the spread between Ask and Bid measures liquidity."
+      title="Just like other prediction markets, Buy and Sell sum to $1.00."
+      description="The difference is the payoff. A 40¢ Anthropic IPO contract implies the market expects a $440B valuation inside the $200B to $800B range."
     >
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="surface-card p-6 space-y-5">
+        <div data-landing-card className="surface-card p-6 space-y-5">
           <div className="flex items-center justify-between">
             <span className="font-['Satoshi'] font-semibold">BUY side</span>
             <span className="font-mono tabular-nums text-3xl font-bold text-primary">
@@ -142,7 +188,7 @@ export function OrderBookSection() {
           </div>
         </div>
 
-        <div className="surface-card p-6 space-y-5 bg-card/60">
+        <div data-landing-card className="surface-card p-6 space-y-5 bg-card/60">
           <div className="data-label">Spread</div>
           <div className="font-['Satoshi'] text-5xl font-semibold tabular-nums">
             {spread.toFixed(2)}¢
@@ -156,18 +202,19 @@ export function OrderBookSection() {
             <div>
               <div className="data-label">Best Ask</div>
               <div className="font-mono tabular-nums font-semibold mt-1">
-                $0.66
+                $0.42
               </div>
             </div>
             <div>
               <div className="data-label">Best Bid</div>
               <div className="font-mono tabular-nums font-semibold mt-1">
-                $0.62
+                $0.39
               </div>
             </div>
           </div>
         </div>
       </div>
+      <InlineWaitlistCTA label="Join the launch waitlist" />
     </SectionShell>
   );
 }
@@ -199,6 +246,7 @@ export function CurvesSection() {
         {curves.map((c) => (
           <div
             key={c.name}
+            data-landing-card
             className="surface-card p-5 space-y-4 group hover:border-primary/30 transition-colors"
           >
             <svg
@@ -243,21 +291,21 @@ export function CurvesSection() {
 const useCases = [
   {
     icon: Activity,
-    title: "Macro indicators",
-    body: "Trade the path of the Fed Funds Rate, CPI prints, or unemployment numbers as a range, not a binary call.",
-    example: "Fed Funds · Dec 2026 · 3.50–5.50%",
+    title: "Valuations",
+    body: "Trade pre-IPO valuation, funding rounds, and M&A deal values that traditional markets do not easily expose.",
+    example: "Anthropic IPO · $200B–$800B",
+  },
+  {
+    icon: LineChart,
+    title: "Market prices",
+    body: "Express views on equity indexes, FX rates, bond yields, and volatility as realized numbers instead of threshold bets.",
+    example: "S&P 500 · Quarter close · 5,000–7,000",
   },
   {
     icon: Cloud,
-    title: "Climate & weather",
-    body: "Hedge or speculate on temperature, rainfall, and storm intensity with continuous payoffs tied to NOAA data.",
+    title: "Weather & real-world data",
+    body: "Make temperature, rainfall, wind speed, energy demand, and crop yield markets accessible with proportional settlement.",
     example: "NYC avg temp · Jan 2027 · 28–42°F",
-  },
-  {
-    icon: Trophy,
-    title: "Sports & events",
-    body: "Express conviction on a player\u2019s season total or a team\u2019s win count without limiting yourself to yes / no.",
-    example: "Season wins · NBA team · 35–55",
   },
 ];
 
@@ -265,14 +313,15 @@ export function UseCasesSection() {
   return (
     <SectionShell
       id="use-cases"
-      eyebrow="Use cases"
-      title="One engine. Many markets."
-      description="Anything that lands on a number can be a LIME contract."
+      eyebrow="Markets"
+      title="Markets traditional products leave inaccessible."
+      description="If it resolves to a number, LIME can turn it into a tradeable range."
     >
       <div className="grid md:grid-cols-3 gap-6">
         {useCases.map((u) => (
           <article
             key={u.title}
+            data-landing-card
             className="surface-card p-7 space-y-4 hover:border-primary/30 transition-colors"
           >
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -293,6 +342,7 @@ export function UseCasesSection() {
           </article>
         ))}
       </div>
+      <InlineWaitlistCTA />
     </SectionShell>
   );
 }
@@ -312,7 +362,7 @@ export function LifecycleSection() {
     >
       <ol className="relative grid grid-cols-2 md:grid-cols-5 gap-4">
         {phases.map((p, i) => (
-          <li key={p} className="surface-card p-5 space-y-2 relative">
+          <li key={p} data-landing-card className="surface-card p-5 space-y-2 relative">
             <div className="font-mono tabular-nums text-[11px] text-muted-foreground">
               0{i + 1}
             </div>
@@ -336,18 +386,18 @@ export function LifecycleSection() {
 const reasons = [
   {
     icon: LineChart,
-    title: "Continuous payoffs",
-    body: "Get paid in proportion to how right you were — not a binary win or zero.",
+    title: "More signal than yes or no",
+    body: "Get paid in proportion to how right you were, instead of collapsing every result into 100¢ or 0¢.",
   },
   {
     icon: ShieldCheck,
-    title: "Transparent settlement",
-    body: "Every market declares its data source up front. No off-chain discretion at resolution.",
+    title: "Markets for inaccessible variables",
+    body: "Trade expectations around private valuations, macro prints, climate data, and other variables that do not have clean traditional instruments.",
   },
   {
     icon: Sparkles,
-    title: "Built to scale on-chain",
-    body: "Architecture is Solana-ready so the same orderbook can move from off-chain MVP to on-chain settlement.",
+    title: "Simple trading flow",
+    body: "The order book feels familiar. The payoff is where LIME becomes more expressive.",
   },
 ];
 
@@ -356,11 +406,11 @@ export function WhyLimeSection() {
     <SectionShell
       id="why"
       eyebrow="Why LIME"
-      title="The case for continuous markets."
+      title="Why continuous payoffs matter."
     >
       <div className="grid md:grid-cols-3 gap-6">
         {reasons.map((r) => (
-          <div key={r.title} className="surface-card p-7 space-y-4">
+          <div key={r.title} data-landing-card className="surface-card p-7 space-y-4">
             <r.icon className="h-6 w-6 text-primary" aria-hidden="true" />
             <h3 className="font-['Satoshi'] text-lg font-semibold">
               {r.title}
@@ -413,6 +463,7 @@ export function FAQSection() {
           <AccordionItem
             key={i}
             value={`item-${i}`}
+            data-landing-card
             className="border-border/60"
           >
             <AccordionTrigger className="font-['Satoshi'] text-left text-base hover:no-underline hover:text-primary">
@@ -430,9 +481,9 @@ export function FAQSection() {
 
 export function CTASection() {
   return (
-    <section className="border-b border-border/60" aria-labelledby="cta-title">
+    <section data-landing-reveal className="border-b border-border/60" aria-labelledby="cta-title">
       <div className="max-w-6xl mx-auto px-6 py-24 md:py-32">
-        <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-primary/[0.06] p-10 md:p-16 text-center space-y-6">
+        <div data-landing-card className="relative overflow-hidden rounded-2xl border border-primary/30 bg-primary/[0.06] p-10 md:p-16 text-center space-y-6">
           <div
             className="pointer-events-none absolute inset-0 opacity-30"
             style={{
@@ -449,15 +500,14 @@ export function CTASection() {
             Open your first position.
           </h2>
           <p className="relative max-w-xl mx-auto text-muted-foreground font-['Satoshi']">
-            Browse live markets, place a Buy or Sell at any price between 0¢ and
-            100¢, and let the orderbook do the rest.
+            Join the waitlist for launch access to LIME's first continuous prediction markets.
           </p>
           <div className="relative">
             <Link
-              to="/app"
+              to="/waitlist"
               className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              Launch the App
+              Join Waitlist
               <ArrowUpRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 aria-hidden="true"
