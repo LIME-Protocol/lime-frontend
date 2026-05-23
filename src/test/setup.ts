@@ -1,18 +1,20 @@
 import "@testing-library/jest-dom";
 
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => {},
-  }),
-});
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => {},
+    }),
+  });
+}
 
 class ResizeObserverMock {
   observe() {}
@@ -20,10 +22,12 @@ class ResizeObserverMock {
   disconnect() {}
 }
 
-Object.defineProperty(window, "ResizeObserver", {
-  writable: true,
-  value: ResizeObserverMock,
-});
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, "ResizeObserver", {
+    writable: true,
+    value: ResizeObserverMock,
+  });
+}
 
 class IntersectionObserverMock {
   constructor(private readonly callback: IntersectionObserverCallback) {}
@@ -42,7 +46,9 @@ class IntersectionObserverMock {
   }
 }
 
-Object.defineProperty(window, "IntersectionObserver", {
-  writable: true,
-  value: IntersectionObserverMock,
-});
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, "IntersectionObserver", {
+    writable: true,
+    value: IntersectionObserverMock,
+  });
+}

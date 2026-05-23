@@ -11,6 +11,8 @@ interface RoleGateProps {
   redirectTo?: string;
   /** Custom fallback when authenticated but lacking the role. */
   fallback?: ReactNode;
+  /** Optional redirect for authenticated users who do not hold the role. */
+  unauthorizedRedirectTo?: string;
 }
 
 /**
@@ -18,7 +20,7 @@ interface RoleGateProps {
  * - Unauthenticated → redirect to `redirectTo`.
  * - Authenticated without role → fallback (default: friendly access denied).
  */
-export default function RoleGate({ role, children, redirectTo = '/auth', fallback }: RoleGateProps) {
+export default function RoleGate({ role, children, redirectTo = '/auth', fallback, unauthorizedRedirectTo }: RoleGateProps) {
   const { user, loading: authLoading } = useAuth();
   const { hasRole, isLoading: roleLoading } = useHasRole(role);
 
@@ -33,6 +35,8 @@ export default function RoleGate({ role, children, redirectTo = '/auth', fallbac
   if (!user) return <Navigate to={redirectTo} replace />;
 
   if (!hasRole) {
+    if (unauthorizedRedirectTo) return <Navigate to={unauthorizedRedirectTo} replace />;
+
     return (
       fallback ?? (
         <div className="max-w-md mx-auto px-6 py-20 text-center space-y-3">

@@ -14,6 +14,8 @@ import { categoryConfig } from '@/lib/categories';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
 import NotificationBell from '@/components/layout/NotificationBell';
+import { useUserRoles } from '@/hooks/use-user-role';
+import type { Tables } from '@/integrations/supabase/types';
 
 /* ── Types ── */
 interface NavItemDef {
@@ -137,12 +139,12 @@ function MarketSearchBar() {
   );
 }
 
-function AccountDropdown() {
+function AccountDropdown({ accountNav }: { accountNav: NavItemDef[] }) {
   const [open, setOpen] = useState(false);
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const { data: balances = [] } = useBalances();
-  const usdBalance = balances.find((b: any) => b.currency === 'USD');
+  const usdBalance = balances.find((balance: Tables<'balances'>) => balance.currency === 'USD');
   const totalUsd = usdBalance ? Number(usdBalance.amount) : 0;
 
   if (!user) return null;
@@ -169,7 +171,7 @@ function AccountDropdown() {
           <div className="px-3 py-2 border-b border-border">
             <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
           </div>
-          {ACCOUNT_NAV.map((item) => {
+          {accountNav.map((item) => {
             const Icon = item.icon;
             return (
               <Link
@@ -216,6 +218,9 @@ function ThemeToggle() {
 export default function Navbar() {
   const { pathname } = useLocation();
   const user = useAuthStore((s) => s.user);
+  const { data: roles = [] } = useUserRoles();
+  const isAdmin = roles.includes('admin');
+  const accountNav = ACCOUNT_NAV.filter((item) => item.path !== '/admin' || isAdmin);
 
   return (
     <header className="sticky top-0 z-40 w-full bg-card/80 backdrop-blur-lg border-b border-border">
@@ -241,7 +246,7 @@ export default function Navbar() {
           <ThemeToggle />
           {user && <NotificationBell />}
           {user ? (
-            <AccountDropdown />
+            <AccountDropdown accountNav={accountNav} />
           ) : (
             <Link
               to="/auth"
@@ -255,7 +260,7 @@ export default function Navbar() {
 
       {/* Mobile nav */}
       <div className="md:hidden flex items-center gap-1 px-4 pb-2 overflow-x-auto">
-        {[...PRIMARY_NAV, ...(user ? ACCOUNT_NAV : [])].map((item) => {
+        {[...PRIMARY_NAV, ...(user ? accountNav : [])].map((item) => {
           const Icon = item.icon;
           return (
             <Link
