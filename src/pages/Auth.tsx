@@ -18,7 +18,7 @@ export default function Auth() {
       </div>
     );
   }
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/app" replace />;
 
   return (
     <div className="min-h-screen flex bg-background">

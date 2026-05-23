@@ -20,7 +20,7 @@ function SectionCard({ icon: Icon, title, children }: { icon: typeof Shield; tit
 export default function About() {
   return (
     <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 space-y-8 animate-fade-in">
-      <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+      <Link to="/app" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 

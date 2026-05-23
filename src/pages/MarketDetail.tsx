@@ -86,7 +86,7 @@ export default function MarketDetail() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-20 text-center">
         <p className="text-muted-foreground text-sm">Market not found</p>
-        <Link to="/" className="text-primary text-sm mt-2 inline-block hover:underline">Back to Explore</Link>
+        <Link to="/app" className="text-primary text-sm mt-2 inline-block hover:underline">Back to Explore</Link>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function MarketDetail() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-6">
-      <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5 animate-fade-in">
+      <Link to="/app" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5 animate-fade-in">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 

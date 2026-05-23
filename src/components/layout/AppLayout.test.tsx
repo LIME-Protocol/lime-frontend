@@ -14,7 +14,7 @@ function CurrentPath() {
 }
 
 describe('AppLayout', () => {
-  it('keeps the app root public instead of redirecting to landing', () => {
+  it('renders app content without an auth redirect', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <AppLayout>

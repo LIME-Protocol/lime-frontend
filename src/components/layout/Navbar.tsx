@@ -24,7 +24,7 @@ interface NavItemDef {
 
 /* ── Primary nav (always visible) ── */
 const PRIMARY_NAV: NavItemDef[] = [
-  { label: 'Explore', path: '/', icon: Compass },
+  { label: 'Explore', path: '/app', icon: Compass },
   { label: 'Resolved', path: '/resolved', icon: BarChart3 },
   { label: 'Bookbuilding', path: '/bookbuilding', icon: BookOpen },
   { label: 'About', path: '/about', icon: Info },
