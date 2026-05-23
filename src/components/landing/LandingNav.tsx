@@ -3,9 +3,9 @@ import { ArrowUpRight } from 'lucide-react';
 import logoIcon from '@/assets/logo-icon.png';
 
 const links = [
-  { href: '#protocol', label: 'Protocol' },
+  { href: '#protocol', label: 'Market design' },
   { href: '#how-it-works', label: 'How it works' },
-  { href: '#use-cases', label: 'Use cases' },
+  { href: '#use-cases', label: 'Markets' },
   { href: '#faq', label: 'FAQ' },
 ];
 
@@ -40,10 +40,10 @@ export default function LandingNav() {
         </ul>
 
         <Link
-          to="/app"
+          to="/waitlist"
           className="group inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          Launch App
+          Join Waitlist
           <ArrowUpRight
             className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             aria-hidden="true"
