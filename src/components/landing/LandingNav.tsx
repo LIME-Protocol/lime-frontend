@@ -16,7 +16,7 @@ export default function LandingNav() {
         className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between"
         aria-label="Landing navigation"
       >
-        <Link to="/landing" className="flex items-center gap-2.5 group" aria-label="LIME home">
+        <Link to="/" className="flex items-center gap-2.5 group" aria-label="LIME home">
           <img src={logoIcon} alt="" width={28} height={28} className="h-7 w-7" aria-hidden="true" />
           <span
             className="font-['Satoshi'] text-base font-semibold tracking-tight"
