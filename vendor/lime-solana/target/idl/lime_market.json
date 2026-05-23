@@ -1,0 +1,956 @@
+{
+    "address": "7fWARazEH3S5r3xJaTd2hjKzpxSPHchzNtFKiYF1PRgM",
+    "metadata": {
+        "name": "lime_market",
+        "version": "0.1.0",
+        "spec": "0.1.0",
+        "description": "LIME market lifecycle program"
+    },
+    "instructions": [
+        {
+            "name": "activate_market",
+            "discriminator": [
+                10,
+                26,
+                197,
+                116,
+                113,
+                99,
+                72,
+                89
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "cancel_market",
+            "discriminator": [
+                205,
+                121,
+                84,
+                210,
+                222,
+                71,
+                150,
+                11
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "close_market",
+            "discriminator": [
+                88,
+                154,
+                248,
+                186,
+                48,
+                14,
+                123,
+                244
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "create_market",
+            "discriminator": [
+                103,
+                226,
+                97,
+                235,
+                200,
+                188,
+                251,
+                254
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    109,
+                                    97,
+                                    114,
+                                    107,
+                                    101,
+                                    116
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "market_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "lower_bound",
+                    "type": "u64"
+                },
+                {
+                    "name": "upper_bound",
+                    "type": "u64"
+                },
+                {
+                    "name": "resolution_ts",
+                    "type": "i64"
+                },
+                {
+                    "name": "settlement_source",
+                    "type": "string"
+                },
+                {
+                    "name": "payoff_type",
+                    "type": {
+                        "defined": {
+                            "name": "PayoffType"
+                        }
+                    }
+                },
+                {
+                    "name": "min_participants",
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "force_activate_market",
+            "discriminator": [
+                253,
+                248,
+                232,
+                233,
+                81,
+                143,
+                70,
+                240
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "increment_participants",
+            "discriminator": [
+                229,
+                37,
+                11,
+                71,
+                100,
+                106,
+                17,
+                244
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "initialize_protocol",
+            "discriminator": [
+                188,
+                233,
+                252,
+                106,
+                134,
+                146,
+                202,
+                91
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "fee_bps",
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "mark_resolved",
+            "discriminator": [
+                127,
+                161,
+                161,
+                97,
+                6,
+                116,
+                35,
+                239
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "mark_settled",
+            "discriminator": [
+                85,
+                36,
+                192,
+                146,
+                83,
+                42,
+                49,
+                60
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "pause_market",
+            "discriminator": [
+                216,
+                238,
+                4,
+                164,
+                65,
+                11,
+                162,
+                91
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "pause_protocol",
+            "discriminator": [
+                144,
+                95,
+                0,
+                107,
+                119,
+                39,
+                248,
+                141
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "resume_market",
+            "discriminator": [
+                198,
+                120,
+                104,
+                87,
+                44,
+                103,
+                108,
+                143
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market",
+                    "writable": true
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "resume_protocol",
+            "discriminator": [
+                62,
+                91,
+                76,
+                18,
+                174,
+                87,
+                87,
+                208
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "update_protocol_admin",
+            "discriminator": [
+                139,
+                246,
+                236,
+                25,
+                107,
+                202,
+                171,
+                7
+            ],
+            "accounts": [
+                {
+                    "name": "admin",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "protocol_config",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    114,
+                                    111,
+                                    116,
+                                    111,
+                                    99,
+                                    111,
+                                    108
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "args": [
+                {
+                    "name": "new_admin",
+                    "type": "pubkey"
+                }
+            ]
+        }
+    ],
+    "accounts": [
+        {
+            "name": "Market",
+            "discriminator": [
+                219,
+                190,
+                213,
+                55,
+                0,
+                227,
+                198,
+                154
+            ]
+        },
+        {
+            "name": "ProtocolConfig",
+            "discriminator": [
+                207,
+                91,
+                250,
+                28,
+                152,
+                179,
+                215,
+                209
+            ]
+        }
+    ],
+    "events": [
+        {
+            "name": "MarketCreated",
+            "discriminator": [
+                88,
+                184,
+                130,
+                231,
+                226,
+                84,
+                6,
+                58
+            ]
+        }
+    ],
+    "errors": [
+        {
+            "code": 6000,
+            "name": "Unauthorized",
+            "msg": "Unauthorized action"
+        },
+        {
+            "code": 6001,
+            "name": "InvalidBounds",
+            "msg": "Invalid lower/upper bounds"
+        },
+        {
+            "code": 6002,
+            "name": "InvalidStatusTransition",
+            "msg": "Invalid market status transition"
+        },
+        {
+            "code": 6003,
+            "name": "ProtocolPaused",
+            "msg": "Protocol is paused"
+        },
+        {
+            "code": 6004,
+            "name": "SettlementSourceTooLong",
+            "msg": "Settlement source exceeds the maximum length"
+        },
+        {
+            "code": 6005,
+            "name": "InsufficientParticipants",
+            "msg": "Minimum participants not reached"
+        },
+        {
+            "code": 6006,
+            "name": "InvalidFeeBps",
+            "msg": "Fee bps must be <= 10_000"
+        },
+        {
+            "code": 6007,
+            "name": "InvalidResolutionTs",
+            "msg": "Resolution timestamp must be in the future"
+        },
+        {
+            "code": 6008,
+            "name": "UnsupportedPayoffType",
+            "msg": "Only linear payoff type is supported for MVP"
+        },
+        {
+            "code": 6009,
+            "name": "ParticipantOverflow",
+            "msg": "Participant count overflow"
+        }
+    ],
+    "types": [
+        {
+            "name": "Market",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market_id",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "admin",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "lower_bound",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "upper_bound",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "resolution_ts",
+                        "type": "i64"
+                    },
+                    {
+                        "name": "settlement_source",
+                        "type": "string"
+                    },
+                    {
+                        "name": "payoff_type",
+                        "type": {
+                            "defined": {
+                                "name": "PayoffType"
+                            }
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "type": {
+                            "defined": {
+                                "name": "MarketStatus"
+                            }
+                        }
+                    },
+                    {
+                        "name": "min_participants",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "participant_count",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "total_long",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_short",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "MarketCreated",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "market_id",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "MarketStatus",
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Preliminary"
+                    },
+                    {
+                        "name": "Active"
+                    },
+                    {
+                        "name": "Paused"
+                    },
+                    {
+                        "name": "PendingResolution"
+                    },
+                    {
+                        "name": "Resolved"
+                    },
+                    {
+                        "name": "Settled"
+                    },
+                    {
+                        "name": "Cancelled"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PayoffType",
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Linear"
+                    },
+                    {
+                        "name": "Sigmoid"
+                    },
+                    {
+                        "name": "Step"
+                    },
+                    {
+                        "name": "Convex"
+                    },
+                    {
+                        "name": "Concave"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "ProtocolConfig",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "admin",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "fee_bps",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "paused",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        }
+    ]
+}
