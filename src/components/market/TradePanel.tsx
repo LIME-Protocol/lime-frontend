@@ -216,7 +216,7 @@ export default function TradePanel({ market }: TradePanelProps) {
               {isDemoMarket ? (
                 <span>
                   Demo market — trading is disabled. Visit a live market from{' '}
-                  <Link to="/explore" className="underline font-semibold text-foreground">
+                  <Link to="/app" className="underline font-semibold text-foreground">
                     Explore
                   </Link>{' '}
                   to place real orders.

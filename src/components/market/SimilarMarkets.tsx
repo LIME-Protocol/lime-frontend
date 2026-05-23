@@ -45,7 +45,7 @@ function LargeView({ markets, title }: { markets: Market[]; title?: string }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{title || 'Similar Markets'}</h3>
-        <Link to="/" className="text-[11px] text-primary font-medium hover:underline flex items-center gap-1">
+        <Link to="/app" className="text-[11px] text-primary font-medium hover:underline flex items-center gap-1">
           View All <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
