@@ -176,6 +176,7 @@ export type Database = {
           id: string
           lower_bound: number
           metric_name: string
+          onchain_market_id: number | null
           resolution_date: string
           settlement_source: string
           settlement_url: string | null
@@ -198,6 +199,7 @@ export type Database = {
           id?: string
           lower_bound: number
           metric_name: string
+          onchain_market_id?: number | null
           resolution_date: string
           settlement_source: string
           settlement_url?: string | null
@@ -220,6 +222,7 @@ export type Database = {
           id?: string
           lower_bound?: number
           metric_name?: string
+          onchain_market_id?: number | null
           resolution_date?: string
           settlement_source?: string
           settlement_url?: string | null

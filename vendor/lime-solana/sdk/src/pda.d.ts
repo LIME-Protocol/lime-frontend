@@ -1,0 +1,12 @@
+import { PublicKey } from "@solana/web3.js";
+import type { PositionSide } from "./types.js";
+export declare function marketPda(programId: PublicKey, marketId: bigint): [PublicKey, number];
+export declare function protocolPda(programId: PublicKey): [PublicKey, number];
+export declare function vaultPda(programId: PublicKey, marketId: bigint): [PublicKey, number];
+export declare function vaultTokenAuthorityPda(programId: PublicKey, marketId: bigint): [PublicKey, number];
+export declare function collateralPda(programId: PublicKey, marketId: bigint, owner: PublicKey): [PublicKey, number];
+export declare function positionPda(programId: PublicKey, marketId: bigint, owner: PublicKey, side: PositionSide): [PublicKey, number];
+export declare function resolutionPda(programId: PublicKey, marketId: bigint): [PublicKey, number];
+export declare function claimPda(programId: PublicKey, marketId: bigint, owner: PublicKey, side: PositionSide): [PublicKey, number];
+export declare function refundPda(programId: PublicKey, marketId: bigint, owner: PublicKey, side: PositionSide): [PublicKey, number];
+export declare function vaultAuthorityPda(programId: PublicKey, marketId: bigint): [PublicKey, number];

@@ -1,0 +1,17 @@
+export const categoryConfig: Record<string, { emoji: string; label: string }> = {
+  Rates: { emoji: '🏦', label: 'Rates' },
+  Inflation: { emoji: '📈', label: 'Inflation' },
+  FX: { emoji: '💱', label: 'FX' },
+  Macro: { emoji: '🌍', label: 'Macro' },
+  Equities: { emoji: '📊', label: 'Equities' },
+  Commodities: { emoji: '🛢️', label: 'Commodities' },
+  Labor: { emoji: '👷', label: 'Labor' },
+  Crypto: { emoji: '₿', label: 'Crypto' },
+  Weather: { emoji: '🌤️', label: 'Weather' },
+  Climate: { emoji: '🌱', label: 'Climate' },
+  Politics: { emoji: '🗳️', label: 'Politics' },
+  Events: { emoji: '📅', label: 'Events' },
+  Entertainment: { emoji: '🎬', label: 'Entertainment' },
+  Sports: { emoji: '⚽', label: 'Sports' },
+  Tech: { emoji: '💻', label: 'Tech' },
+};

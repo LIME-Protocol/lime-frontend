@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { markets as mockMarkets, categoryConfig } from '@/lib/mock-data';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
 import type { Market } from '@/lib/types';
@@ -11,9 +10,7 @@ export default function Bookbuilding() {
   const { data: dbMarkets } = useMarkets();
 
   const allMarkets: Market[] = useMemo(() => {
-    const fromDb = (dbMarkets || []).map(dbMarketToMarket);
-    if (fromDb.length > 0) return [...fromDb, ...mockMarkets];
-    return mockMarkets;
+    return (dbMarkets || []).map(dbMarketToMarket);
   }, [dbMarkets]);
 
   const preliminary = useMemo(() => allMarkets.filter(m => m.status === 'preliminary'), [allMarkets]);

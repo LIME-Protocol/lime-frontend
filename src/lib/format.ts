@@ -3,7 +3,7 @@
  * Extracted to avoid duplication.
  */
 
-import { categoryConfig } from '@/lib/mock-data';
+import { categoryConfig } from '@/lib/categories';
 
 /** Format an implied value for display based on unit type */
 export function fmtImplied(n: number, unit: string): string {

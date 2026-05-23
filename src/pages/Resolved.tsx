@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { markets as mockMarkets } from '@/lib/mock-data';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
 import { calculatePayoff, formatCurrency } from '@/lib/types';
@@ -14,9 +13,7 @@ export default function Resolved() {
   const { data: dbMarkets } = useMarkets('resolved');
 
   const resolved: Market[] = useMemo(() => {
-    const fromDb = (dbMarkets || []).map(dbMarketToMarket);
-    const fromMock = mockMarkets.filter((m) => m.status === 'resolved');
-    return fromDb.length > 0 ? [...fromDb, ...fromMock] : fromMock;
+    return (dbMarkets || []).map(dbMarketToMarket);
   }, [dbMarkets]);
 
   return (

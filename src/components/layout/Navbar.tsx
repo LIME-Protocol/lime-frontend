@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from '@/hooks/use-theme';
 import { useBalances } from '@/hooks/use-wallet';
-import { markets as mockMarkets, categoryConfig } from '@/lib/mock-data';
+import { categoryConfig } from '@/lib/categories';
 import { useMarkets } from '@/hooks/use-markets';
 import { dbMarketToMarket } from '@/lib/adapters';
 import NotificationBell from '@/components/layout/NotificationBell';
@@ -68,9 +68,8 @@ function MarketSearchBar() {
   const results = (() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
-    const fromDb = (dbMarkets || []).map(dbMarketToMarket);
-    const all = fromDb.length > 0 ? [...fromDb, ...mockMarkets] : mockMarkets;
-    return all
+    return (dbMarkets || [])
+      .map(dbMarketToMarket)
       .filter((m) => m.title.toLowerCase().includes(q) || m.category.toLowerCase().includes(q))
       .slice(0, 6);
   })();

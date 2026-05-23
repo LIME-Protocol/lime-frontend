@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import { usePositions, useUserOrders, useUserTrades } from '@/hooks/use-portfolio';
-import { categoryConfig } from '@/lib/mock-data';
+import { categoryConfig } from '@/lib/categories';
 import StatusBadge from '@/components/shared/StatusBadge';
 import SummaryCard from '@/components/shared/SummaryCard';
 import EmptyState from '@/components/shared/EmptyState';

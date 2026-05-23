@@ -13,10 +13,21 @@ export interface PayoffCurve {
 }
 
 // ── Market ──
-export type MarketStatus = 'active' | 'pending' | 'preliminary' | 'resolved' | 'settled' | 'invalid';
+export type MarketStatus =
+  | 'draft'
+  | 'pending'
+  | 'preliminary'
+  | 'active'
+  | 'pending_resolution'
+  | 'resolved'
+  | 'settled'
+  | 'invalid'
+  | 'invalidated'
+  | 'cancelled';
 
 export interface Market {
   id: string;
+  onchainMarketId?: string;
   title: string;
   description: string;
   category: string;

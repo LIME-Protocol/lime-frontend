@@ -1,0 +1,17 @@
+{
+  "name": "@lime/solana",
+  "version": "0.1.0",
+  "description": "LIME Solana SDK for wallet, collateral and settlement flows",
+  "type": "module",
+  "main": "sdk/src/index.js",
+  "types": "sdk/src/index.d.ts",
+  "files": [
+    "sdk",
+    "target"
+  ],
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.4"
+  }
+}

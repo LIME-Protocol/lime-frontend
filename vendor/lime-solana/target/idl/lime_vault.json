@@ -1,0 +1,1075 @@
+{
+    "address": "73C6Qi25C8owQGRKgrvfDkTXKLgyawSC5MXwAGHj7iMZ",
+    "metadata": {
+        "name": "lime_vault",
+        "version": "0.1.0",
+        "spec": "0.1.0",
+        "description": "LIME collateral vault and position accounting"
+    },
+    "instructions": [
+        {
+            "name": "deposit_collateral",
+            "discriminator": [
+                156,
+                131,
+                142,
+                116,
+                146,
+                247,
+                162,
+                120
+            ],
+            "accounts": [
+                {
+                    "name": "user",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "usdc_mint"
+                },
+                {
+                    "name": "market"
+                },
+                {
+                    "name": "user_ata",
+                    "writable": true
+                },
+                {
+                    "name": "market_vault",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "vault_token_account",
+                    "writable": true
+                },
+                {
+                    "name": "user_collateral",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    108,
+                                    108,
+                                    97,
+                                    116,
+                                    101,
+                                    114,
+                                    97,
+                                    108
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "user"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "token_program",
+                    "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "market_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "init_market_vault",
+            "discriminator": [
+                40,
+                89,
+                237,
+                125,
+                101,
+                18,
+                210,
+                155
+            ],
+            "accounts": [
+                {
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "usdc_mint"
+                },
+                {
+                    "name": "market"
+                },
+                {
+                    "name": "vault_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "market_vault",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "vault_token_account",
+                    "writable": true
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "market_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "settlement_authority",
+                    "type": "pubkey"
+                }
+            ]
+        },
+        {
+            "name": "settle_trade",
+            "discriminator": [
+                252,
+                176,
+                98,
+                248,
+                73,
+                123,
+                8,
+                157
+            ],
+            "accounts": [
+                {
+                    "name": "backend_signer",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "market"
+                },
+                {
+                    "name": "market_vault",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "buyer_collateral",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    108,
+                                    108,
+                                    97,
+                                    116,
+                                    101,
+                                    114,
+                                    97,
+                                    108
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "buyer"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "seller_collateral",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    108,
+                                    108,
+                                    97,
+                                    116,
+                                    101,
+                                    114,
+                                    97,
+                                    108
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "seller"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "buyer_position",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    111,
+                                    115,
+                                    105,
+                                    116,
+                                    105,
+                                    111,
+                                    110
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "buyer"
+                            },
+                            {
+                                "kind": "const",
+                                "value": [
+                                    108,
+                                    111,
+                                    110,
+                                    103
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "seller_position",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    112,
+                                    111,
+                                    115,
+                                    105,
+                                    116,
+                                    105,
+                                    111,
+                                    110
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "seller"
+                            },
+                            {
+                                "kind": "const",
+                                "value": [
+                                    115,
+                                    104,
+                                    111,
+                                    114,
+                                    116
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
+                }
+            ],
+            "args": [
+                {
+                    "name": "market_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "buyer",
+                    "type": "pubkey"
+                },
+                {
+                    "name": "seller",
+                    "type": "pubkey"
+                },
+                {
+                    "name": "quantity",
+                    "type": "u64"
+                },
+                {
+                    "name": "price_scaled",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "transfer_for_settlement",
+            "discriminator": [
+                168,
+                10,
+                219,
+                215,
+                147,
+                178,
+                191,
+                35
+            ],
+            "accounts": [
+                {
+                    "name": "settlement_authority",
+                    "signer": true
+                },
+                {
+                    "name": "usdc_mint"
+                },
+                {
+                    "name": "market_vault",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "vault_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "vault_token_account",
+                    "writable": true
+                },
+                {
+                    "name": "recipient_ata",
+                    "writable": true
+                },
+                {
+                    "name": "token_program",
+                    "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                }
+            ],
+            "args": [
+                {
+                    "name": "market_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "withdraw_available_collateral",
+            "discriminator": [
+                86,
+                67,
+                74,
+                237,
+                82,
+                146,
+                171,
+                66
+            ],
+            "accounts": [
+                {
+                    "name": "user",
+                    "writable": true,
+                    "signer": true
+                },
+                {
+                    "name": "market"
+                },
+                {
+                    "name": "usdc_mint"
+                },
+                {
+                    "name": "market_vault",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "vault_authority",
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    118,
+                                    97,
+                                    117,
+                                    108,
+                                    116,
+                                    95,
+                                    97,
+                                    117,
+                                    116,
+                                    104,
+                                    111,
+                                    114,
+                                    105,
+                                    116,
+                                    121
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "vault_token_account",
+                    "writable": true
+                },
+                {
+                    "name": "user_ata",
+                    "writable": true
+                },
+                {
+                    "name": "user_collateral",
+                    "writable": true,
+                    "pda": {
+                        "seeds": [
+                            {
+                                "kind": "const",
+                                "value": [
+                                    99,
+                                    111,
+                                    108,
+                                    108,
+                                    97,
+                                    116,
+                                    101,
+                                    114,
+                                    97,
+                                    108
+                                ]
+                            },
+                            {
+                                "kind": "arg",
+                                "path": "market_id"
+                            },
+                            {
+                                "kind": "account",
+                                "path": "user"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "token_program",
+                    "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                }
+            ],
+            "args": [
+                {
+                    "name": "market_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "u64"
+                }
+            ]
+        }
+    ],
+    "accounts": [
+        {
+            "name": "Market",
+            "discriminator": [
+                219,
+                190,
+                213,
+                55,
+                0,
+                227,
+                198,
+                154
+            ]
+        },
+        {
+            "name": "MarketVault",
+            "discriminator": [
+                49,
+                9,
+                150,
+                132,
+                124,
+                162,
+                137,
+                208
+            ]
+        },
+        {
+            "name": "UserCollateral",
+            "discriminator": [
+                105,
+                117,
+                183,
+                100,
+                173,
+                169,
+                109,
+                65
+            ]
+        },
+        {
+            "name": "UserPosition",
+            "discriminator": [
+                251,
+                248,
+                209,
+                245,
+                83,
+                234,
+                17,
+                27
+            ]
+        }
+    ],
+    "events": [
+        {
+            "name": "TradeSettled",
+            "discriminator": [
+                22,
+                119,
+                166,
+                225,
+                175,
+                53,
+                93,
+                216
+            ]
+        }
+    ],
+    "errors": [
+        {
+            "code": 6000,
+            "name": "InvalidAmount",
+            "msg": "Amount must be > 0"
+        },
+        {
+            "code": 6001,
+            "name": "MathOverflow",
+            "msg": "Math overflow"
+        },
+        {
+            "code": 6002,
+            "name": "InvalidPrice",
+            "msg": "Price must be within [0, SCALE]"
+        },
+        {
+            "code": 6003,
+            "name": "MixedSidePosition",
+            "msg": "Cannot mix long and short in same position account"
+        },
+        {
+            "code": 6004,
+            "name": "MarketMismatch",
+            "msg": "Market/account mismatch"
+        },
+        {
+            "code": 6005,
+            "name": "MarketNotTradable",
+            "msg": "Market is not in a tradable state"
+        },
+        {
+            "code": 6006,
+            "name": "UnauthorizedBackend",
+            "msg": "Backend signer is not authorized"
+        },
+        {
+            "code": 6007,
+            "name": "InvalidMint",
+            "msg": "Invalid token mint"
+        },
+        {
+            "code": 6008,
+            "name": "InvalidTokenOwner",
+            "msg": "Invalid token account owner"
+        },
+        {
+            "code": 6009,
+            "name": "InvalidVaultAuthority",
+            "msg": "Invalid settlement vault authority"
+        },
+        {
+            "code": 6010,
+            "name": "InvalidSideForTrade",
+            "msg": "Invalid side for settle_trade account"
+        },
+        {
+            "code": 6011,
+            "name": "WithdrawDisabledUseSettlement",
+            "msg": "Direct withdraw is disabled for MVP, use settlement/refund flows"
+        },
+        {
+            "code": 6012,
+            "name": "InsufficientAvailableCollateral",
+            "msg": "Insufficient available collateral"
+        },
+        {
+            "code": 6013,
+            "name": "PositionOwnerMismatch",
+            "msg": "Position/account owner mismatch"
+        },
+        {
+            "code": 6014,
+            "name": "SelfTradeDisabled",
+            "msg": "Self trades are disabled for MVP"
+        },
+        {
+            "code": 6015,
+            "name": "UnauthorizedSettlement",
+            "msg": "Settlement authority is not authorized"
+        }
+    ],
+    "types": [
+        {
+            "name": "Market",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market_id",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "admin",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "lower_bound",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "upper_bound",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "resolution_ts",
+                        "type": "i64"
+                    },
+                    {
+                        "name": "settlement_source",
+                        "type": "string"
+                    },
+                    {
+                        "name": "payoff_type",
+                        "type": {
+                            "defined": {
+                                "name": "PayoffType"
+                            }
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "type": {
+                            "defined": {
+                                "name": "MarketStatus"
+                            }
+                        }
+                    },
+                    {
+                        "name": "min_participants",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "participant_count",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "total_long",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_short",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "MarketStatus",
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Preliminary"
+                    },
+                    {
+                        "name": "Active"
+                    },
+                    {
+                        "name": "Paused"
+                    },
+                    {
+                        "name": "PendingResolution"
+                    },
+                    {
+                        "name": "Resolved"
+                    },
+                    {
+                        "name": "Settled"
+                    },
+                    {
+                        "name": "Cancelled"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "MarketVault",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market_id",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "market",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "token_mint",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "vault_token_account",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "vault_authority",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "settlement_authority",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "total_collateral",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "vault_authority_bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PayoffType",
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Linear"
+                    },
+                    {
+                        "name": "Sigmoid"
+                    },
+                    {
+                        "name": "Step"
+                    },
+                    {
+                        "name": "Convex"
+                    },
+                    {
+                        "name": "Concave"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PositionSide",
+            "type": {
+                "kind": "enum",
+                "variants": [
+                    {
+                        "name": "Long"
+                    },
+                    {
+                        "name": "Short"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "TradeSettled",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market_vault",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "buyer",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "seller",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "quantity",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "price_scaled",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "UserCollateral",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market_id",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "available_collateral",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_deposited",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "UserPosition",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "market_id",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "side",
+                        "type": {
+                            "defined": {
+                                "name": "PositionSide"
+                            }
+                        }
+                    },
+                    {
+                        "name": "quantity",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "cost_basis",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    }
+                ]
+            }
+        }
+    ]
+}
